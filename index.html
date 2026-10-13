@@ -175,7 +175,7 @@
   }
   .sheet.open{transform:none}
 
-  /* BARRA SUPERIOR LIMPIA: Solo estado a la izquierda y ✕ a la derecha (SIN CHOQUE DE BOTONES) */
+  /* BARRA SUPERIOR LIMPIA: Solo estado a la izquierda y ✕ a la derecha (SIN CHOQUES) */
   .sheet-top{display:flex;align-items:center;justify-content:space-between;min-height:42px}
   
   .status{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--teal)}
@@ -214,6 +214,17 @@
 
   .heard{font-size:14px;color:#A2B4DE;font-style:italic;min-height:20px;margin-top:4px}
 
+  /* Banner de diagnóstico/ayuda si el micrófono tiene problemas */
+  .mic-help-banner{
+    display:none;background:#FFEFEF;color:#9B1C1C;border:1.5px solid #F8B4B4;
+    border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin-top:10px;font-weight:600;
+  }
+  .mic-help-banner.show{display:block}
+  .btn-grant-mic{
+    margin-top:6px;background:#9B1C1C;color:#fff;font-size:13px;font-weight:700;
+    padding:6px 14px;border-radius:8px;display:inline-block;
+  }
+
   /* Zona inferior: Chips + Micrófono */
   .sheet-bottom{display:flex;align-items:flex-end;gap:10px;margin-top:12px}
   .chips{flex:1;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
@@ -239,13 +250,6 @@
   .mic.speaking .ring{animation:ring 2s ease-out infinite}
   .mic.thinking{background:radial-gradient(circle at 35% 30%,#63739d,#2d395a 70%);color:#d2dcf4}
   @keyframes ring{0%{opacity:.75;transform:scale(.85)}80%,100%{opacity:0;transform:scale(1.6)}}
-
-  /* Banner de ayuda si el micrófono está bloqueado */
-  .mic-help-banner{
-    display:none;background:#FFEFEF;color:#9B1C1C;border:1.5px solid #F8B4B4;
-    border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.4;margin-top:10px;font-weight:600;
-  }
-  .mic-help-banner.show{display:block}
 
   .note{font-size:13px;color:#A9BBDF;margin-top:8px;line-height:1.35}
   .note:empty{display:none}
@@ -472,7 +476,7 @@
 
   <div class="sheet" id="sheet" role="dialog" aria-label="Asistente guiado por voz">
     
-    <!-- Barra superior: Estado a la izquierda y ✕ a la derecha (SIN CHOQUES) -->
+    <!-- Barra superior: Estado a la izquierda y ✕ a la derecha -->
     <div class="sheet-top">
       <div class="status idle" id="status"><span class="eq"><i></i><i></i><i></i></span><span id="statusText">TOCA PARA HABLAR</span></div>
       <button class="btn-close-sheet" id="btnCloseSheet" aria-label="Cerrar asistente">
@@ -491,7 +495,8 @@
     <div class="heard" id="heard"></div>
 
     <div class="mic-help-banner" id="micHelpBanner">
-      ⚠️ <b>Micrófono bloqueado:</b> Toca el candado 🔒 arriba en la barra de direcciones de tu navegador, elige <b>Permisos</b>, activa el <b>Micrófono</b> y recarga la página.
+      <div id="micHelpText">⚠️ El micrófono no está activo. Toca el botón para solicitar permiso de audio.</div>
+      <button class="btn-grant-mic" id="btnGrantMic">Activar micrófono</button>
     </div>
 
     <div class="sheet-bottom">
@@ -690,7 +695,7 @@ function detectIntent(raw){
   var views={home:$('viewHome'),transfer:$('viewTransfer'),receipt:$('viewReceipt')};
   var dim=$('dim'),fab=$('fab'),sheet=$('sheet'),statusEl=$('status'),statusText=$('statusText'),msgEl=$('msg'),heard=$('heard'),
       chipsEl=$('chips'),mic=$('mic'),note=$('note'),toastEl=$('toast'),repeatBtn=$('repeatBtn'),btnCloseSheet=$('btnCloseSheet'),
-      micHelpBanner=$('micHelpBanner');
+      micHelpBanner=$('micHelpBanner'),btnGrantMic=$('btnGrantMic'),micHelpText=$('micHelpText');
   var fDest=$('fDest'),destName=$('destName'),destRut=$('destRut'),destBank=$('destBank'),
       fAmount=$('fAmount'),amountVal=$('amountVal'),amountErr=$('amountErr'),
       summary=$('summary'),continueBtn=$('continueBtn');
@@ -730,7 +735,7 @@ function detectIntent(raw){
 
   function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
 
-  /* Síntesis TTS */
+  /* ================= SÍNTESIS DE VOZ TTS ================= */
   var synthSupported='speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
   var voice=null;
   function pickVoice(){
@@ -823,7 +828,7 @@ function detectIntent(raw){
     clearDest(); clearAmount(); hideSummary(); setFocus('none');
   }
 
-  /* Síntesis TTS */
+  /* Síntesis TTS con manejo estricto de turnos (No escuchar mientras habla) */
   function say(display, spoken){
     setMsg(display); renderChips();
     lastSpokenText=spoken||display;
@@ -835,11 +840,12 @@ function detectIntent(raw){
         if(finished) return; finished=true; clearTimeout(guard);
         speaking=false; renderStatus(); 
         resetInactivityWatchdog();
-        setTimeout(resolve,250);
+        // Pausa breve de 250ms para que el hardware de altavoz de Android libere el foco de audio
+        setTimeout(resolve, 250);
       }
       var text=(spoken||display).replace(/[“”"]/g,'');
-      guard=setTimeout(finish, 1600+text.length*90);
-      if(!synthSupported){ setTimeout(finish, Math.min(4000,800+text.length*35)); return; }
+      guard=setTimeout(finish, 1500+text.length*85);
+      if(!synthSupported){ setTimeout(finish, Math.min(3500,800+text.length*30)); return; }
       try{ speechSynthesis.cancel(); }catch(e){}
       var u=new SpeechSynthesisUtterance(text);
       u.lang=voice?voice.lang:'es-CL'; if(voice) u.voice=voice; u.rate=0.9; u.pitch=1.0;
@@ -849,90 +855,135 @@ function detectIntent(raw){
   }
   function skipSpeech(){ try{ speechSynthesis.cancel(); }catch(e){} }
 
-  /* ================= RECONOCIMIENTO DE VOZ ROBUSTO PARA MÓVIL ================= */
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition, rec=null;
-  
-  function initSpeechRecognition(){
+  /* ================= RECONOCIMIENTO DE VOZ AUTO-RECUPERABLE ================= */
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+  var rec = null;
+  var micPermissionGranted = false;
+
+  function createRecognitionInstance(){
     if(!SR) return null;
-    var r = new SR();
-    r.lang = 'es-CL';
-    r.continuous = false;
-    r.interimResults = true;
-    r.maxAlternatives = 1;
+    try {
+      var r = new SR();
+      r.lang = 'es-CL';
+      r.continuous = false;
+      r.interimResults = true;
+      r.maxAlternatives = 1;
 
-    r.onstart = function(){
-      listening = true;
-      gotFinal = false;
-      micHelpBanner.classList.remove('show');
-      renderStatus();
-    };
+      r.onstart = function(){
+        listening = true;
+        gotFinal = false;
+        micHelpBanner.classList.remove('show');
+        renderStatus();
+      };
 
-    r.onresult = function(e){
-      inactivityCount = 0;
-      resetInactivityWatchdog();
-      var interim = '', final = '';
-      for(var i=e.resultIndex; i<e.results.length; i++){
-        var tr = e.results[i][0].transcript;
-        if(e.results[i].isFinal) final += tr; else interim += tr;
-      }
-      if(final.trim()){
-        gotFinal = true;
-        handleUtterance(final.trim());
-      } else if(interim){
-        heard.textContent = 'Dijiste: “' + interim + '…”';
-      }
-    };
+      r.onresult = function(e){
+        inactivityCount = 0;
+        resetInactivityWatchdog();
+        var interim = '', final = '';
+        for(var i=e.resultIndex; i<e.results.length; i++){
+          var tr = e.results[i][0].transcript;
+          if(e.results[i].isFinal) final += tr; else interim += tr;
+        }
+        if(final.trim()){
+          gotFinal = true;
+          handleUtterance(final.trim());
+        } else if(interim){
+          heard.textContent = 'Dijiste: “' + interim + '…”';
+        }
+      };
 
-    r.onerror = function(e){
-      if(e.error === 'no-speech' || e.error === 'aborted') return;
-      listening = false;
-      renderStatus();
-      if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
-        wantListen = false;
-        micHelpBanner.classList.add('show');
-        setMsg('El micrófono está bloqueado en tu celular. Revisa el candado 🔒 arriba para activarlo.');
-      } else {
-        setMsg('Hubo una interrupción en el micrófono. Toca el botón verde para hablar de nuevo.');
-      }
-    };
+      r.onerror = function(e){
+        listening = false;
+        renderStatus();
+        if(e.error === 'no-speech' || e.error === 'aborted') return;
+        
+        console.warn('SpeechRecognition error:', e.error);
+        if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+          wantListen = false;
+          micPermissionGranted = false;
+          micHelpText.innerHTML = '⚠️ <b>Micrófono bloqueado:</b> Toca el candado 🔒 arriba en la barra de direcciones de tu navegador, entra a <b>Permisos</b> y activa el <b>Micrófono</b>.';
+          micHelpBanner.classList.add('show');
+        } else if(e.error === 'network'){
+          // En navegadores como Brave, los Escudos a veces bloquean la conexión a Google Speech
+          micHelpText.innerHTML = '⚠️ <b>Conexión de voz bloqueada:</b> Si usas Brave, desactiva temporalmente los <b>Escudos de Brave (Shields)</b> para este sitio, o usa las opciones en pantalla.';
+          micHelpBanner.classList.add('show');
+        } else {
+          setMsg('Toca el botón verde para hablar de nuevo.');
+        }
+      };
 
-    r.onend = function(){
-      listening = false;
-      renderStatus();
-      if(!panelOpen || !wantListen || busy || speaking || gotFinal) return;
-      if(panelOpen && wantListen && !busy && !speaking && S.step !== 'done'){
-        setTimeout(function(){
-          if(panelOpen && wantListen && !busy && !speaking && !listening) startListening();
-        }, 200);
-      }
-    };
+      r.onend = function(){
+        listening = false;
+        renderStatus();
+        if(!panelOpen || !wantListen || busy || speaking || gotFinal) return;
+        // Si el motor cortó por silencio breve, reinicia la escucha limpiamente
+        if(panelOpen && wantListen && !busy && !speaking && S.step !== 'done'){
+          setTimeout(function(){
+            if(panelOpen && wantListen && !busy && !speaking && !listening) startListening();
+          }, 300);
+        }
+      };
 
-    return r;
+      return r;
+    } catch(err){
+      console.error('Error creando SpeechRecognition:', err);
+      return null;
+    }
   }
 
-  rec = initSpeechRecognition();
+  rec = createRecognitionInstance();
 
   function stopListening(){
-    if(rec){ try{ rec.abort(); }catch(e){} }
+    if(rec){
+      try { rec.abort(); } catch(e){}
+    }
     listening = false;
     renderStatus();
   }
 
   function startListening(){
-    if(!rec || !panelOpen || busy || speaking || listening || S.step==='done') return;
+    if(!panelOpen || busy || speaking || listening || S.step==='done') return;
+    if(!rec){
+      rec = createRecognitionInstance();
+      if(!rec) return;
+    }
     gotFinal = false;
-    try{
+    try {
       rec.start();
-    }catch(e){
-      // Si ya estaba corriendo o hay estado transitorio
-      if(e.name !== 'InvalidStateError'){
-        try{ rec.abort(); rec.start(); }catch(err){}
+    } catch(e){
+      // Si la instancia se quedó trabada en estado inválido (bug común en Android)
+      console.warn('Recreando SpeechRecognition tras error:', e.name);
+      try { rec.abort(); } catch(err){}
+      rec = createRecognitionInstance();
+      try { rec.start(); } catch(err){
+        console.error('No se pudo iniciar reconocimiento:', err);
       }
     }
   }
 
+  /* Solicita permiso de micrófono con User Gesture directo */
+  async function requestMicExplicitly(){
+    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+      try {
+        var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(function(t){ t.stop(); });
+        micPermissionGranted = true;
+        micHelpBanner.classList.remove('show');
+        toast('Micrófono activado correctamente');
+        wantListen = true;
+        startListening();
+        return true;
+      } catch(err){
+        console.warn('getUserMedia falló:', err);
+        micHelpBanner.classList.add('show');
+        return false;
+      }
+    }
+    return false;
+  }
+
   function afterTurn(){ 
-    if(panelOpen && wantListen && !busy && !speaking && S.step!=='done' && rec){
+    if(panelOpen && wantListen && !busy && !speaking && S.step!=='done'){
       startListening(); 
     }
   }
@@ -1173,7 +1224,7 @@ function detectIntent(raw){
     });
   }
 
-  /* Control de apertura / cierre con gesto de usuario directo para micrófono */
+  /* Control de apertura / cierre con Turn-Taking limpio */
   async function openAssistant(){
     if(panelOpen) return;
     panelOpen=true; wantListen=true; var my=++session;
@@ -1181,13 +1232,8 @@ function detectIntent(raw){
     sheet.classList.add('open'); fab.classList.add('hidden'); updateDim(); renderChips(); renderStatus(); setHeard('');
     resetInactivityWatchdog();
 
-    // Activar inmediatamente la solicitud de micrófono al hacer tap (preserva el gesto de usuario en Chrome Móvil)
-    if(rec){
-      try {
-        startListening();
-      } catch(err){}
-    } else {
-      note.textContent='Este navegador no tiene soporte de voz. Puedes usar los botones en pantalla o escribir tu mensaje.';
+    if(!SR){
+      note.textContent='Este navegador no tiene soporte de voz. Puedes usar las opciones en pantalla o escribir tu mensaje.';
       if(!$('typebox')){
         var inp=document.createElement('input'); inp.id='typebox'; inp.className='typebox'; inp.placeholder='Escribe tu respuesta aquí';
         inp.addEventListener('keydown',function(e){ if(e.key==='Enter' && inp.value.trim()){ var v=inp.value.trim(); inp.value=''; handleUtterance(v); } });
@@ -1196,8 +1242,12 @@ function detectIntent(raw){
     }
 
     if(!panelOpen||my!==session) return;
+    
+    // Primero el asistente habla su saludo; una vez que termina de hablar, se activa el micrófono
     await promptForStep();
-    afterTurn();
+    if(panelOpen && wantListen && !busy && my===session){
+      startListening();
+    }
   }
 
   function closeAssistant(){
@@ -1211,6 +1261,7 @@ function detectIntent(raw){
   /* Eventos */
   fab.addEventListener('click', openAssistant);
   btnCloseSheet.addEventListener('click', closeAssistant);
+  btnGrantMic.addEventListener('click', requestMicExplicitly);
   
   repeatBtn.addEventListener('click', function(e){
     e.stopPropagation();
