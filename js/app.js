@@ -136,103 +136,284 @@ class AppRouter {
   setupRecipientStep() {
     const tabSaved = document.getElementById('tabRecipientSaved');
     const tabNew = document.getElementById('tabRecipientNew');
+    const tabFavorites = document.getElementById('tabRecipientFavorites');
+
     const paneSaved = document.getElementById('paneRecipientSaved');
     const paneNew = document.getElementById('paneRecipientNew');
-    const btnContinue = document.getElementById('btnContinueRecipient');
+    const paneFavorites = document.getElementById('paneRecipientFavorites');
+    const savedActions = document.getElementById('recipientSavedBottomActions');
 
-    if (tabSaved && tabNew) {
-      tabSaved.addEventListener('click', () => {
-        tabSaved.classList.add('active');
-        tabNew.classList.remove('active');
-        paneSaved.classList.remove('hidden');
-        paneNew.classList.add('hidden');
-        this.transferState.isNewRecipient = false;
-      });
+    const stepRut = document.getElementById('newRecipientStepRut');
+    const stepDetails = document.getElementById('newRecipientStepDetails');
 
-      tabNew.addEventListener('click', () => {
-        tabNew.classList.add('active');
-        tabSaved.classList.remove('active');
-        paneNew.classList.remove('hidden');
-        paneSaved.classList.add('hidden');
-        this.transferState.isNewRecipient = true;
+    const showSavedTab = () => {
+      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      if (tabSaved) tabSaved.classList.add('active');
+      if (paneSaved) paneSaved.classList.remove('hidden');
+      if (paneNew) paneNew.classList.add('hidden');
+      if (paneFavorites) paneFavorites.classList.add('hidden');
+      if (savedActions) savedActions.classList.remove('hidden');
+      this.transferState.isNewRecipient = false;
+    };
+
+    const showFavoritesTab = () => {
+      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      if (tabFavorites) tabFavorites.classList.add('active');
+      if (paneSaved) paneSaved.classList.add('hidden');
+      if (paneNew) paneNew.classList.add('hidden');
+      if (paneFavorites) paneFavorites.classList.remove('hidden');
+      if (savedActions) savedActions.classList.remove('hidden');
+      this.transferState.isNewRecipient = false;
+    };
+
+    const showNewTab = () => {
+      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      if (tabNew) tabNew.classList.add('active');
+      if (paneSaved) paneSaved.classList.add('hidden');
+      if (paneFavorites) paneFavorites.classList.add('hidden');
+      if (paneNew) paneNew.classList.remove('hidden');
+      if (savedActions) savedActions.classList.add('hidden');
+      // Mostrar solo la etapa RUT inicialmente
+      if (stepRut) stepRut.classList.remove('hidden');
+      if (stepDetails) stepDetails.classList.add('hidden');
+      this.transferState.isNewRecipient = true;
+    };
+
+    if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
+    if (tabFavorites) tabFavorites.addEventListener('click', showFavoritesTab);
+    if (tabNew) tabNew.addEventListener('click', showNewTab);
+
+    // Buscador superior "¿A quién quieres transferir?"
+    const searchInput = document.getElementById('recipientSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const contactCards = document.querySelectorAll('#paneRecipientSaved .contact-item, #paneRecipientFavorites .contact-item');
+        contactCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(query) ? '' : 'none';
+        });
       });
     }
 
-    // Formateo automático de RUT mientras la persona escribe (Hallazgo E2)
+    // Formateo automático de RUT mientras la persona escribe o presiona teclas
     const newRecipientRutInput = document.getElementById('newRecipientRut');
+    const formatRutValue = (raw) => {
+      let val = raw.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (val.length > 9) val = val.slice(0, 9);
+      if (val.length === 0) return '';
+      if (val.length === 1) return val;
+      const dv = val.slice(-1);
+      const cuerpo = val.slice(0, -1);
+      let formatted = '';
+      let count = 0;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        formatted = cuerpo[i] + formatted;
+        count++;
+        if (count === 3 && i > 0) {
+          formatted = '.' + formatted;
+          count = 0;
+        }
+      }
+      return formatted + '-' + dv;
+    };
+
     if (newRecipientRutInput) {
       newRecipientRutInput.addEventListener('input', (e) => {
-        let val = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
-        if (val.length > 9) val = val.slice(0, 9);
-        if (val.length === 0) {
-          e.target.value = '';
-          return;
-        }
-        if (val.length === 1) {
-          e.target.value = val;
-          return;
-        }
-        const dv = val.slice(-1);
-        const cuerpo = val.slice(0, -1);
-        let formatted = '';
-        let count = 0;
-        for (let i = cuerpo.length - 1; i >= 0; i--) {
-          formatted = cuerpo[i] + formatted;
-          count++;
-          if (count === 3 && i > 0) {
-            formatted = '.' + formatted;
-            count = 0;
-          }
-        }
-        e.target.value = formatted + '-' + dv;
+        e.target.value = formatRutValue(e.target.value);
       });
     }
 
-    // Selección de Rosa Pérez en frecuentes
-    const contactRosa = document.getElementById('frequentContactRosa');
-    if (contactRosa) {
-      contactRosa.addEventListener('click', () => {
-        document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
-        contactRosa.classList.add('selected');
-        this.transferState.recipient = {
-          id: 'rosa_perez',
-          name: 'Rosa Pérez Sepúlveda',
-          rut: '12.876.543-2',
-          bank: 'Banco de Chile',
-          accountType: 'Cuenta Corriente',
-          accountNum: '00-128-45920-01'
-        };
+    // Teclado Numérico en Pantalla
+    const keypadButtons = document.querySelectorAll('#rutVirtualKeypad .btn-keypad-digit');
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!newRecipientRutInput) return;
+        const key = btn.getAttribute('data-key');
+        let currentClean = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
+
+        if (key === 'BACK') {
+          currentClean = currentClean.slice(0, -1);
+        } else if (currentClean.length < 9) {
+          currentClean += key;
+        }
+
+        newRecipientRutInput.value = formatRutValue(currentClean);
+        newRecipientRutInput.dispatchEvent(new Event('input'));
       });
-    }
+    });
 
-    if (btnContinue) {
-      btnContinue.addEventListener('click', () => {
-        if (this.transferState.isNewRecipient) {
-          const nameInput = document.getElementById('newRecipientName');
-          const rutInput = document.getElementById('newRecipientRut');
-          const bankSelect = document.getElementById('newRecipientBank');
-          const typeSelect = document.getElementById('newRecipientType');
-          const numInput = document.getElementById('newRecipientNum');
+    // Dictado por voz de RUT
+    const btnVoiceDictate = document.getElementById('btnVoiceDictateRut');
+    const rutVoiceFeedback = document.getElementById('rutVoiceFeedback');
+    if (btnVoiceDictate && newRecipientRutInput) {
+      btnVoiceDictate.addEventListener('click', () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'es-CL';
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
 
-          if (!nameInput.value.trim() || !rutInput.value.trim() || !numInput.value.trim()) {
-            alert('Por favor completa el nombre, RUT y número de cuenta para continuar.');
-            if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
-            return;
+          if (rutVoiceFeedback) {
+            rutVoiceFeedback.style.display = 'block';
+            rutVoiceFeedback.textContent = '🎙️ Escuchando... Di los números de tu RUT (ej: doce ocho siete seis...)';
           }
+          btnVoiceDictate.style.background = '#FEE2E2';
+          btnVoiceDictate.style.borderColor = '#EF4444';
 
-          this.transferState.recipient = {
-            id: 'nuevo_' + Date.now(),
-            name: nameInput.value.trim(),
-            rut: rutInput.value.trim(),
-            bank: bankSelect.value,
-            accountType: typeSelect.value,
-            accountNum: numInput.value.trim()
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            // Convertir palabras habladas a dígitos comunes
+            let digits = transcript
+              .replace(/\buno\b/gi, '1')
+              .replace(/\bdos\b/gi, '2')
+              .replace(/\btres\b/gi, '3')
+              .replace(/\bcuatro\b/gi, '4')
+              .replace(/\bcinco\b/gi, '5')
+              .replace(/\bseis\b/gi, '6')
+              .replace(/\bsiete\b/gi, '7')
+              .replace(/\bocho\b/gi, '8')
+              .replace(/\bnueve\b/gi, '9')
+              .replace(/\bcero\b/gi, '0')
+              .replace(/\bka\b/gi, 'K')
+              .replace(/[^0-9kK]/g, '');
+
+            if (digits) {
+              newRecipientRutInput.value = formatRutValue(digits);
+              if (rutVoiceFeedback) {
+                rutVoiceFeedback.textContent = `✓ Entendido: ${newRecipientRutInput.value}`;
+              }
+            } else {
+              if (rutVoiceFeedback) {
+                rutVoiceFeedback.textContent = `No se detectaron números. Intenta dictar de nuevo o usa el teclado.`;
+              }
+            }
           };
-        }
 
-        this.goTo('amount');
+          recognition.onerror = () => {
+            if (rutVoiceFeedback) {
+              rutVoiceFeedback.textContent = 'No pudimos escuchar con claridad. Puedes tocar los números del teclado abajo.';
+            }
+          };
+
+          recognition.onend = () => {
+            btnVoiceDictate.style.background = '';
+            btnVoiceDictate.style.borderColor = '';
+            setTimeout(() => {
+              if (rutVoiceFeedback) rutVoiceFeedback.style.display = 'none';
+            }, 3500);
+          };
+
+          recognition.start();
+        } else {
+          // Fallback amigable si el navegador no soporta Web Speech API
+          const demoRut = '15.678.910-K';
+          newRecipientRutInput.value = demoRut;
+          if (rutVoiceFeedback) {
+            rutVoiceFeedback.style.display = 'block';
+            rutVoiceFeedback.textContent = `✓ RUT dictado (simulado): ${demoRut}`;
+            setTimeout(() => { rutVoiceFeedback.style.display = 'none'; }, 3000);
+          }
+        }
       });
     }
+
+    // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
+    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
+    if (btnConfirmRutNext) {
+      btnConfirmRutNext.addEventListener('click', () => {
+        const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
+        if (rutVal.length < 3) {
+          alert('Por favor ingresa un RUT válido con los números o el micrófono.');
+          return;
+        }
+        // Ocultar etapa RUT y mostrar formulario de datos
+        if (stepRut) stepRut.classList.add('hidden');
+        if (stepDetails) {
+          stepDetails.classList.remove('hidden');
+          const nameInput = document.getElementById('newRecipientName');
+          if (nameInput) nameInput.focus();
+        }
+      });
+    }
+
+    // Selección de Tipo de Cuenta con 4 Botones (Pills)
+    const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
+    const hiddenAccountTypeInput = document.getElementById('newRecipientType');
+    accountTypePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        accountTypePills.forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        const selectedType = pill.getAttribute('data-type');
+        if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = selectedType;
+      });
+    });
+
+    // Selección de Rosa Pérez en Guardados y Favoritos
+    const contactRosa = document.getElementById('frequentContactRosa');
+    const favRosa = document.getElementById('favContactRosa');
+    const selectRosa = () => {
+      document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
+      if (contactRosa) contactRosa.classList.add('selected');
+      if (favRosa) favRosa.classList.add('selected');
+      this.transferState.recipient = {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-2',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      };
+    };
+
+    if (contactRosa) contactRosa.addEventListener('click', selectRosa);
+    if (favRosa) favRosa.addEventListener('click', selectRosa);
+
+    // Botones de Continuar (Tanto en Guardados como en Formulario Nuevo)
+    const btnContinueSaved = document.getElementById('btnContinueRecipientSaved');
+    const btnContinueNew = document.getElementById('btnContinueRecipient');
+
+    const handleContinueAction = () => {
+      if (this.transferState.isNewRecipient) {
+        const nameInput = document.getElementById('newRecipientName');
+        const rutInput = document.getElementById('newRecipientRut');
+        const bankSelect = document.getElementById('newRecipientBank');
+        const typeSelect = document.getElementById('newRecipientType');
+        const numInput = document.getElementById('newRecipientNum');
+        const emailInput = document.getElementById('newRecipientEmail');
+
+        if (!nameInput || !nameInput.value.trim() || !rutInput.value.trim() || !numInput.value.trim()) {
+          alert('Por favor completa el nombre, RUT y número de cuenta para continuar.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        this.transferState.recipient = {
+          id: 'nuevo_' + Date.now(),
+          name: nameInput.value.trim(),
+          rut: rutInput.value.trim(),
+          bank: bankSelect ? bankSelect.value : 'BancoEstado',
+          accountType: typeSelect ? typeSelect.value : 'Cuenta Corriente',
+          accountNum: numInput.value.trim(),
+          email: emailInput ? emailInput.value.trim() : ''
+        };
+      }
+
+      this.goTo('amount');
+    };
+
+    if (btnContinueSaved) btnContinueSaved.addEventListener('click', handleContinueAction);
+    if (btnContinueNew) btnContinueNew.addEventListener('click', handleContinueAction);
+
+    // Botones Cancelar (vuelven a la lista de guardados o al home)
+    const btnCancelSaved = document.getElementById('btnCancelRecipientSaved');
+    const btnCancelRut = document.getElementById('btnCancelAddRecipientRut');
+    const btnCancelForm = document.getElementById('btnCancelAddRecipientForm');
+
+    if (btnCancelSaved) btnCancelSaved.addEventListener('click', () => this.goTo('home'));
+    if (btnCancelRut) btnCancelRut.addEventListener('click', showSavedTab);
+    if (btnCancelForm) btnCancelForm.addEventListener('click', showSavedTab);
   }
 
   /* Paso 2: Monto y Glosa */

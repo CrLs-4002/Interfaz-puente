@@ -680,3 +680,159 @@ input:checked + .switch-slider:before {
   font-size: 18px;
   font-weight: 900;
 }
+
+/* ================= NUEVOS ESTILOS: BUSCADOR, TABS Y BOTONES DE CUENTA ================= */
+.recipient-search-box {
+  margin-bottom: 16px;
+}
+
+.recipient-search-box label {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.recipient-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.recipient-search-input-wrap svg {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.recipient-search-input {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 14px 12px 46px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.recipient-search-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13, 143, 114, 0.15);
+}
+
+/* Botones de Tipo de Cuenta tipo Píldoras */
+.account-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-account-type-option {
+  min-height: 50px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-account-type-option:hover {
+  border-color: var(--indigo);
+  background: #F8FAFC;
+}
+
+.btn-account-type-option.selected {
+  border-color: var(--teal) !important;
+  background: var(--teal-light) !important;
+  color: var(--teal) !important;
+  box-shadow: 0 0 0 2px rgba(46, 196, 164, 0.3);
+}
+
+/* Teclado numérico en pantalla */
+.virtual-num-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-keypad-digit {
+  min-height: 54px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 2px solid var(--line);
+  color: var(--navy);
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.btn-keypad-digit:active {
+  background: var(--indigo-soft);
+  transform: scale(0.95);
+}
+
+.btn-keypad-action {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  background: #F1F5F9 !important;
+}
+
+/* Botón Continuar y Cancelar extendidos a lo largo */
+.form-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+  width: 100%;
+}
+
+.btn-cta-full-width {
+  width: 100% !important;
+  min-height: 56px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.btn-cancel-full-width {
+  width: 100% !important;
+  min-height: 48px;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-cancel-full-width:hover {
+  color: var(--ink);
+}
+
