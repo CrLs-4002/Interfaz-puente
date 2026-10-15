@@ -57,8 +57,33 @@ class FacilitatorPanel {
     this.metricCorrected = document.getElementById('facMetricCorrected');
   }
 
-  /* ================= 5 TOQUES SECRETOS EN EL BANNER ================= */
+  /* ================= DISPARADORES PARA EL FACILITADOR ================= */
   setupSecretTrigger() {
+    // 1. Atajo de teclado: Alt+F o Ctrl+Shift+F
+    document.addEventListener('keydown', (e) => {
+      if ((e.altKey && e.key.toLowerCase() === 'f') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'f')) {
+        e.preventDefault();
+        this.open();
+      }
+    });
+
+    // 2. 5 toques en el logo de BancoEstado en la cabecera
+    const brandEl = document.querySelector('.be-brand');
+    if (brandEl) {
+      brandEl.addEventListener('click', () => {
+        this.tapCount++;
+        clearTimeout(this.tapTimer);
+        if (this.tapCount >= 5) {
+          this.open();
+          this.tapCount = 0;
+        } else {
+          this.tapTimer = setTimeout(() => {
+            this.tapCount = 0;
+          }, 3000);
+        }
+      });
+    }
+
     if (!this.banner) return;
 
     this.banner.addEventListener('click', () => {
