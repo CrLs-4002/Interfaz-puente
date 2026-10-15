@@ -344,12 +344,27 @@ class AppRouter {
     // Selección de Tipo de Cuenta con 4 Botones (Pills)
     const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
     const hiddenAccountTypeInput = document.getElementById('newRecipientType');
+    const bankSelect = document.getElementById('newRecipientBank');
+    const numInput = document.getElementById('newRecipientNum');
+
     accountTypePills.forEach(pill => {
       pill.addEventListener('click', () => {
         accountTypePills.forEach(p => p.classList.remove('selected'));
         pill.classList.add('selected');
         const selectedType = pill.getAttribute('data-type');
         if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = selectedType;
+
+        // Si elige CuentaRUT: rellenar automáticamente el número de cuenta con el RUT menos el dígito verificador
+        if (selectedType === 'CuentaRUT') {
+          if (bankSelect) bankSelect.value = 'BancoEstado';
+          if (newRecipientRutInput && numInput) {
+            const rawRut = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
+            if (rawRut.length > 1) {
+              const rutSinDv = rawRut.slice(0, -1);
+              numInput.value = rutSinDv;
+            }
+          }
+        }
       });
     });
 
