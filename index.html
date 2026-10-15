@@ -27,6 +27,18 @@
   button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
   .ic{width:22px;height:22px;display:block}
 
+  /* Aviso si se abre dentro del WebView de la app de Google o WhatsApp */
+  .inapp-warning{
+    display:none;position:relative;z-index:99;background:#1E293B;color:#F8FAFC;
+    padding:10px 14px;font-size:13px;align-items:center;justify-content:space-between;gap:10px;
+    box-shadow:0 2px 10px rgba(0,0,0,.25);
+  }
+  .inapp-warning.show{display:flex}
+  .btn-intent{
+    background:var(--orange);color:#fff;padding:6px 12px;border-radius:8px;
+    font-size:12px;font-weight:900;text-decoration:none;white-space:nowrap;
+  }
+
   /* Marco móvil proporcionado a escala real */
   .app{position:relative;width:100%;max-width:440px;margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden}
   @media (min-width:480px){
@@ -183,7 +195,7 @@
   }
   .sheet.open{transform:none}
 
-  /* BARRA SUPERIOR LIMPIA: Solo estado a la izquierda y ✕ a la derecha */
+  /* BARRA SUPERIOR: Estado a la izquierda y ✕ a la derecha */
   .sheet-top{display:flex;align-items:center;justify-content:space-between;min-height:42px}
   
   .status{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--teal)}
@@ -196,7 +208,7 @@
   .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}
   @keyframes eq{0%,100%{height:3px}50%{height:12px}}
 
-  /* Único botón en la cabecera: Cerrar (✕) despejado */
+  /* Botón Cerrar (✕) */
   .btn-close-sheet{
     width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);
     color:#fff;display:flex;align-items:center;justify-content:center;
@@ -222,7 +234,7 @@
 
   .heard{font-size:14px;color:#A2B4DE;font-style:italic;min-height:20px;margin-top:4px}
 
-  /* Banner de ayuda si el navegador (Chrome móvil / Webview) tiene problemas con el micrófono */
+  /* Banner de diagnóstico/ayuda si el navegador (Chrome móvil / Webview) tiene problemas con el micrófono */
   .mic-help-banner{
     display:none;background:#FFEFEF;color:#9B1C1C;border:1.5px solid #F8B4B4;
     border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-top:10px;font-weight:700;
@@ -230,7 +242,11 @@
   .mic-help-banner.show{display:block}
   .btn-grant-mic{
     margin-top:8px;background:#9B1C1C;color:#fff;font-size:13px;font-weight:800;
-    padding:7px 14px;border-radius:8px;display:inline-block;
+    padding:7px 14px;border-radius:8px;display:inline-block;margin-right:8px;
+  }
+  .btn-help-steps{
+    margin-top:8px;background:#fff;color:#9B1C1C;border:1.5px solid #9B1C1C;font-size:13px;font-weight:800;
+    padding:6px 12px;border-radius:8px;display:inline-block;
   }
 
   /* Zona inferior: Chips + Micrófono */
@@ -243,7 +259,7 @@
   }
   .chip:active{background:rgba(255,255,255,.28);transform:scale(.97)}
 
-  /* Botón Micrófono */
+  /* Botón Micrófono con pulsación de Barge-In */
   .mic{
     position:relative;flex:0 0 auto;width:64px;height:64px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,#4ff2cc,var(--teal) 70%);color:var(--navy);
@@ -263,7 +279,27 @@
   .note:empty{display:none}
   .typebox{margin-top:8px;width:100%;min-height:44px;border-radius:12px;border:none;padding:0 14px;font-size:15px;font-weight:700}
 
-  /* ================= MODAL BE PASS (SENIOR FRIENDLY) ================= */
+  /* ================= MODAL DE GUÍA PARA ACTIVAR MICRÓFONO EN CHROME ================= */
+  .mic-guide-modal{
+    position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(13,27,62,.85);
+    z-index:60;opacity:0;visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:20px;transition:all .35s var(--ease);
+  }
+  .mic-guide-modal.active{opacity:1;visibility:visible}
+  .mic-guide-card{
+    background:#fff;border-radius:24px;padding:22px 18px;max-width:380px;width:100%;
+    box-shadow:0 15px 40px rgba(0,0,0,.35);
+  }
+  .mic-guide-title{font-size:18px;font-weight:900;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .mic-step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+  .mic-step-num{background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:none}
+  .mic-step-txt{font-size:14px;line-height:1.4;color:var(--ink)}
+  .mic-step-txt b{font-weight:800;color:var(--indigo)}
+  .mic-guide-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+  .btn-reload{background:var(--indigo);color:#fff;min-height:44px;border-radius:12px;font-size:15px;font-weight:800}
+  .btn-dismiss-guide{color:var(--muted);min-height:38px;font-size:14px;font-weight:700}
+
+  /* ================= MODAL SEGURIDAD BE PASS (SENIOR FRIENDLY) ================= */
   .auth-overlay{
     position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(13,27,62,.7);
     z-index:40;opacity:0;visibility:hidden;display:flex;flex-direction:column;justify-content:flex-end;
@@ -321,6 +357,12 @@
 </style>
 </head>
 <body>
+
+<!-- Aviso de navegador interno (Google App / WhatsApp) -->
+<div class="inapp-warning" id="inAppWarning">
+  <span>⚠️ Estás en el visor interno de Google (bloquea el micrófono).</span>
+  <a class="btn-intent" id="btnIntentChrome" href="#">Abrir en Chrome</a>
+</div>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs>
@@ -504,8 +546,11 @@
 
     <!-- Banner de diagnóstico/ayuda si el navegador (Chrome móvil / Webview) tiene problemas con el micrófono -->
     <div class="mic-help-banner" id="micHelpBanner">
-      <div id="micHelpText">⚠️ El micrófono no está activo. Si usas Chrome o la app de Google, toca abajo para activarlo.</div>
-      <button class="btn-grant-mic" id="btnGrantMic">Activar micrófono</button>
+      <div id="micHelpText">⚠️ El micrófono no está activo en Chrome. Toca abajo para solicitar acceso.</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn-grant-mic" id="btnGrantMic">Activar micrófono</button>
+        <button class="btn-help-steps" id="btnHelpSteps">Ver cómo desbloquearlo</button>
+      </div>
     </div>
 
     <div class="sheet-bottom">
@@ -513,6 +558,32 @@
       <button class="mic idle" id="mic" aria-label="Hablar o interrumpir para responder"><svg class="ic"><use href="#i-mic" xlink:href="#i-mic"/></svg><span class="ring"></span></button>
     </div>
     <div class="note" id="note"></div>
+  </div>
+
+  <!-- ================= MODAL DE GUÍA PARA ACTIVAR MICRÓFONO EN CHROME ================= -->
+  <div class="mic-guide-modal" id="micGuideModal">
+    <div class="mic-guide-card">
+      <div class="mic-guide-title">
+        <svg class="ic" style="color:var(--orange)"><use href="#i-lock" xlink:href="#i-lock"/></svg>
+        Cómo activar el micrófono en Chrome
+      </div>
+      <div class="mic-step">
+        <span class="mic-step-num">1</span>
+        <div class="mic-step-txt">En la barra de direcciones arriba, toca el ícono del <b>candado 🔒</b> o controles a la izquierda de la URL.</div>
+      </div>
+      <div class="mic-step">
+        <span class="mic-step-num">2</span>
+        <div class="mic-step-txt">Toca en <b>"Permisos"</b> (o <i>Configuración de sitios</i>) y activa la opción <b>Micrófono</b>.</div>
+      </div>
+      <div class="mic-step">
+        <span class="mic-step-num">3</span>
+        <div class="mic-step-txt">Toca el botón <b>"Recargar página"</b> para aplicar el permiso y hablar con el asistente.</div>
+      </div>
+      <div class="mic-guide-btns">
+        <button class="btn-reload" id="btnReloadPage">Recargar página ahora</button>
+        <button class="btn-dismiss-guide" id="btnDismissGuide">Entendido, cerrar guía</button>
+      </div>
+    </div>
   </div>
 
   <!-- ================= MODAL SEGURIDAD BE PASS ================= -->
@@ -704,7 +775,10 @@ function detectIntent(raw){
   var views={home:$('viewHome'),transfer:$('viewTransfer'),receipt:$('viewReceipt')};
   var dim=$('dim'),fab=$('fab'),sheet=$('sheet'),statusEl=$('status'),statusText=$('statusText'),msgEl=$('msg'),heard=$('heard'),
       chipsEl=$('chips'),mic=$('mic'),note=$('note'),toastEl=$('toast'),repeatBtn=$('repeatBtn'),btnCloseSheet=$('btnCloseSheet'),
-      micHelpBanner=$('micHelpBanner'),btnGrantMic=$('btnGrantMic'),micHelpText=$('micHelpText');
+      micHelpBanner=$('micHelpBanner'),btnGrantMic=$('btnGrantMic'),micHelpText=$('micHelpText'),btnHelpSteps=$('btnHelpSteps'),
+      micGuideModal=$('micGuideModal'),btnReloadPage=$('btnReloadPage'),btnDismissGuide=$('btnDismissGuide'),
+      inAppWarning=$('inAppWarning'),btnIntentChrome=$('btnIntentChrome');
+
   var fDest=$('fDest'),destName=$('destName'),destRut=$('destRut'),destBank=$('destBank'),
       fAmount=$('fAmount'),amountVal=$('amountVal'),amountErr=$('amountErr'),
       summary=$('summary'),continueBtn=$('continueBtn');
@@ -743,6 +817,19 @@ function detectIntent(raw){
   }
 
   function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+
+  /* ================= DETECCIÓN DE WEBVIEW (APP DE GOOGLE / WHATSAPP) ================= */
+  function isWebview(){
+    var ua = navigator.userAgent || '';
+    return /; wv\)|Android.*Version\/[0-9.]+|GSA\/|FBAN|FBAV|Instagram|WhatsApp|Line/i.test(ua);
+  }
+
+  // Si está dentro de la app de Google, ofrecemos abrir en Chrome oficial mediante Intent de Android
+  if(isWebview() && inAppWarning && btnIntentChrome){
+    var cleanUrl = location.href.replace(/^https?:\/\//, '');
+    btnIntentChrome.href = 'intent://' + cleanUrl + '#Intent;scheme=https;package=com.android.chrome;end';
+    inAppWarning.classList.add('show');
+  }
 
   /* ================= SÍNTESIS DE VOZ TTS CON INTERRUPCIÓN (BARGE-IN) ================= */
   var synthSupported='speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
@@ -852,7 +939,7 @@ function detectIntent(raw){
         currentUtterFinish = null;
         speaking=false; renderStatus(); 
         resetInactivityWatchdog();
-        setTimeout(resolve, 150);
+        setTimeout(resolve, 100);
       }
       currentUtterFinish = finish;
       var text=(spoken||display).replace(/[“”"]/g,'');
@@ -922,8 +1009,13 @@ function detectIntent(raw){
         if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
           wantListen = false;
           showMicBlockedNotice();
-        } else if(e.error === 'network'){
-          micHelpText.innerHTML = '⚠️ <b>Conexión de voz bloqueada:</b> Si usas Brave o un bloqueador, desactiva temporalmente los <b>Escudos (Shields)</b> para este sitio.';
+        } else if(e.error === 'network' || e.error === 'language-not-supported'){
+          // Fallback automático de dialecto si el teléfono no tiene el paquete chileno offline
+          if(r.lang === 'es-CL'){
+            r.lang = 'es-419'; // Español neutro
+            try { r.start(); return; } catch(err){}
+          }
+          micHelpText.innerHTML = '⚠️ <b>Conexión de voz:</b> Revisa tu conexión o desactiva bloqueadores para este sitio.';
           micHelpBanner.classList.add('show');
         } else {
           setMsg('Toca el micrófono para intentar hablar de nuevo.');
@@ -977,15 +1069,9 @@ function detectIntent(raw){
     }
   }
 
-  /* Detecta si la app se abrió dentro de un Webview interno (Google Search App, WhatsApp, Instagram) */
-  function isWebview(){
-    var ua = navigator.userAgent || '';
-    return /; wv\)|Android.*Version\/[0-9.]+|GSA\/|FBAN|FBAV|Instagram|WhatsApp|Line/i.test(ua);
-  }
-
   function showMicBlockedNotice(){
     if(isWebview()){
-      micHelpText.innerHTML = '⚠️ <b>Estás en el navegador interno de Google o WhatsApp:</b> Este navegador no permite micrófono. Toca los tres puntos <b>⋮</b> arriba a la derecha y selecciona <b>"Abrir en Chrome"</b>.';
+      micHelpText.innerHTML = '⚠️ <b>Estás en el visor interno de Google o WhatsApp:</b> No permite micrófono. Toca los tres puntos <b>⋮</b> arriba a la derecha y selecciona <b>"Abrir en Chrome"</b>.';
     } else {
       micHelpText.innerHTML = '⚠️ <b>Micrófono bloqueado en Chrome:</b> Toca el candado o icono 🔒/⚙️ a la izquierda de la dirección web, entra a <b>Permisos</b>, activa el <b>Micrófono</b> y recarga la página.';
     }
@@ -997,19 +1083,26 @@ function detectIntent(raw){
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
       try {
         var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        stream.getTracks().forEach(function(t){ t.stop(); });
+        // Pausa de 300ms antes de detener tracks para que Chrome registre el permiso en el perfil
+        setTimeout(function(){
+          stream.getTracks().forEach(function(t){ t.stop(); });
+        }, 300);
         micHelpBanner.classList.remove('show');
-        toast('✓ Micrófono habilitado correctamente');
+        toast('✓ Micrófono habilitado');
         wantListen = true;
-        startListening();
+        setTimeout(function(){
+          startListening();
+        }, 400);
         return true;
       } catch(err){
         console.warn('getUserMedia falló:', err);
         showMicBlockedNotice();
+        micGuideModal.classList.add('active');
         return false;
       }
     }
     showMicBlockedNotice();
+    micGuideModal.classList.add('active');
     return false;
   }
 
@@ -1024,7 +1117,7 @@ function detectIntent(raw){
     busy=true; inactivityCount=0; wantListen=true; var my=session;
     stopListening(); setHeard(raw);
     thinking=true; thinkingLabel='REVISANDO…'; renderStatus();
-    await sleep(550);
+    await sleep(500);
     thinking=false; renderStatus();
     if(!panelOpen||my!==session){ busy=false; return; }
     try{ await route(raw); }catch(err){ console.error(err); }
@@ -1085,9 +1178,9 @@ function detectIntent(raw){
   }
   async function enterTransfer(raw){
     thinking=true; thinkingLabel='PREPARANDO…'; renderStatus();
-    await sleep(300);
+    await sleep(250);
     resetTransfer(); goView('transfer'); S.step='recipient'; setFocus('dest');
-    await sleep(350);
+    await sleep(300);
     thinking=false; renderStatus();
     var a=extractAmount(raw); if(a) S.pending=a;
     var c=extractContact(raw);
@@ -1229,6 +1322,7 @@ function detectIntent(raw){
     if(speak) return say('Listo, volvimos al inicio. Dime cuando quieras transferir.');
   }
 
+  /* Píldoras con soporte de interrupción instantánea (Barge-In) */
   function chipsFor(step){
     switch(step){
       case 'home': return ['Quiero transferir','¿Cuál es mi saldo?'];
@@ -1245,13 +1339,16 @@ function detectIntent(raw){
     chipsFor(S.step).forEach(function(t){
       var b=document.createElement('button'); b.type='button'; b.className='chip'; 
       b.textContent=t;
-      b.addEventListener('click',function(){ 
+      b.addEventListener('click', async function(){ 
         resetInactivityWatchdog();
-        // Si el usuario toca un botón mientras habla el asistente, cortamos la voz al instante
-        if(speaking) skipSpeech();
+        // Si el usuario toca un botón mientras habla el asistente en CUALQUIER paso, cortar la voz
+        if(speaking){
+          skipSpeech();
+          await sleep(50);
+        }
         if(t==='Cambiar persona') { S.dest=null; clearDest(); S.step='recipient'; setFocus('dest'); promptForStep(); }
         else if(t==='Cambiar monto') { S.amount=null; clearAmount(); hideSummary(); S.step='amount'; setFocus('amount'); promptForStep(); }
-        else if(panelOpen && !busy) handleUtterance(t); 
+        else if(panelOpen) handleUtterance(t); 
       });
       chipsEl.appendChild(b);
     });
@@ -1295,6 +1392,9 @@ function detectIntent(raw){
   fab.addEventListener('click', openAssistant);
   btnCloseSheet.addEventListener('click', closeAssistant);
   btnGrantMic.addEventListener('click', requestMicExplicitly);
+  btnHelpSteps.addEventListener('click', function(){ micGuideModal.classList.add('active'); });
+  btnDismissGuide.addEventListener('click', function(){ micGuideModal.classList.remove('active'); });
+  btnReloadPage.addEventListener('click', function(){ location.reload(); });
   
   repeatBtn.addEventListener('click', function(e){
     e.stopPropagation();
@@ -1304,36 +1404,40 @@ function detectIntent(raw){
   dim.addEventListener('click', closeAssistant);
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeAssistant(); });
   
-  /* Botón Micrófono con Interrupción Inmediata (Barge-In) */
+  /* ================= BARGE-IN UNIVERSAL: INTERRUPCIÓN EN TODOS LOS PASOS ================= */
   mic.addEventListener('click', function(){
-    if(!panelOpen||busy) return;
+    if(!panelOpen) return;
     resetInactivityWatchdog();
 
-    // Si el usuario toca el micrófono mientras el asistente está hablando:
-    // Corta la voz al milisegundo y pasa directo a escuchar
+    // BARGE-IN: Si el asistente está hablando en CUALQUIER paso de la transferencia
+    // (Destinatario, Monto, Confirmación, BE Pass, etc.), cortamos la voz al instante y pasamos a escuchar
     if(speaking){
-      wantListen=true;
-      heard.textContent='';
+      wantListen = true;
+      heard.textContent = '';
       skipSpeech();
+      renderStatus();
       setTimeout(function(){
         if(panelOpen && wantListen && !speaking){
           startListening();
         }
-      }, 100);
+      }, 80);
       return;
     }
 
+    // Si la app está pensando o transicionando de vista, no hacer nada
+    if(thinking) return;
+
     // Si ya estaba escuchando: pausar
     if(listening){
-      wantListen=false;
+      wantListen = false;
       stopListening();
       renderStatus();
       return;
     }
 
     // Si estaba inactivo: empezar a escuchar
-    wantListen=true;
-    heard.textContent='';
+    wantListen = true;
+    heard.textContent = '';
     startListening();
   });
 
