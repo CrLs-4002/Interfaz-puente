@@ -23,6 +23,13 @@
   cursor: grabbing;
 }
 
+/* Ocultar el botón flotante mientras la tarjeta de guía paso a paso esté activa para que no la tape */
+body.dynamic-focus-active .puente-fab-container {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
 .puente-fab-btn {
   display: flex;
   align-items: center;
@@ -353,6 +360,11 @@ input:checked + .switch-slider:before {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+}
+
+/* Cuando el foco dinámico está activo, elevar el screen-view activo para que sus casillas iluminadas salgan sobre el fondo oscuro */
+body.dynamic-focus-active .screen-view.is-active {
+  z-index: 34 !important;
 }
 
 /* Casilla de formulario que se remarca e ilumina en primer plano */

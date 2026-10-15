@@ -220,6 +220,7 @@ class InterfazPuente {
     this.clearSpotlight();
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
+    document.body.classList.add('dynamic-focus-active');
 
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -237,6 +238,7 @@ class InterfazPuente {
   }
 
   clearSpotlight() {
+    document.body.classList.remove('dynamic-focus-active');
     if (this.activeSpotlightElement) {
       this.activeSpotlightElement.classList.remove('spotlight-active');
       this.activeSpotlightElement = null;
@@ -398,6 +400,7 @@ class InterfazPuente {
     this.clearSpotlight();
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
+    document.body.classList.add('dynamic-focus-active');
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     if (this.dynamicFocusOverlay) {
