@@ -400,17 +400,18 @@ input:checked + .switch-slider:before {
   animation: pulse-speaking 1s infinite alternate;
 }
 
-/* Tarjeta de guía explicativa en el foco */
+/* Tarjeta flotante de guía explicativa tipo globo de ayuda (Wireframe style) */
 .spotlight-guide-card {
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 24px;
-  z-index: 37;
+  left: 14px;
+  right: 14px;
+  bottom: 20px;
+  z-index: 45;
   background: #FFFFFF;
-  border-radius: 20px;
-  padding: 18px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  border: 2px solid var(--teal);
+  border-radius: 22px;
+  padding: 18px 16px;
+  box-shadow: 0 16px 40px rgba(13, 27, 62, 0.28);
   display: none;
   animation: bubble-appear 0.3s var(--ease);
 }
@@ -420,9 +421,9 @@ input:checked + .switch-slider:before {
 }
 
 .spotlight-guide-card h4 {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 900;
-  color: var(--indigo);
+  color: var(--navy);
   margin-bottom: 6px;
   display: flex;
   align-items: center;

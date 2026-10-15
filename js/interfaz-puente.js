@@ -281,43 +281,43 @@ class InterfazPuente {
       ];
     } else if (currentView === 'recipient') {
       if (isNewRecipientTab) {
-        // Paso a paso para inscribir a alguien nuevo
+        // Paso a paso para inscribir a alguien nuevo (según wireframe)
         return [
           {
-            target: '#groupRecipientName',
-            title: 'Paso 1: Nombre de la persona',
-            message: 'Escribe aquí el nombre y apellido de la persona a quien le enviarás el dinero.',
-            speech: 'Paso 1: Nombre completo. Escribe el nombre de la persona que recibirá el dinero.'
+            target: '#groupRecipientRut',
+            title: 'Paso 1: RUT de la persona',
+            message: 'Ahora debes tocar donde dice "Ingresa el RUT" para anotar el RUT de la persona a quien le darás dinero. NO ES NECESARIO PONER PUNTOS NI GUIÓN.',
+            speech: 'Paso 1: Ingresa el RUT de la persona a quien le darás dinero. No es necesario poner puntos ni guión.'
           },
           {
-            target: '#groupRecipientRut',
-            title: 'Paso 2: RUT de la persona',
-            message: 'Ingresa el RUT de tu destinatario, por ejemplo 15.678.910-K.',
-            speech: 'Paso 2: RUT. Ingresa el número de carnet o RUT de la persona.'
+            target: '#groupRecipientName',
+            title: 'Paso 2: Nombre y Apellido',
+            message: 'Anota el nombre y apellido de la persona a quien le darás dinero.',
+            speech: 'Paso 2: Nombre y apellido. Anota el nombre y apellido de la persona.'
           },
           {
             target: '#groupRecipientBank',
-            title: 'Paso 3: Banco de destino',
-            message: 'Selecciona en la lista el banco donde la persona tiene su cuenta guardada.',
-            speech: 'Paso 3: Banco de destino. Selecciona en la lista el banco de la persona.'
+            title: 'Paso 3: Banco',
+            message: 'Aquí debes elegir el nombre del banco de la persona a quien le darás dinero.',
+            speech: 'Paso 3: Banco. Elige el nombre del banco de la persona.'
           },
           {
             target: '#groupRecipientType',
             title: 'Paso 4: Tipo de cuenta',
-            message: 'Elige si su cuenta es Cuenta Corriente, CuentaRUT o Cuenta Vista.',
+            message: 'Aquí debes elegir el tipo de cuenta de la persona a quien le darás dinero.',
             speech: 'Paso 4: Tipo de cuenta. Elige si es Cuenta Corriente, CuentaRUT o Cuenta Vista.'
           },
           {
             target: '#groupRecipientNum',
             title: 'Paso 5: Número de cuenta',
-            message: 'Escribe el número de cuenta bancaria que te entregó la persona.',
-            speech: 'Paso 5: Número de cuenta. Escribe el número exacto de su cuenta bancaria.'
+            message: 'Aquí debes anotar el número de cuenta de la persona a quien le darás dinero.',
+            speech: 'Paso 5: Número de cuenta. Escribe el número exacto de su cuenta.'
           },
           {
             target: '#btnContinueRecipient',
-            title: 'Paso 6: Continuar al monto',
-            message: 'Toca el botón Continuar para avanzar a indicar cuánto dinero vas a enviar.',
-            speech: 'Paso 6: Toca el botón verde Continuar para ingresar el monto.'
+            title: 'Paso 6: Continuar',
+            message: 'Luego haz toque donde dice "Continuar" para avanzar al monto a transferir.',
+            speech: 'Paso 6: Toca el botón Continuar para indicar cuánto dinero vas a enviar.'
           }
         ];
       } else {
