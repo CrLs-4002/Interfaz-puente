@@ -41,6 +41,36 @@ class PuenteSpeech {
     }
   }
 
+  prepareTextForSpeech(text) {
+    if (!text) return '';
+    let clean = text.replace(/[*_#]/g, '').trim();
+
+    // 1. Quitar prefijos técnicos de moneda (CLP, CLP$)
+    clean = clean.replace(/\bCLP\s*\$?/gi, '');
+
+    // 2. Reemplazar $ seguido de cifras por su valor numérico acompañado exclusivamente de la palabra "pesos" (o "peso" si es 1)
+    // Ejemplo: $50.000 -> 50.000 pesos; $ 350.000 -> 350.000 pesos; $1 -> 1 peso
+    clean = clean.replace(/\$\s*(\d{1,3}(?:\.\d{3})+|\d+)/g, (match, numStr) => {
+      const cleanNum = numStr.trim();
+      return cleanNum === '1' ? '1 peso' : `${cleanNum} pesos`;
+    });
+
+    // 3. Reemplazar cualquier mención de dólares o pesos chilenos para que la voz solo diga "pesos"
+    clean = clean.replace(/\b(d[oó]lares\s+americanos?|d[oó]lares|d[oó]lar)\b/gi, 'pesos');
+    clean = clean.replace(/\bpesos\s+chilenos?\b/gi, 'pesos');
+
+    // 4. Si queda algún símbolo $ residual
+    clean = clean.replace(/\$/g, 'pesos');
+
+    // 5. Evitar redundancias como "pesos pesos"
+    clean = clean.replace(/\bpesos\s+pesos\b/gi, 'pesos');
+
+    // 6. Normalizar espacios
+    clean = clean.replace(/\s+/g, ' ').trim();
+
+    return clean;
+  }
+
   speak(text, onEnd) {
     if (!this.synth) {
       console.warn('Síntesis de voz no soportada en este navegador.');
@@ -51,7 +81,7 @@ class PuenteSpeech {
     // Si ya está hablando, detener para evitar solapamientos
     this.stop();
 
-    const cleanText = text.replace(/[*_#]/g, '').trim();
+    const cleanText = this.prepareTextForSpeech(text);
     if (!cleanText) return;
 
     this.currentUtterance = new SpeechSynthesisUtterance(cleanText);

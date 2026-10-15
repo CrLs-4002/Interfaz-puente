@@ -90,6 +90,12 @@ class AppRouter {
     return '$' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   }
 
+  formatCLPForSpeech(num) {
+    const val = Math.round(Number(num) || 0);
+    const formatted = val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return val === 1 ? '1 peso' : `${formatted} pesos`;
+  }
+
   parseCLP(str) {
     const clean = str.replace(/[^\d]/g, '');
     return parseInt(clean, 10) || 0;
@@ -509,7 +515,7 @@ class AppRouter {
     const btnSpeakCard = document.getElementById('btnSpeakSummaryCard');
 
     const speakSummaryContent = () => {
-      const amtStr = this.formatCLP(this.transferState.amount);
+      const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
@@ -730,7 +736,7 @@ class AppRouter {
   readCurrentScreenAloud() {
     if (!window.puenteSpeech) return;
     if (this.currentView === 'home') {
-      window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLP(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
+      window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
     } else if (this.currentView === 'recipient') {
       window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
     } else if (this.currentView === 'new-recipient') {
@@ -741,9 +747,9 @@ class AppRouter {
         window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
       }
     } else if (this.currentView === 'amount') {
-      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLP(this.user.balance)}.`);
+      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
     } else if (this.currentView === 'summary') {
-      const amtStr = this.formatCLP(this.transferState.amount);
+      const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
