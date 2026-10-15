@@ -187,7 +187,10 @@
                   <div class="contact-bank-info">Banco de Chile · Cta. Corriente</div>
                   <div style="font-size:13px;color:#64748B">RUT 12.876.543-2</div>
                 </div>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <button type="button" class="btn-speak-section" data-speak="Destinatario frecuente: Rosa Pérez Sepúlveda, cuenta corriente en Banco de Chile. Toca para seleccionarla." aria-label="Escuchar datos de Rosa Pérez" title="Escuchar">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                </button>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="3" style="margin-left:4px"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
 
               <!-- Contacto Pedro Retamales (Hijo) -->
@@ -587,12 +590,11 @@
           </div>
         </div>
 
-        <!-- Botón Flotante Principal -->
-        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Abrir ayuda de Interfaz Puente">
+        <!-- Botón Flotante Principal (Solo icono) -->
+        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Ayuda paso a paso" title="Toca aquí para ver qué hacer paso a paso">
           <span class="puente-fab-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
           </span>
-          <span class="puente-fab-label">¿Te ayudo?</span>
         </button>
       </div>
 
@@ -644,19 +646,29 @@
         </div>
       </div>
 
-      <!-- ================= FOCO DINÁMICO (SPOTLIGHT 85%) ================= -->
+      <!-- ================= FOCO DINÁMICO (SPOTLIGHT 85% PASO A PASO) ================= -->
       <div class="dynamic-focus-overlay" id="dynamicFocusOverlay" aria-hidden="true"></div>
 
-      <!-- Tarjeta flotante explicativa del foco -->
+      <!-- Tarjeta flotante explicativa del paso a paso -->
       <div class="spotlight-guide-card" id="spotlightGuideCard">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:13px;font-weight:900;color:var(--mint);background:var(--navy);padding:2px 8px;border-radius:6px" id="spotlightStepBadge">PASO 1</span>
+          <button type="button" class="btn-spotlight-voice" id="btnSpotlightVoice" aria-label="Escuchar explicación de este paso" title="Toca para que la IA lea este paso">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            <span style="font-size:13px;font-weight:800;margin-left:4px">Escuchar</span>
+          </button>
+        </div>
         <h4 id="spotlightGuideTitle">Paso a completar</h4>
         <p id="spotlightGuideText">Aquí debes indicar a quién le vas a transferir.</p>
         <div class="spotlight-guide-btns">
-          <button type="button" class="btn-spotlight-voice" id="btnSpotlightVoice" aria-label="Escuchar esta guía">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <button type="button" class="btn-pill secondary" id="btnSpotlightPrev" style="min-height:44px;font-size:15px;display:none">
+            Anterior
           </button>
-          <button type="button" class="btn-spotlight-done" id="btnSpotlightDone">
-            Entendido, gracias
+          <button type="button" class="btn-spotlight-done" id="btnSpotlightNext">
+            Siguiente paso
+          </button>
+          <button type="button" class="btn-pill secondary" id="btnSpotlightDone" style="min-height:44px;font-size:14px;padding:0 12px">
+            Cerrar guía
           </button>
         </div>
       </div>

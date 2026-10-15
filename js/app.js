@@ -383,9 +383,6 @@ class AppRouter {
       digits.forEach((d, i) => {
         d.value = fakeCode[i] || '';
       });
-      if (window.puenteSpeech) {
-        window.puenteSpeech.speak('Para tu tranquilidad, ingresa el código simulado 123456 para confirmar la transferencia.');
-      }
     }
   }
 
@@ -457,11 +454,6 @@ class AppRouter {
     }
     if (opEl) {
       opEl.textContent = Math.floor(10000000 + Math.random() * 90000000).toString();
-    }
-
-    // Lectura en voz del comprobante
-    if (window.puenteSpeech) {
-      window.puenteSpeech.speak(`¡Listo! Se envió ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name}. Tu transferencia fue exitosa.`);
     }
   }
 

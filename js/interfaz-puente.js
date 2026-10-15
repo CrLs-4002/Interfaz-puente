@@ -195,10 +195,6 @@ class InterfazPuente {
   triggerInactivityOffer() {
     if (!this.inactivityBubble) return;
     this.inactivityBubble.classList.add('show');
-    // Pregunta no impositiva
-    if (window.puenteSpeech) {
-      window.puenteSpeech.speak('¿Quieres que te muestre dónde seguir?');
-    }
   }
 
   dismissInactivityOffer() {
@@ -208,7 +204,7 @@ class InterfazPuente {
     this.inactivitySeconds = 0;
   }
 
-  /* ================= FOCO DINÁMICO (SPOTLIGHT AL 85%) ================= */
+  /* ================= FOCO DINÁMICO (SPOTLIGHT AL 85% PASO A PASO) ================= */
   activateSpotlight(targetSelector, title, message) {
     if (!this.enabled) return;
     this.dismissInactivityOffer();
@@ -217,7 +213,6 @@ class InterfazPuente {
     const targetEl = document.querySelector(targetSelector);
     if (!targetEl) return;
 
-    // Registrar métrica en facilitador
     if (window.facilitatorPanel) {
       window.facilitatorPanel.recordMetric('spotlight');
     }
@@ -226,26 +221,18 @@ class InterfazPuente {
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
 
-    // Desplazar suavemente a la vista
     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // Activar fondo al 85%
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
     }
 
-    // Configurar y mostrar tarjeta de guía
     if (this.spotlightCard) {
       const titleEl = document.getElementById('spotlightGuideTitle');
       const textEl = document.getElementById('spotlightGuideText');
       if (titleEl) titleEl.textContent = title || 'Paso actual';
       if (textEl) textEl.textContent = message || 'Completa este campo para continuar con tranquilidad.';
       this.spotlightCard.classList.add('show');
-    }
-
-    // Lectura de voz del foco
-    if (window.puenteSpeech) {
-      window.puenteSpeech.speak(`${title}. ${message}`);
     }
   }
 
@@ -265,20 +252,204 @@ class InterfazPuente {
     }
   }
 
-  /* Determina automáticamente el campo relevante según la pantalla actual */
-  spotlightCurrentStep() {
+  /* Flujo interactivo paso a paso para completar la transferencia */
+  startStepByStepGuide() {
+    this.currentStepIndex = 0;
+    this.executeCurrentStep();
+  }
+
+  getGuideSteps() {
     const currentView = window.appRouter ? window.appRouter.currentView : 'home';
+    const isNewRecipientTab = document.getElementById('tabRecipientNew') && document.getElementById('tabRecipientNew').classList.contains('active');
+
     if (currentView === 'home') {
-      this.activateSpotlight('#btnQuickTransfer', 'Comenzar transferencia', 'Toca el botón naranja "Transferir dinero" para comenzar.');
+      return [
+        {
+          target: '#cardCuentaRut',
+          title: 'Revisar tu dinero disponible',
+          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes $350.000 listos para usar.',
+          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
+        },
+        {
+          target: '#btnQuickTransfer',
+          title: 'Comenzar a transferir',
+          message: 'Toca este botón naranja para iniciar el envío de dinero a otra persona.',
+          speech: 'Paso 2: Toca el botón naranja Transferir dinero para comenzar.'
+        }
+      ];
     } else if (currentView === 'recipient') {
-      this.activateSpotlight('#frequentContactRosa', 'Elige a quién transferir', 'Toca a Rosa Pérez para enviarle dinero, o la pestaña "Inscribir nuevo" si es otra persona.');
+      if (isNewRecipientTab) {
+        // Paso a paso para inscribir a alguien nuevo
+        return [
+          {
+            target: '#groupRecipientName',
+            title: 'Paso 1: Nombre de la persona',
+            message: 'Escribe aquí el nombre y apellido de la persona a quien le enviarás el dinero.',
+            speech: 'Paso 1: Nombre completo. Escribe el nombre de la persona que recibirá el dinero.'
+          },
+          {
+            target: '#groupRecipientRut',
+            title: 'Paso 2: RUT de la persona',
+            message: 'Ingresa el RUT de tu destinatario, por ejemplo 15.678.910-K.',
+            speech: 'Paso 2: RUT. Ingresa el número de carnet o RUT de la persona.'
+          },
+          {
+            target: '#groupRecipientBank',
+            title: 'Paso 3: Banco de destino',
+            message: 'Selecciona en la lista el banco donde la persona tiene su cuenta guardada.',
+            speech: 'Paso 3: Banco de destino. Selecciona en la lista el banco de la persona.'
+          },
+          {
+            target: '#groupRecipientType',
+            title: 'Paso 4: Tipo de cuenta',
+            message: 'Elige si su cuenta es Cuenta Corriente, CuentaRUT o Cuenta Vista.',
+            speech: 'Paso 4: Tipo de cuenta. Elige si es Cuenta Corriente, CuentaRUT o Cuenta Vista.'
+          },
+          {
+            target: '#groupRecipientNum',
+            title: 'Paso 5: Número de cuenta',
+            message: 'Escribe el número de cuenta bancaria que te entregó la persona.',
+            speech: 'Paso 5: Número de cuenta. Escribe el número exacto de su cuenta bancaria.'
+          },
+          {
+            target: '#btnContinueRecipient',
+            title: 'Paso 6: Continuar al monto',
+            message: 'Toca el botón Continuar para avanzar a indicar cuánto dinero vas a enviar.',
+            speech: 'Paso 6: Toca el botón verde Continuar para ingresar el monto.'
+          }
+        ];
+      } else {
+        // Paso a paso con contacto frecuente ya registrado
+        return [
+          {
+            target: '#frequentContactRosa',
+            title: 'Paso 1: Elegir a Rosa Pérez',
+            message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
+            speech: 'Paso 1: Toca a Rosa Pérez para seleccionarla como la persona que recibirá el dinero.'
+          },
+          {
+            target: '#tabRecipientNew',
+            title: '¿O prefieres una persona nueva?',
+            message: 'Si necesitas transferirle a alguien nuevo, toca esta pestaña para anotar sus datos.',
+            speech: 'Si deseas transferirle a alguien que no está en la lista, toca Inscribir nuevo.'
+          },
+          {
+            target: '#btnContinueRecipient',
+            title: 'Paso 2: Continuar',
+            message: 'Toca Continuar para indicar cuánto dinero deseas transferirle a Rosa.',
+            speech: 'Paso 2: Toca el botón verde Continuar para ingresar el monto a enviar.'
+          }
+        ];
+      }
     } else if (currentView === 'amount') {
-      this.activateSpotlight('#amountBox', 'Ingresa el monto', 'Indica cuánto dinero deseas enviar. Por ejemplo: $50.000.');
+      return [
+        {
+          target: '#amountBox',
+          title: 'Paso 1: Ingresar el monto',
+          message: 'Escribe la cantidad exacta de dinero a enviar, o toca uno de los montos sugeridos ($50.000).',
+          speech: 'Paso 1: Ingresa el monto. Escribe cuánto dinero quieres transferir, por ejemplo 50 mil pesos.'
+        },
+        {
+          target: '#groupGlosa',
+          title: 'Paso 2: Mensaje opcional',
+          message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
+          speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona.'
+        },
+        {
+          target: '#btnContinueAmount',
+          title: 'Paso 3: Revisar antes de enviar',
+          message: 'Toca este botón para ver el resumen detallado antes de confirmar.',
+          speech: 'Paso 3: Toca Revisar antes de enviar para verificar los datos antes de autorizar.'
+        }
+      ];
     } else if (currentView === 'summary') {
-      this.activateSpotlight('#safeSummaryCard', 'Revisa antes de enviar', 'Lee con calma los datos. Si todo está correcto, toca "Sí, enviar". Recuerda que no se puede deshacer.');
-    } else if (currentView === 'auth') {
-      this.activateSpotlight('#securityCodeBox', 'Código de seguridad', 'Escribe el código de prueba 123456 para autorizar el envío.');
+      return [
+        {
+          target: '#safeSummaryCard',
+          title: 'Revisión final de seguridad',
+          message: 'Lee atentamente el monto y el nombre de la persona. Si todo está correcto, presiona Sí, enviar.',
+          speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.'
+        }
+      ];
     }
+    return [];
+  }
+
+  executeCurrentStep() {
+    const steps = this.getGuideSteps();
+    if (!steps.length) return;
+
+    if (this.currentStepIndex >= steps.length) {
+      this.clearSpotlight();
+      return;
+    }
+    if (this.currentStepIndex < 0) {
+      this.currentStepIndex = 0;
+    }
+
+    const step = steps[this.currentStepIndex];
+    const targetEl = document.querySelector(step.target);
+    if (!targetEl) {
+      this.currentStepIndex++;
+      this.executeCurrentStep();
+      return;
+    }
+
+    this.clearSpotlight();
+    this.activeSpotlightElement = targetEl;
+    targetEl.classList.add('spotlight-active');
+    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    if (this.spotlightCard) {
+      const badgeEl = document.getElementById('spotlightStepBadge');
+      const titleEl = document.getElementById('spotlightGuideTitle');
+      const textEl = document.getElementById('spotlightGuideText');
+      const prevBtn = document.getElementById('btnSpotlightPrev');
+      const nextBtn = document.getElementById('btnSpotlightNext');
+      const voiceBtn = document.getElementById('btnSpotlightVoice');
+
+      if (badgeEl) badgeEl.textContent = `PASO ${this.currentStepIndex + 1} DE ${steps.length}`;
+      if (titleEl) titleEl.textContent = step.title;
+      if (textEl) textEl.textContent = step.message;
+      if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
+
+      if (prevBtn) {
+        prevBtn.style.display = this.currentStepIndex > 0 ? 'inline-flex' : 'none';
+      }
+      if (nextBtn) {
+        nextBtn.textContent = (this.currentStepIndex === steps.length - 1) ? 'Finalizar guía' : 'Siguiente paso';
+      }
+
+      this.spotlightCard.classList.add('show');
+    }
+
+    // Nota: La voz NO se activa automáticamente, solo si el usuario toca el botón de escuchar
+  }
+
+  nextGuideStep() {
+    const steps = this.getGuideSteps();
+    if (this.currentStepIndex < steps.length - 1) {
+      this.currentStepIndex++;
+      this.executeCurrentStep();
+    } else {
+      this.clearSpotlight();
+    }
+  }
+
+  prevGuideStep() {
+    if (this.currentStepIndex > 0) {
+      this.currentStepIndex--;
+      this.executeCurrentStep();
+    }
+  }
+
+  /* Activa la guía paso a paso al tocar el botón */
+  spotlightCurrentStep() {
+    this.startStepByStepGuide();
   }
 
   /* ================= TRADUCCIÓN SEMÁNTICA (GLOSARIO) ================= */
@@ -341,11 +512,6 @@ class InterfazPuente {
     if (window.facilitatorPanel) {
       window.facilitatorPanel.recordMetric('help');
     }
-
-    // Si es primera vez o está en inicio, sugerir brevemente
-    if (window.puenteSpeech) {
-      window.puenteSpeech.speak('Aquí tienes tu pasamanos digital. Puedes activar el foco iluminado o escuchar la pantalla.');
-    }
   }
 
   closeSheet() {
@@ -360,9 +526,6 @@ class InterfazPuente {
     if (!hasSeen && this.enabled && this.onboardingOverlay) {
       setTimeout(() => {
         this.onboardingOverlay.classList.add('active');
-        if (window.puenteSpeech) {
-          window.puenteSpeech.speak('Bienvenida Elena. Este botón verde es tu pasamanos digital. Tócalo en cualquier momento si necesitas que te guíe paso a paso o te aclare alguna palabra.');
-        }
       }, 600);
     }
   }
@@ -433,17 +596,28 @@ class InterfazPuente {
       switchSemantic.addEventListener('change', (e) => this.toggleSemanticMode(e.target.checked));
     }
 
-    // Tarjeta del Spotlight: botón continuar / voz
+    // Tarjeta del Spotlight paso a paso: botones siguiente, anterior, cerrar y escuchar
+    const btnSpotlightNext = document.getElementById('btnSpotlightNext');
+    if (btnSpotlightNext) {
+      btnSpotlightNext.addEventListener('click', () => this.nextGuideStep());
+    }
+
+    const btnSpotlightPrev = document.getElementById('btnSpotlightPrev');
+    if (btnSpotlightPrev) {
+      btnSpotlightPrev.addEventListener('click', () => this.prevGuideStep());
+    }
+
     const btnSpotlightDone = document.getElementById('btnSpotlightDone');
     if (btnSpotlightDone) {
       btnSpotlightDone.addEventListener('click', () => this.clearSpotlight());
     }
+
     const btnSpotlightVoice = document.getElementById('btnSpotlightVoice');
     if (btnSpotlightVoice) {
       btnSpotlightVoice.addEventListener('click', () => {
-        const text = document.getElementById('spotlightGuideText');
-        if (text && window.puenteSpeech) {
-          window.puenteSpeech.speak(text.textContent);
+        const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
+        if (speechText && window.puenteSpeech) {
+          window.puenteSpeech.speak(speechText);
         }
       });
     }
