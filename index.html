@@ -429,14 +429,14 @@
           </div>
         </section>
 
-        <!-- ================= PANTALLA 3: MONTO Y GLOSA ================= -->
+        <!-- ================= PANTALLA 3: INGRESAR MONTO ================= -->
         <section class="screen-view" id="view-amount" aria-label="Ingresar monto">
           <header class="view-header">
             <button type="button" class="btn-back" id="btnBackFromAmount" aria-label="Volver a destinatario">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <h1>
-              <span class="term-technical">Monto y Glosa</span>
+              <span class="term-technical">Ingresar Monto</span>
               <span class="term-simplified">¿Cuánto dinero quieres enviar?</span>
             </h1>
           </header>
@@ -462,19 +462,25 @@
               <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('cuenta_cargo')" title="¿Qué significa Cuenta de cargo?" aria-label="Significado de Cuenta de cargo">?</button>
             </div>
 
-            <!-- Input de Monto Grande -->
+            <!-- Input de Monto Grande con opción de escribir o elegir montos sugeridos -->
             <div class="amount-display-box" id="amountBox" tabindex="0">
-              <label for="inputAmount" style="font-size:16px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;margin-bottom:6px">
+              <label for="inputAmount" style="font-size:16px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
                 <span>
                   <span class="term-technical">Monto a transferir</span>
-                  <span class="term-simplified">Cantidad exacta de dinero a enviar</span>
+                  <span class="term-simplified">Escribe el monto o elige un botón</span>
                 </span>
-                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Escribe la cantidad de dinero en pesos chilenos que deseas enviar a la otra persona, o toca uno de los montos sugeridos abajo." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
+                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                 </button>
               </label>
               
-              <input type="text" class="amount-input-big" id="inputAmount" value="$50.000" inputmode="numeric" aria-label="Monto en pesos chilenos">
+              <!-- Input editable directamente donde se puede escribir cualquier monto -->
+              <div style="display:flex;align-items:center;justify-content:center;position:relative;margin:6px 0 12px">
+                <input type="text" class="amount-input-big" id="inputAmount" value="$50.000" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos chilenos">
+              </div>
+              <div style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px">
+                ✏️ Toca los números arriba para escribir otro monto, o elige una sugerencia:
+              </div>
               
               <!-- Píldoras de Monto Rápido -->
               <div class="quick-amounts">
@@ -488,16 +494,15 @@
               <div class="form-error-msg" id="amountErrorBox" style="margin-top:12px;font-size:16px"></div>
             </div>
 
-            <!-- Campo de Glosa / Mensaje Opcional -->
+            <!-- Campo de Mensaje (anteriormente Glosa) -->
             <div class="form-group" id="groupGlosa" style="margin-top:20px">
               <label class="form-label" for="inputGlosa">
                 <span>
-                  <span class="term-technical">Glosa</span>
-                  <span class="term-simplified">Mensaje para la otra persona (opcional)</span>
+                  <span style="font-weight:900;color:var(--ink);font-size:17px">Mensaje</span>
+                  <span class="term-simplified">(opcional para quien recibe)</span>
                 </span>
                 <span style="display:inline-flex;align-items:center">
-                  <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('glosa')" title="¿Qué significa Glosa?" aria-label="Significado de Glosa">?</button>
-                  <button type="button" class="btn-speak-section" data-speak="Glosa o mensaje. Es un texto opcional para dejarle una nota a la otra persona, como regalo o pago de almuerzo." aria-label="Escuchar explicación de la glosa" title="Escuchar qué rellenar">
+                  <button type="button" class="btn-speak-section" data-speak="Mensaje opcional para la otra persona. Es voluntario, puedes escribir para qué es el dinero, como regalo o almuerzo." aria-label="Escuchar explicación del mensaje" title="Escuchar qué rellenar">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                   </button>
                 </span>
@@ -506,11 +511,16 @@
               <p class="form-helper-text">La otra persona podrá leer este mensaje cuando reciba la transferencia.</p>
             </div>
 
-            <!-- Botón Continuar -->
-            <button type="button" class="btn-cta-big" id="btnContinueAmount" style="margin-top:20px">
-              Revisar antes de enviar
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
+            <!-- Botón Inferior: Igual que el botón Continuar anterior (centrado, extendido a los márgenes) -->
+            <div class="form-bottom-actions" style="margin-top:24px">
+              <button type="button" class="btn-cta-big btn-cta-full-width" id="btnContinueAmount">
+                Revisar datos
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+              <button type="button" class="btn-cancel-full-width" id="btnCancelAmount">
+                Cancelar
+              </button>
+            </div>
 
           </div>
         </section>

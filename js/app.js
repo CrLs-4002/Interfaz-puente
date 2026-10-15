@@ -461,6 +461,14 @@ class AppRouter {
       });
     });
 
+    // Botón Cancelar en monto (vuelve a la pantalla de destinatarios)
+    const btnCancelAmount = document.getElementById('btnCancelAmount');
+    if (btnCancelAmount) {
+      btnCancelAmount.addEventListener('click', () => {
+        this.goTo('recipient');
+      });
+    }
+
     if (btnContinue) {
       btnContinue.addEventListener('click', () => {
         const val = this.transferState.amount;

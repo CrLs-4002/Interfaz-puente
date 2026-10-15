@@ -359,8 +359,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar, o toca uno de los montos sugeridos ($50.000).',
-          speech: 'Paso 1: Ingresa el monto. Escribe cuánto dinero quieres transferir, por ejemplo 50 mil pesos.'
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla, o elige uno de los montos sugeridos abajo ($10.000, $30.000, $50.000 o $100.000).',
+          speech: 'Paso 1: Ingresa el monto. Toca para escribir cuánto dinero quieres transferir, o elige una de las opciones sugeridas.'
         },
         {
           target: '#groupGlosa',
@@ -370,9 +370,9 @@ class InterfazPuente {
         },
         {
           target: '#btnContinueAmount',
-          title: 'Paso 3: Revisar antes de enviar',
-          message: 'Toca este botón para ver el resumen detallado antes de confirmar.',
-          speech: 'Paso 3: Toca Revisar antes de enviar para verificar los datos antes de autorizar.'
+          title: 'Paso 3: Revisar datos',
+          message: 'Toca este botón para ver el resumen detallado antes de confirmar la transferencia.',
+          speech: 'Paso 3: Toca Revisar datos para verificar todo antes de autorizar.'
         }
       ];
     } else if (currentView === 'summary') {
