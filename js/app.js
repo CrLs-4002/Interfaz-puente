@@ -506,14 +506,17 @@ class AppRouter {
   setupSummaryStep() {
     const btnConfirm = document.getElementById('btnConfirmSummary');
     const btnReview = document.getElementById('btnReviewSummary');
-    const btnListen = document.getElementById('btnListenSummary');
-    const btnSpeakHeader = document.getElementById('btnSpeakSummaryHeader');
     const btnSpeakCard = document.getElementById('btnSpeakSummaryCard');
 
     const speakSummaryContent = () => {
-      const textEl = document.getElementById('safeSummaryText');
-      if (textEl && window.puenteSpeech) {
-        window.puenteSpeech.speak(textEl.textContent + ' Por tu seguridad, una vez enviado no se puede deshacer. Si estás de acuerdo, presiona el botón verde Ingresar clave de 6 números.');
+      const amtStr = this.formatCLP(this.transferState.amount);
+      const destName = this.transferState.recipient.name;
+      const destBank = this.transferState.recipient.bank;
+      
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
+      
+      if (window.puenteSpeech) {
+        window.puenteSpeech.speak(speechText);
       }
     };
 
@@ -533,8 +536,6 @@ class AppRouter {
       });
     }
 
-    if (btnListen) btnListen.addEventListener('click', speakSummaryContent);
-    if (btnSpeakHeader) btnSpeakHeader.addEventListener('click', speakSummaryContent);
     if (btnSpeakCard) btnSpeakCard.addEventListener('click', speakSummaryContent);
   }
 

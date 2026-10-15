@@ -531,11 +531,8 @@
             <button type="button" class="btn-back" onclick="window.appRouter.goTo('amount')" aria-label="Volver a monto">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
-            <h1 id="safeSummaryTitle" style="display:flex;align-items:center;justify-content:space-between;width:100%">
+            <h1 id="safeSummaryTitle">
               <span>Resumen Seguro</span>
-              <button type="button" class="btn-speak-section" id="btnSpeakSummaryHeader" aria-label="Escuchar resumen en voz alta" title="Escuchar resumen">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-              </button>
             </h1>
           </header>
 
@@ -557,7 +554,7 @@
                   <h2 class="safe-summary-title">Lee esto antes de confirmar</h2>
                   <span style="font-size:14px;color:var(--muted)">Verificación protegida</span>
                 </div>
-                <!-- Botón de voz directo dentro de la tarjeta -->
+                <!-- Único botón para escuchar lo que dice la pantalla -->
                 <button type="button" class="btn-speak-section" id="btnSpeakSummaryCard" aria-label="Escuchar resumen de la pantalla" title="Escuchar">
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
                 </button>
@@ -577,12 +574,6 @@
 
               <!-- Alerta si se inyectó el error de $500.000 -->
               <div id="summaryBalanceWarning" class="form-error-msg hidden" style="font-size:16px;margin-bottom:14px"></div>
-
-              <!-- Botón grande para escuchar en voz alta -->
-              <button type="button" class="btn-speech-trigger" id="btnListenSummary" style="width:100%;margin-bottom:16px">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-                Escuchar lo que dice esta pantalla
-              </button>
 
               <!-- Autorización traducida a lenguaje claro (Hallazgo E6) -->
               <div style="margin-top:16px">
