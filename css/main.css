@@ -129,6 +129,7 @@ input, select, textarea {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  overscroll-behavior: none;
 }
 
 /* Modo pantalla completa para celulares reales */
@@ -182,6 +183,7 @@ input, select, textarea {
   flex: 1 1 auto;
   overflow: hidden;
   background: var(--bg);
+  overscroll-behavior: none;
 }
 
 .screen-view {
@@ -198,6 +200,7 @@ input, select, textarea {
   transform: translateX(25px);
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s linear 0.3s;
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 .screen-view.is-active {

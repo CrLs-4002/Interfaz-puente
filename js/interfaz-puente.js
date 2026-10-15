@@ -41,6 +41,7 @@ class InterfazPuente {
     this.checkOnboarding();
     this.toggleSemanticMode(this.semanticMode, false);
     this.updateLanguageWidgetBadge();
+    this.setupScrollGuards();
   }
 
   cacheElements() {
@@ -214,6 +215,67 @@ class InterfazPuente {
     this.inactivitySeconds = 0;
   }
 
+  /* ================= SEGURIDAD DE ENCUADRE Y SCROLL ================= */
+  setupScrollGuards() {
+    const frame = document.getElementById('appMainContainer');
+    if (frame) {
+      frame.addEventListener('scroll', () => {
+        if (frame.scrollTop !== 0 || frame.scrollLeft !== 0) {
+          frame.scrollTop = 0;
+          frame.scrollLeft = 0;
+        }
+      }, { passive: true });
+    }
+    const screenContainer = document.querySelector('.screen-container');
+    if (screenContainer) {
+      screenContainer.addEventListener('scroll', () => {
+        if (screenContainer.scrollTop !== 0 || screenContainer.scrollLeft !== 0) {
+          screenContainer.scrollTop = 0;
+          screenContainer.scrollLeft = 0;
+        }
+      }, { passive: true });
+    }
+  }
+
+  resetFrameScroll() {
+    const frame = document.getElementById('appMainContainer');
+    if (frame) {
+      frame.scrollTop = 0;
+      frame.scrollLeft = 0;
+    }
+    const screenContainer = document.querySelector('.screen-container');
+    if (screenContainer) {
+      screenContainer.scrollTop = 0;
+      screenContainer.scrollLeft = 0;
+    }
+    const appWrapper = document.querySelector('.app-wrapper');
+    if (appWrapper) {
+      appWrapper.scrollTop = 0;
+      appWrapper.scrollLeft = 0;
+    }
+    window.scrollTo(0, 0);
+  }
+
+  scrollToElement(targetEl) {
+    if (!targetEl) return;
+    const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
+    if (scrollContainer) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+      const currentScroll = scrollContainer.scrollTop;
+      const relativeTop = targetRect.top - containerRect.top + currentScroll;
+      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 140) : 140;
+      const visibleHeight = Math.max(100, containerRect.height - cardHeight);
+      const targetScroll = Math.max(0, relativeTop - (visibleHeight / 2) + (targetRect.height / 2));
+
+      scrollContainer.scrollTo({
+        top: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+    this.resetFrameScroll();
+  }
+
   /* ================= FOCO DINÁMICO (SPOTLIGHT AL 85% PASO A PASO) ================= */
   activateSpotlight(targetSelector, title, message) {
     if (!this.enabled) return;
@@ -233,7 +295,7 @@ class InterfazPuente {
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
 
-    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.scrollToElement(targetEl);
 
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
@@ -263,6 +325,18 @@ class InterfazPuente {
     if (window.puenteSpeech) {
       window.puenteSpeech.stop();
     }
+
+    // Regresar el área de scroll al inicio suavemente
+    const activeView = document.querySelector('.screen-view.is-active');
+    if (activeView) {
+      const scrollArea = activeView.querySelector('.scroll-area');
+      if (scrollArea) {
+        scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Asegurar que el marco y el viewport no queden desplazados
+    this.resetFrameScroll();
   }
 
   /* Flujo interactivo paso a paso para completar la transferencia */
@@ -423,7 +497,7 @@ class InterfazPuente {
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
-    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    this.scrollToElement(targetEl);
 
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
