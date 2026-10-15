@@ -507,6 +507,15 @@ class AppRouter {
     const btnConfirm = document.getElementById('btnConfirmSummary');
     const btnReview = document.getElementById('btnReviewSummary');
     const btnListen = document.getElementById('btnListenSummary');
+    const btnSpeakHeader = document.getElementById('btnSpeakSummaryHeader');
+    const btnSpeakCard = document.getElementById('btnSpeakSummaryCard');
+
+    const speakSummaryContent = () => {
+      const textEl = document.getElementById('safeSummaryText');
+      if (textEl && window.puenteSpeech) {
+        window.puenteSpeech.speak(textEl.textContent + ' Por tu seguridad, una vez enviado no se puede deshacer. Si estás de acuerdo, presiona el botón verde Ingresar clave de 6 números.');
+      }
+    };
 
     if (btnConfirm) {
       btnConfirm.addEventListener('click', () => {
@@ -524,25 +533,15 @@ class AppRouter {
       });
     }
 
-    if (btnListen) {
-      btnListen.addEventListener('click', () => {
-        const textEl = document.getElementById('safeSummaryText');
-        if (textEl && window.puenteSpeech) {
-          window.puenteSpeech.speak(textEl.textContent + ' Si estás de acuerdo, presiona el botón verde Sí, enviar.');
-        }
-      });
-    }
+    if (btnListen) btnListen.addEventListener('click', speakSummaryContent);
+    if (btnSpeakHeader) btnSpeakHeader.addEventListener('click', speakSummaryContent);
+    if (btnSpeakCard) btnSpeakCard.addEventListener('click', speakSummaryContent);
   }
 
   renderSummary() {
     const titleEl = document.getElementById('safeSummaryTitle');
     const textEl = document.getElementById('safeSummaryText');
     const warnBox = document.getElementById('summaryBalanceWarning');
-
-    // Título según variante A/B
-    if (titleEl) {
-      titleEl.textContent = this.summaryTitleVariant === 'resumen_seguro' ? 'Resumen Seguro' : 'Revisa antes de enviar';
-    }
 
     // Microcopy determinista requerido por el enunciado:
     // "Vas a enviar $50.000 a Rosa Pérez, a su cuenta en Banco de Chile. Una vez enviado, no se puede deshacer."
@@ -581,30 +580,47 @@ class AppRouter {
     }
   }
 
-  /* Paso 4: Clave Dinámica Simulada */
+  /* Paso 4: Clave Dinámica Simulada con Teclado Numérico Funcional */
   setupAuthStep() {
     const modal = document.getElementById('securityModalOverlay');
     const btnAuthorize = document.getElementById('btnAuthorizeTransfer');
     const btnCancel = document.getElementById('btnCancelAuth');
     const digits = document.querySelectorAll('.security-digit');
+    const keypadButtons = document.querySelectorAll('#authVirtualKeypad .btn-keypad-digit');
 
-    if (digits.length > 0) {
-      digits.forEach((d, idx) => {
-        d.addEventListener('input', (e) => {
-          if (e.target.value.length === 1 && idx < digits.length - 1) {
-            digits[idx + 1].focus();
-          }
-        });
-        d.addEventListener('keydown', (e) => {
-          if (e.key === 'Backspace' && !e.target.value && idx > 0) {
-            digits[idx - 1].focus();
-          }
-        });
+    this.enteredPin = '';
+
+    const updatePinDisplay = () => {
+      digits.forEach((d, i) => {
+        if (i < this.enteredPin.length) {
+          d.value = this.enteredPin[i];
+          d.classList.add('filled');
+        } else {
+          d.value = '';
+          d.classList.remove('filled');
+        }
       });
-    }
+    };
+
+    // Tablero numérico en pantalla (solo dígitos 0-9 y borrar)
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-key');
+        if (key === 'BACK') {
+          this.enteredPin = this.enteredPin.slice(0, -1);
+        } else if (/^[0-9]$/.test(key) && this.enteredPin.length < 6) {
+          this.enteredPin += key;
+        }
+        updatePinDisplay();
+      });
+    });
 
     if (btnAuthorize) {
       btnAuthorize.addEventListener('click', () => {
+        if (this.enteredPin.length < 6) {
+          alert('Por favor ingresa los 6 números de tu clave.');
+          return;
+        }
         this.executeTransfer();
       });
     }
@@ -620,11 +636,11 @@ class AppRouter {
     const modal = document.getElementById('securityModalOverlay');
     if (modal) {
       modal.classList.add('active');
-      // Pre-cargar código ficticio 123456 como ayuda pedagógica
+      // Iniciar con la clave de prueba 123456 precargada pero editable con el teclado
+      this.enteredPin = '123456';
       const digits = document.querySelectorAll('.security-digit');
-      const fakeCode = ['1', '2', '3', '4', '5', '6'];
       digits.forEach((d, i) => {
-        d.value = fakeCode[i] || '';
+        d.value = this.enteredPin[i] || '';
       });
     }
   }
