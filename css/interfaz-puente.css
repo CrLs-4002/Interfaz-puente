@@ -334,15 +334,15 @@ input:checked + .switch-slider:before {
   50% { opacity: 0.75; }
 }
 
-/* ================= FOCO DINÁMICO (SPOTLIGHT 85%) ================= */
+/* ================= FOCO DINÁMICO (SPOTLIGHT 85% OSCURECIDO) ================= */
 .dynamic-focus-overlay {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(13, 27, 62, 0.85); /* 85% de oscurecimiento requerido */
-  z-index: 35;
+  background: rgba(13, 27, 62, 0.88); /* 85-88% de oscurecimiento */
+  z-index: 30;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.35s var(--ease);
@@ -355,15 +355,28 @@ input:checked + .switch-slider:before {
   pointer-events: auto;
 }
 
-/* Elemento iluminado en Foco Dinámico */
+/* Casilla de formulario que se remarca e ilumina en primer plano */
 .spotlight-active {
   position: relative !important;
-  z-index: 36 !important;
-  box-shadow: 0 0 0 4px var(--mint), 0 0 35px rgba(46, 196, 164, 0.7) !important;
+  z-index: 35 !important;
+  box-shadow: 0 0 0 4px var(--mint), 0 0 45px rgba(46, 196, 164, 0.9) !important;
   border-color: var(--mint) !important;
   background: #FFFFFF !important;
-  border-radius: 14px;
-  transition: all 0.3s var(--ease);
+  border-radius: 16px !important;
+  padding: 10px 12px 14px 12px !important;
+  transition: all 0.25s var(--ease);
+}
+
+.spotlight-active .form-input,
+.spotlight-active .form-select {
+  background: #FFFFFF !important;
+  border-color: var(--mint) !important;
+  color: var(--ink) !important;
+}
+
+.spotlight-active .form-label {
+  color: var(--navy) !important;
+  font-weight: 900 !important;
 }
 
 /* Botón accesible de lectura por voz para cada sección/campo */
@@ -475,26 +488,33 @@ input:checked + .switch-slider:before {
   justify-content: center;
   box-shadow: 0 4px 12px rgba(13, 143, 114, 0.3);
 }
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 
-/* ================= TRADUCCIÓN SEMÁNTICA INLINE ================= */
+/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
 .semantic-translation-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: #EFF6FF;
-  border: 1px solid #BFDBFE;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  border: 1.5px solid var(--indigo);
   color: var(--indigo);
-  padding: 3px 8px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   cursor: pointer;
   margin-left: 6px;
+  flex: none;
+  line-height: 1;
+  padding: 0;
   vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+.semantic-translation-badge:hover, .semantic-translation-badge:focus {
+  background: var(--indigo);
+  color: #FFFFFF;
+  transform: scale(1.1);
 }
 
 .semantic-translation-badge:hover {
