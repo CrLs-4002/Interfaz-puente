@@ -732,14 +732,23 @@ class AppRouter {
     if (this.currentView === 'home') {
       window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLP(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
     } else if (this.currentView === 'recipient') {
-      window.puenteSpeech.speak('¿A quién le quieres enviar el dinero? Puedes elegir a Rosa Pérez de tu lista de contactos o anotar los datos de una persona nueva.');
+      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
+    } else if (this.currentView === 'new-recipient') {
+      const isStepRut = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+      if (isStepRut) {
+        window.puenteSpeech.speak('Nuevo destinatario. Ingresa el RUT de quien recibe usando el teclado numérico en pantalla o tocando el micrófono para dictarlo.');
+      } else {
+        window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
+      }
     } else if (this.currentView === 'amount') {
-      window.puenteSpeech.speak(`¿Cuánto dinero quieres transferir? Tu saldo disponible es de ${this.formatCLP(this.user.balance)}.`);
+      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLP(this.user.balance)}.`);
     } else if (this.currentView === 'summary') {
-      const text = document.getElementById('safeSummaryText');
-      if (text) window.puenteSpeech.speak(text.textContent);
+      const amtStr = this.formatCLP(this.transferState.amount);
+      const destName = this.transferState.recipient.name;
+      const destBank = this.transferState.recipient.bank;
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
     } else if (this.currentView === 'receipt') {
-      this.renderReceipt();
+      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
     }
   }
 }

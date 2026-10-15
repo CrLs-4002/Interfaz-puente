@@ -39,11 +39,20 @@ class InterfazPuente {
     this.setupEventListeners();
     this.setupInactivityWatchdog();
     this.checkOnboarding();
+    this.updateLanguageWidgetBadge();
   }
 
   cacheElements() {
     this.fabContainer = document.getElementById('puenteFabContainer');
     this.fabBtn = document.getElementById('puenteFabBtn');
+    this.widgetMenu = document.getElementById('puenteWidgetMenu');
+    this.widgetBackdrop = document.getElementById('puenteWidgetBackdrop');
+    this.btnWidgetSpeech = document.getElementById('btnWidgetSpeech');
+    this.btnWidgetTutorial = document.getElementById('btnWidgetTutorial');
+    this.btnWidgetLanguage = document.getElementById('btnWidgetLanguage');
+    this.badgeWidgetLanguage = document.getElementById('badgeWidgetLanguage');
+    this.isWidgetMenuOpen = false;
+
     this.sheetBackdrop = document.getElementById('puenteSheetBackdrop');
     this.sheet = document.getElementById('puenteSheet');
     this.inactivityBubble = document.getElementById('inactivityOfferBubble');
@@ -161,7 +170,7 @@ class InterfazPuente {
         e.stopPropagation();
         return;
       }
-      this.openSheet();
+      this.toggleWidgetMenu();
     });
   }
 
@@ -209,6 +218,7 @@ class InterfazPuente {
     if (!this.enabled) return;
     this.dismissInactivityOffer();
     this.closeSheet();
+    this.closeWidgetMenu();
 
     const targetEl = document.querySelector(targetSelector);
     if (!targetEl) return;
@@ -477,6 +487,10 @@ class InterfazPuente {
     if (switchEl) {
       switchEl.checked = this.semanticMode;
     }
+    this.updateLanguageWidgetBadge();
+    if (window.puenteSpeech) {
+      window.puenteSpeech.speak(this.semanticMode ? 'Modo lenguaje simple activado.' : 'Modo lenguaje simple desactivado.');
+    }
   }
 
   showTermExplanation(termId) {
@@ -515,10 +529,70 @@ class InterfazPuente {
     }
   }
 
+  /* ================= WIDGET SPEED DIAL (3 BOTONES DESLIZANTES) ================= */
+  toggleWidgetMenu() {
+    if (this.isWidgetMenuOpen) {
+      this.closeWidgetMenu();
+    } else {
+      this.openWidgetMenu();
+    }
+  }
+
+  openWidgetMenu() {
+    if (!this.enabled) return;
+    this.dismissInactivityOffer();
+    this.closeSheet();
+    this.isWidgetMenuOpen = true;
+    if (this.widgetMenu) {
+      this.widgetMenu.classList.add('open');
+    }
+    if (this.fabBtn) {
+      this.fabBtn.classList.add('is-active');
+    }
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.classList.add('active');
+    }
+    this.updateLanguageWidgetBadge();
+  }
+
+  closeWidgetMenu() {
+    this.isWidgetMenuOpen = false;
+    if (this.widgetMenu) {
+      this.widgetMenu.classList.remove('open');
+    }
+    if (this.fabBtn) {
+      this.fabBtn.classList.remove('is-active');
+    }
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.classList.remove('active');
+    }
+  }
+
+  updateLanguageWidgetBadge() {
+    const badge = document.getElementById('badgeWidgetLanguage');
+    const btnLang = document.getElementById('btnWidgetLanguage');
+    if (badge && btnLang) {
+      if (this.semanticMode) {
+        badge.textContent = 'Activo';
+        badge.style.background = 'var(--teal-light)';
+        badge.style.color = 'var(--teal)';
+        btnLang.classList.remove('inactive');
+        btnLang.classList.add('active');
+      } else {
+        badge.textContent = 'Inactivo';
+        badge.style.background = '#F1F5F9';
+        badge.style.color = 'var(--muted)';
+        btnLang.classList.remove('active');
+        btnLang.classList.add('inactive');
+      }
+    }
+  }
+
   /* ================= PANEL / BOTTOM SHEET ================= */
   openSheet() {
     if (!this.enabled || !this.sheet) return;
     this.dismissInactivityOffer();
+    this.closeWidgetMenu();
     this.sheetBackdrop.classList.add('active');
     this.sheet.classList.add('open');
 
@@ -570,6 +644,39 @@ class InterfazPuente {
 
   /* ================= CONEXIONES DE EVENTOS ================= */
   setupEventListeners() {
+    // Backdrop del widget para cerrar al tocar afuera
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.addEventListener('click', () => this.closeWidgetMenu());
+    }
+
+    // Botón 1: Escuchar Pantalla
+    if (this.btnWidgetSpeech) {
+      this.btnWidgetSpeech.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeWidgetMenu();
+        if (window.appRouter) {
+          window.appRouter.readCurrentScreenAloud();
+        }
+      });
+    }
+
+    // Botón 2: Modo tutorial
+    if (this.btnWidgetTutorial) {
+      this.btnWidgetTutorial.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeWidgetMenu();
+        this.startStepByStepGuide();
+      });
+    }
+
+    // Botón 3: Lenguaje Simple
+    if (this.btnWidgetLanguage) {
+      this.btnWidgetLanguage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleSemanticMode();
+      });
+    }
+
     // Cerrar panel de ayuda
     const btnClose = document.getElementById('btnClosePuente');
     if (btnClose) btnClose.addEventListener('click', () => this.closeSheet());

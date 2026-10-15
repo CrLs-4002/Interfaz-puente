@@ -752,6 +752,9 @@
         </div>
       </div>
 
+      <!-- Backdrop transparente para cerrar el menú del widget al tocar afuera -->
+      <div class="puente-widget-backdrop" id="puenteWidgetBackdrop"></div>
+
       <!-- ================= WIDGET INTERFAZ PUENTE (BOTÓN FLOTANTE) ================= -->
       <div class="puente-fab-container" id="puenteFabContainer">
         
@@ -772,10 +775,39 @@
           </div>
         </div>
 
-        <!-- Botón Flotante Principal (Solo icono) -->
-        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Ayuda paso a paso" title="Toca aquí para ver qué hacer paso a paso">
-          <span class="puente-fab-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <!-- Menú emergente de 3 botones que se deslizan hacia arriba del Widget -->
+        <div class="puente-widget-menu" id="puenteWidgetMenu" role="menu" aria-label="Opciones del Widget">
+          <!-- 1. Escuchar Pantalla -->
+          <button type="button" class="btn-widget-action" id="btnWidgetSpeech" role="menuitem">
+            <div class="btn-widget-icon" style="background:#FEE2E2;color:#DC2626">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+            </div>
+            <span class="btn-widget-text">Escuchar Pantalla</span>
+          </button>
+
+          <!-- 2. Modo tutorial -->
+          <button type="button" class="btn-widget-action" id="btnWidgetTutorial" role="menuitem">
+            <div class="btn-widget-icon" style="background:#FEF3C7;color:#D97706">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+            </div>
+            <span class="btn-widget-text">Modo tutorial</span>
+          </button>
+
+          <!-- 3. Lenguaje Simple -->
+          <button type="button" class="btn-widget-action" id="btnWidgetLanguage" role="menuitem">
+            <div class="btn-widget-icon" style="background:#E0F2FE;color:#0284C7">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+            </div>
+            <span class="btn-widget-text">Lenguaje Simple</span>
+            <span class="btn-widget-badge" id="badgeWidgetLanguage">Activo</span>
+          </button>
+        </div>
+
+        <!-- Botón Flotante Principal (Widget) -->
+        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Widget de ayuda" title="Widget de ayuda">
+          <span class="puente-fab-icon" id="puenteFabIcon">
+            <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </span>
         </button>
       </div>
