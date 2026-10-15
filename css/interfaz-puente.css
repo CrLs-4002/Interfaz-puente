@@ -341,53 +341,32 @@ input:checked + .switch-slider:before {
   50% { opacity: 0.75; }
 }
 
-/* ================= FOCO DINÁMICO (SPOTLIGHT 85% OSCURECIDO) ================= */
+/* ================= FOCO DINÁMICO (RESALTADO DE CASILLA SIN OSCURECER) ================= */
 .dynamic-focus-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(13, 27, 62, 0.88); /* 85-88% de oscurecimiento */
-  z-index: 30;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.35s var(--ease);
-  pointer-events: none;
+  display: none !important; /* Desactivado el oscurecimiento de la pantalla */
 }
 
-.dynamic-focus-overlay.active {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
-}
-
-/* Cuando el foco dinámico está activo, elevar el screen-view activo para que sus casillas iluminadas salgan sobre el fondo oscuro */
-body.dynamic-focus-active .screen-view.is-active {
-  z-index: 34 !important;
-}
-
-/* Casilla de formulario que se remarca e ilumina en primer plano */
+/* Casilla de formulario que se remarca e ilumina limpiamente */
 .spotlight-active {
   position: relative !important;
-  z-index: 35 !important;
-  box-shadow: 0 0 0 4px var(--mint), 0 0 45px rgba(46, 196, 164, 0.9) !important;
-  border-color: var(--mint) !important;
+  z-index: 10 !important;
+  box-shadow: 0 0 0 3.5px var(--teal), 0 6px 20px rgba(13, 143, 114, 0.25) !important;
+  border-color: var(--teal) !important;
   background: #FFFFFF !important;
   border-radius: 16px !important;
-  padding: 10px 12px 14px 12px !important;
+  padding: 8px 10px 12px 10px !important;
   transition: all 0.25s var(--ease);
 }
 
 .spotlight-active .form-input,
 .spotlight-active .form-select {
   background: #FFFFFF !important;
-  border-color: var(--mint) !important;
+  border-color: var(--teal) !important;
   color: var(--ink) !important;
 }
 
 .spotlight-active .form-label {
-  color: var(--navy) !important;
+  color: var(--teal) !important;
   font-weight: 900 !important;
 }
 
