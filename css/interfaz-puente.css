@@ -602,7 +602,7 @@ input:checked + .switch-slider:before {
 
 /* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
 .semantic-translation-badge {
-  display: inline-flex;
+  display: none !important;
   align-items: center;
   justify-content: center;
   width: 28px;
@@ -628,11 +628,27 @@ input:checked + .switch-slider:before {
   transform: scale(1.1);
 }
 
-.semantic-translation-badge:hover {
-  background: #DBEAFE;
+/* ================= CONTROL DE LENGUAJE SIMPLE / BANCA ESTÁNDAR ================= */
+
+/* 1. ESTADO INACTIVO (Lenguaje simple apagado / Banca estándar) */
+.term-simplified {
+  display: none !important;
 }
 
-/* Modo traducción semántica activado en la app: los títulos se transforman */
+.term-technical {
+  display: inline-block;
+}
+
+/* Ocultar textos explicativos que ayudan al adulto mayor a entender lo que se está haciendo */
+.semantic-helper-text {
+  display: none !important;
+}
+
+.form-helper-text {
+  display: none !important;
+}
+
+/* 2. ESTADO ACTIVO (Lenguaje simple encendido en appMainContainer) */
 .app-semantic-active .term-technical {
   display: none !important;
 }
@@ -641,10 +657,20 @@ input:checked + .switch-slider:before {
   display: inline-block !important;
 }
 
-.term-simplified {
-  display: none;
-  color: var(--indigo);
-  font-weight: 900;
+.app-semantic-active .semantic-translation-badge {
+  display: inline-flex !important;
+}
+
+.app-semantic-active .semantic-helper-text {
+  display: block !important;
+}
+
+.app-semantic-active span.semantic-helper-text {
+  display: inline-block !important;
+}
+
+.app-semantic-active .form-helper-text {
+  display: block !important;
 }
 
 /* Modal explicativo de un término del glosario */

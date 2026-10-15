@@ -39,6 +39,7 @@ class InterfazPuente {
     this.setupEventListeners();
     this.setupInactivityWatchdog();
     this.checkOnboarding();
+    this.toggleSemanticMode(this.semanticMode, false);
     this.updateLanguageWidgetBadge();
   }
 
@@ -477,7 +478,7 @@ class InterfazPuente {
   }
 
   /* ================= TRADUCCIÓN SEMÁNTICA (GLOSARIO) ================= */
-  toggleSemanticMode(enabled) {
+  toggleSemanticMode(enabled, announce = true) {
     this.semanticMode = enabled !== undefined ? enabled : !this.semanticMode;
     const appEl = document.getElementById('appMainContainer');
     if (appEl) {
@@ -488,7 +489,7 @@ class InterfazPuente {
       switchEl.checked = this.semanticMode;
     }
     this.updateLanguageWidgetBadge();
-    if (window.puenteSpeech) {
+    if (announce && window.puenteSpeech) {
       window.puenteSpeech.speak(this.semanticMode ? 'Modo lenguaje simple activado.' : 'Modo lenguaje simple desactivado.');
     }
   }
