@@ -158,6 +158,36 @@ class AppRouter {
       });
     }
 
+    // Formateo automático de RUT mientras la persona escribe (Hallazgo E2)
+    const newRecipientRutInput = document.getElementById('newRecipientRut');
+    if (newRecipientRutInput) {
+      newRecipientRutInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
+        if (val.length > 9) val = val.slice(0, 9);
+        if (val.length === 0) {
+          e.target.value = '';
+          return;
+        }
+        if (val.length === 1) {
+          e.target.value = val;
+          return;
+        }
+        const dv = val.slice(-1);
+        const cuerpo = val.slice(0, -1);
+        let formatted = '';
+        let count = 0;
+        for (let i = cuerpo.length - 1; i >= 0; i--) {
+          formatted = cuerpo[i] + formatted;
+          count++;
+          if (count === 3 && i > 0) {
+            formatted = '.' + formatted;
+            count = 0;
+          }
+        }
+        e.target.value = formatted + '-' + dv;
+      });
+    }
+
     // Selección de Rosa Pérez en frecuentes
     const contactRosa = document.getElementById('frequentContactRosa');
     if (contactRosa) {

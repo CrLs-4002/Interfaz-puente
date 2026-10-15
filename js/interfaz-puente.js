@@ -567,6 +567,7 @@ class InterfazPuente {
     // Botones de oferta de inactividad
     const btnYes = document.getElementById('btnOfferYes');
     const btnNo = document.getElementById('btnOfferNo');
+    const btnCloseX = document.getElementById('btnOfferCloseX');
     if (btnYes) {
       btnYes.addEventListener('click', () => {
         this.dismissInactivityOffer();
@@ -575,6 +576,9 @@ class InterfazPuente {
     }
     if (btnNo) {
       btnNo.addEventListener('click', () => this.dismissInactivityOffer());
+    }
+    if (btnCloseX) {
+      btnCloseX.addEventListener('click', () => this.dismissInactivityOffer());
     }
 
     // Botón de Foco en el Sheet
@@ -613,6 +617,11 @@ class InterfazPuente {
     const btnSpotlightDone = document.getElementById('btnSpotlightDone');
     if (btnSpotlightDone) {
       btnSpotlightDone.addEventListener('click', () => this.clearSpotlight());
+    }
+
+    const btnSpotlightCloseX = document.getElementById('btnSpotlightCloseX');
+    if (btnSpotlightCloseX) {
+      btnSpotlightCloseX.addEventListener('click', () => this.clearSpotlight());
     }
 
     const btnSpotlightVoice = document.getElementById('btnSpotlightVoice');
