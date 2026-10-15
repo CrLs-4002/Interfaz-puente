@@ -939,13 +939,22 @@ input, select, textarea {
   font-weight: 900;
   text-align: center;
   background: var(--bg);
-  color: var(--ink);
+  color: var(--navy);
+  user-select: none;
+  pointer-events: none;
+  transition: all 0.15s ease;
 }
 
-.security-digit:focus {
-  border-color: var(--indigo);
-  outline: none;
+.security-digit.filled {
+  border-color: var(--teal);
   background: #FFFFFF;
+  color: var(--navy);
+  box-shadow: 0 0 0 2px rgba(13, 143, 114, 0.2);
+}
+
+.security-digit.active-cell {
+  border-color: var(--orange);
+  background: #FFFBEB;
 }
 
 .security-pedagogic-warning {

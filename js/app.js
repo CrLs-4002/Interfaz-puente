@@ -590,35 +590,46 @@ class AppRouter {
 
     this.enteredPin = '';
 
-    const updatePinDisplay = () => {
+    this.updatePinDisplay = () => {
       digits.forEach((d, i) => {
         if (i < this.enteredPin.length) {
           d.value = this.enteredPin[i];
           d.classList.add('filled');
+          d.classList.remove('active-cell');
+        } else if (i === this.enteredPin.length) {
+          d.value = '';
+          d.classList.remove('filled');
+          d.classList.add('active-cell');
         } else {
           d.value = '';
           d.classList.remove('filled');
+          d.classList.remove('active-cell');
         }
       });
     };
 
     // Tablero numérico en pantalla (solo dígitos 0-9 y borrar)
     keypadButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         const key = btn.getAttribute('data-key');
         if (key === 'BACK') {
-          this.enteredPin = this.enteredPin.slice(0, -1);
-        } else if (/^[0-9]$/.test(key) && this.enteredPin.length < 6) {
-          this.enteredPin += key;
+          if (this.enteredPin.length > 0) {
+            this.enteredPin = this.enteredPin.slice(0, -1);
+          }
+        } else if (/^[0-9]$/.test(key)) {
+          if (this.enteredPin.length < 6) {
+            this.enteredPin += key;
+          }
         }
-        updatePinDisplay();
+        this.updatePinDisplay();
       });
     });
 
     if (btnAuthorize) {
       btnAuthorize.addEventListener('click', () => {
         if (this.enteredPin.length < 6) {
-          alert('Por favor ingresa los 6 números de tu clave.');
+          alert('Por favor completa los 6 números de tu clave tocando el teclado.');
           return;
         }
         this.executeTransfer();
@@ -636,12 +647,11 @@ class AppRouter {
     const modal = document.getElementById('securityModalOverlay');
     if (modal) {
       modal.classList.add('active');
-      // Iniciar con la clave de prueba 123456 precargada pero editable con el teclado
-      this.enteredPin = '123456';
-      const digits = document.querySelectorAll('.security-digit');
-      digits.forEach((d, i) => {
-        d.value = this.enteredPin[i] || '';
-      });
+      // Iniciar con las casillas listas para escribir tocando el teclado
+      this.enteredPin = '';
+      if (this.updatePinDisplay) {
+        this.updatePinDisplay();
+      }
     }
   }
 
