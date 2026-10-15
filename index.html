@@ -812,53 +812,6 @@
         </button>
       </div>
 
-      <!-- Bottom Sheet de Interfaz Puente -->
-      <div class="puente-sheet-backdrop" id="puenteSheetBackdrop"></div>
-      <div class="puente-sheet" id="puenteSheet" role="dialog" aria-label="Menú de apoyo Interfaz Puente">
-        <div class="puente-sheet-header">
-          <div class="puente-sheet-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            <span>Interfaz Puente</span>
-          </div>
-          <button type="button" class="btn-close-puente" id="btnClosePuente" aria-label="Cerrar ayuda">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-
-        <!-- Opción 1: Foco Dinámico -->
-        <div class="puente-card-option">
-          <div class="puente-option-info">
-            <h3>Foco iluminado</h3>
-            <p>Oscurece la pantalla y te muestra exactamente el campo que debes completar.</p>
-          </div>
-          <button type="button" class="btn-puente-action" id="btnTriggerDynamicFocus" style="width:auto;padding:0 14px">
-            Iluminar
-          </button>
-        </div>
-
-        <!-- Opción 2: Traducción Semántica -->
-        <div class="puente-card-option">
-          <div class="puente-option-info">
-            <h3>Modo lenguaje claro</h3>
-            <p>Reemplaza palabras técnicas del banco por preguntas sencillas.</p>
-          </div>
-          <label class="switch-control" for="switchSemanticMode">
-            <input type="checkbox" id="switchSemanticMode" checked>
-            <span class="switch-slider"></span>
-          </label>
-        </div>
-
-        <!-- Opción 3: Lectura por Voz -->
-        <div class="puente-card-option">
-          <div class="puente-option-info">
-            <h3>Escuchar esta pantalla</h3>
-            <p>Una voz pausada te lee lo que ves en pantalla para no forzar la vista.</p>
-          </div>
-          <button type="button" class="btn-speech-trigger" id="btnTriggerSpeech" style="width:auto;padding:0 14px">
-            Escuchar
-          </button>
-        </div>
-      </div>
 
       <!-- ================= FOCO DINÁMICO (SPOTLIGHT 85% PASO A PASO) ================= -->
       <div class="dynamic-focus-overlay" id="dynamicFocusOverlay" aria-hidden="true"></div>

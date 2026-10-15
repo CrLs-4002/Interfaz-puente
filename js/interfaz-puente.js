@@ -588,24 +588,14 @@ class InterfazPuente {
     }
   }
 
-  /* ================= PANEL / BOTTOM SHEET ================= */
+  /* ================= PANEL / BOTTOM SHEET (DESACTIVADO) ================= */
   openSheet() {
-    if (!this.enabled || !this.sheet) return;
-    this.dismissInactivityOffer();
-    this.closeWidgetMenu();
-    this.sheetBackdrop.classList.add('active');
-    this.sheet.classList.add('open');
-
-    // Registrar llamada a ayuda en facilitador
-    if (window.facilitatorPanel) {
-      window.facilitatorPanel.recordMetric('help');
-    }
+    // Desactivado: el display inferior ha sido eliminado a favor del menú Widget
+    return;
   }
 
   closeSheet() {
-    if (!this.sheet) return;
-    this.sheetBackdrop.classList.remove('active');
-    this.sheet.classList.remove('open');
+    return;
   }
 
   /* ================= BIENVENIDA (5 SEGUNDOS) ================= */
