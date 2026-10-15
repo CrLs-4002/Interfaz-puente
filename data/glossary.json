@@ -1,0 +1,102 @@
+{
+  "version": "1.0.0",
+  "descripcion": "Glosario de Traducción Semántica de Interfaz Puente — BancoEstado (Simulación Académica INACAP)",
+  "terminos": [
+    {
+      "id": "transferencia_terceros",
+      "termino_bancario": "Transferencia a terceros",
+      "traduccion_simple": "Enviar dinero a otra persona",
+      "pregunta_guia": "¿A quién deseas pasarle dinero hoy?",
+      "explicacion": "Significa mover dinero de tu CuentaRUT a la cuenta de otra persona, ya sea un familiar, amigo o conocido.",
+      "ejemplo": "Por ejemplo: pasarle $50.000 a tu amiga Rosa Pérez."
+    },
+    {
+      "id": "destinatario",
+      "termino_bancario": "Destinatario",
+      "traduccion_simple": "¿A quién le quieres enviar el dinero?",
+      "pregunta_guia": "¿Quién es la persona que recibirá tu dinero?",
+      "explicacion": "Es el nombre y datos de la persona que va a recibir tu dinero.",
+      "ejemplo": "Ejemplo: Rosa Pérez."
+    },
+    {
+      "id": "inscribir_destinatario",
+      "termino_bancario": "Inscribir destinatario",
+      "traduccion_simple": "Guardar los datos de una persona nueva",
+      "pregunta_guia": "¿Quieres guardar a esta persona para no volver a escribir sus datos?",
+      "explicacion": "Es como anotar el nombre y cuenta de alguien en tu libreta telefónica, para que la próxima vez sea más rápido.",
+      "ejemplo": "Anotar el RUT y cuenta de Rosa por primera vez."
+    },
+    {
+      "id": "cuenta_cargo",
+      "termino_bancario": "Cuenta de cargo",
+      "traduccion_simple": "¿De qué cuenta sale tu dinero?",
+      "pregunta_guia": "¿De dónde sacaremos el dinero para enviar?",
+      "explicacion": "Es tu propia cuenta bancaria desde donde se descuenta el monto que vas a transferir.",
+      "ejemplo": "Tu CuentaRUT donde tienes tus $350.000 disponibles."
+    },
+    {
+      "id": "cuenta_destino",
+      "termino_bancario": "Cuenta de destino",
+      "traduccion_simple": "¿Dónde llegará el dinero?",
+      "pregunta_guia": "¿A qué número de cuenta de la otra persona enviamos la plata?",
+      "explicacion": "Es la cuenta bancaria de la persona que recibirá tu transferencia.",
+      "ejemplo": "La Cuenta Corriente de Rosa Pérez."
+    },
+    {
+      "id": "tipo_cuenta",
+      "termino_bancario": "Tipo de cuenta (CuentaRUT, Cuenta Vista, Cuenta Corriente)",
+      "traduccion_simple": "¿Qué clase de cuenta tiene esa persona?",
+      "pregunta_guia": "¿Qué tipo de cuenta bancaria te dio la persona?",
+      "explicacion": "Los bancos tienen distintos tipos de cuentas: CuentaRUT (la más común de BancoEstado), Cuenta Vista o Cuenta Corriente.",
+      "ejemplo": "Rosa tiene Cuenta Corriente en Banco de Chile."
+    },
+    {
+      "id": "banco_destino",
+      "termino_bancario": "Banco de destino",
+      "traduccion_simple": "¿En qué banco está la cuenta de la otra persona?",
+      "pregunta_guia": "¿En qué institución bancaria tiene su cuenta la otra persona?",
+      "explicacion": "Es la institución donde la otra persona tiene su dinero guardado.",
+      "ejemplo": "BancoEstado, Banco de Chile, BCI, Santander, etc."
+    },
+    {
+      "id": "monto",
+      "termino_bancario": "Monto",
+      "traduccion_simple": "¿Cuánto dinero quieres enviar?",
+      "pregunta_guia": "¿Qué cantidad exacta en pesos vas a transferir?",
+      "explicacion": "Es la cifra en pesos chilenos que deseas enviar a la otra persona.",
+      "ejemplo": "Por ejemplo: $50.000 (cincuenta mil pesos)."
+    },
+    {
+      "id": "glosa",
+      "termino_bancario": "Glosa",
+      "traduccion_simple": "Mensaje para la otra persona (opcional)",
+      "pregunta_guia": "¿Quieres dejarle un mensaje o recordatorio sobre este pago?",
+      "explicacion": "Es un texto breve y voluntario para explicar el motivo del pago.",
+      "ejemplo": "Por ejemplo: 'Regalo cumpleaños' o 'Pago del almuerzo'."
+    },
+    {
+      "id": "saldo_disponible",
+      "termino_bancario": "Saldo disponible",
+      "traduccion_simple": "Dinero que tienes listo para usar",
+      "pregunta_guia": "¿Cuánta plata tienes en tu cuenta en este momento?",
+      "explicacion": "Es el dinero real que puedes gastar o transferir hoy mismo, sin retenciones.",
+      "ejemplo": "Tu saldo disponible actual es de $350.000."
+    },
+    {
+      "id": "autorizar_clave_dinamica",
+      "termino_bancario": "Autorizar con clave dinámica",
+      "traduccion_simple": "Confirmar con código de seguridad",
+      "pregunta_guia": "¿Confirmas el envío con tu código de seguridad BE Pass?",
+      "explicacion": "Es un candado de seguridad: un código de 6 números que solo tú conoces para asegurar que nadie envíe dinero por ti.",
+      "ejemplo": "En esta prueba simulada usaremos el código 123456."
+    },
+    {
+      "id": "comprobante",
+      "termino_bancario": "Comprobante",
+      "traduccion_simple": "Recibo que demuestra que el dinero fue enviado",
+      "pregunta_guia": "¿Deseas ver o guardar el recibo de tu transferencia?",
+      "explicacion": "Es como la boleta de una compra: el respaldo oficial que demuestra la hora, el monto y a quién le enviaste el dinero.",
+      "ejemplo": "Puedes guardarlo o mostrárselo a Rosa si te lo pide."
+    }
+  ]
+}

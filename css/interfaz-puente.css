@@ -1,0 +1,622 @@
+/* ==========================================================================
+   INTERFAZ PUENTE — WIDGET "EL PASAMANOS DIGITAL"
+   Estilos del botón flotante arrastrable, Foco Dinámico (85%),
+   Traducción Semántica, Lectura por voz y Onboarding
+   ========================================================================== */
+
+/* ================= BOTÓN FLOTANTE "¿TE AYUDO?" (ARRASTRABLE) ================= */
+.puente-fab-container {
+  position: absolute;
+  right: 16px;
+  bottom: 84px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  touch-action: none; /* Permite arrastrar libremente */
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.15s ease, opacity 0.25s ease;
+}
+
+.puente-fab-container:active {
+  cursor: grabbing;
+}
+
+.puente-fab-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #102048 0%, #1A2F6C 100%);
+  color: #FFFFFF;
+  border: 3px solid var(--mint);
+  padding: 8px 18px 8px 10px;
+  border-radius: 36px;
+  box-shadow: 0 8px 26px rgba(13, 27, 62, 0.45);
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  animation: puente-pulse 3s infinite ease-out;
+}
+
+.puente-fab-btn:active {
+  transform: scale(0.95);
+}
+
+.puente-fab-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--mint);
+  color: #0D1B3E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.puente-fab-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.puente-fab-label {
+  white-space: nowrap;
+}
+
+/* Estado de autoocultamiento (después de 3 trámites exitosos sin ayuda) */
+.puente-fab-container.is-minimized .puente-fab-btn {
+  padding: 6px;
+  border-radius: 50%;
+  animation: none;
+}
+
+.puente-fab-container.is-minimized .puente-fab-label {
+  display: none;
+}
+
+@keyframes puente-pulse {
+  0% {
+    box-shadow: 0 8px 24px rgba(13, 27, 62, 0.4), 0 0 0 0 rgba(46, 196, 164, 0.6);
+  }
+  70%, 100% {
+    box-shadow: 0 8px 24px rgba(13, 27, 62, 0.4), 0 0 0 16px rgba(46, 196, 164, 0);
+  }
+}
+
+/* ================= OFERTA INACTIVIDAD TRAS 15 SEGUNDOS ================= */
+.inactivity-offer-bubble {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: #FFFFFF;
+  border: 2.5px solid var(--teal);
+  border-radius: 20px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 12px 32px rgba(13, 27, 62, 0.3);
+  z-index: 45;
+  display: none;
+  animation: bubble-appear 0.3s var(--ease);
+}
+
+.inactivity-offer-bubble.show {
+  display: block;
+}
+
+.inactivity-offer-bubble p {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.inactivity-offer-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.inactivity-offer-btns button {
+  flex: 1;
+  min-height: 40px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.btn-offer-yes {
+  background: var(--teal);
+  color: #FFFFFF;
+}
+
+.btn-offer-no {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+@keyframes bubble-appear {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= PANEL / BOTTOM SHEET DE INTERFAZ PUENTE ================= */
+.puente-sheet-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.65);
+  z-index: 55;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s var(--ease);
+}
+
+.puente-sheet-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.puente-sheet {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 56;
+  max-height: 85%;
+  background: var(--navy-sheet);
+  color: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  padding: 18px 18px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  transform: translateY(100%);
+  transition: transform 0.35s var(--ease);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.puente-sheet.open {
+  transform: none;
+}
+
+.puente-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.puente-sheet-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--mint);
+}
+
+.btn-close-puente {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-puente:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Opciones de Asistencia en el Panel */
+.puente-card-option {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.puente-option-info h3 {
+  font-size: 17px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.puente-option-info p {
+  font-size: 14px;
+  color: #CBD5E1;
+  line-height: 1.3;
+}
+
+/* Switch de Accesibilidad */
+.switch-control {
+  position: relative;
+  display: inline-block;
+  width: 58px;
+  height: 34px;
+  flex: none;
+}
+
+.switch-control input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+  background-color: var(--mint);
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(24px);
+  background-color: #0D1B3E;
+}
+
+/* Botón de Foco Inmediato */
+.btn-puente-action {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  background: var(--mint);
+  color: #0D1B3E;
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(46, 196, 164, 0.3);
+}
+
+.btn-puente-action:active {
+  transform: scale(0.98);
+}
+
+/* Botón para Escuchar Explicación */
+.btn-speech-trigger {
+  min-height: 48px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.btn-speech-trigger.speaking {
+  background: #C52224;
+  border-color: #EF4444;
+  animation: pulse-speaking 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-speaking {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* ================= FOCO DINÁMICO (SPOTLIGHT 85%) ================= */
+.dynamic-focus-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.85); /* 85% de oscurecimiento requerido */
+  z-index: 35;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s var(--ease);
+  pointer-events: none;
+}
+
+.dynamic-focus-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Elemento iluminado en Foco Dinámico */
+.spotlight-active {
+  position: relative !important;
+  z-index: 36 !important;
+  box-shadow: 0 0 0 4px var(--mint), 0 0 35px rgba(46, 196, 164, 0.6) !important;
+  border-color: var(--mint) !important;
+  background: #FFFFFF !important;
+  transition: all 0.3s var(--ease);
+}
+
+/* Tarjeta de guía explicativa en el foco */
+.spotlight-guide-card {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
+  z-index: 37;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 18px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  display: none;
+  animation: bubble-appear 0.3s var(--ease);
+}
+
+.spotlight-guide-card.show {
+  display: block;
+}
+
+.spotlight-guide-card h4 {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--indigo);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spotlight-guide-card p {
+  font-size: 16px;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.spotlight-guide-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-spotlight-voice {
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid var(--line);
+}
+
+.btn-spotlight-done {
+  flex: 1;
+  min-height: 50px;
+  border-radius: 14px;
+  background: var(--teal);
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= TRADUCCIÓN SEMÁNTICA INLINE ================= */
+.semantic-translation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #EFF6FF;
+  border: 1px solid #BFDBFE;
+  color: var(--indigo);
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.semantic-translation-badge:hover {
+  background: #DBEAFE;
+}
+
+/* Modo traducción semántica activado en la app: los títulos se transforman */
+.app-semantic-active .term-technical {
+  display: none !important;
+}
+
+.app-semantic-active .term-simplified {
+  display: inline-block !important;
+}
+
+.term-simplified {
+  display: none;
+  color: var(--indigo);
+  font-weight: 900;
+}
+
+/* Modal explicativo de un término del glosario */
+.term-modal-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 62, 0.7);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.term-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.term-modal-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+}
+
+.term-modal-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--indigo);
+  margin-bottom: 4px;
+}
+
+.term-modal-subtitle {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.term-modal-meaning {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.term-modal-example {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 18px;
+}
+
+.term-modal-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-listen-term {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-close-term {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--indigo);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+/* ================= BIENVENIDA / ONBOARDING CONDICIONAL (5 SEG) ================= */
+.puente-onboarding-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 62, 0.88);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s var(--ease);
+}
+
+.puente-onboarding-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.puente-onboarding-card {
+  background: #FFFFFF;
+  border-radius: 26px;
+  padding: 24px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  animation: bubble-appear 0.4s var(--ease);
+}
+
+.onboarding-badge {
+  display: inline-block;
+  background: var(--mint);
+  color: #0D1B3E;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.puente-onboarding-card h2 {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+
+.puente-onboarding-card p {
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+.puente-onboarding-card button {
+  width: 100%;
+  min-height: 52px;
+  background: var(--indigo);
+  color: #FFFFFF;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 900;
+}

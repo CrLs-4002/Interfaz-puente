@@ -1,0 +1,1025 @@
+/* ==========================================================================
+   INTERFAZ PUENTE — PROTOTIPO ACADÉMICO INACAP
+   Estilo Base y Flujo Bancario BancoEstado Accesible (WCAG 2.2 AA & COGA)
+   Autores: Carlos Valdés & Sebastián Mardones
+   ========================================================================== */
+
+:root {
+  /* Paleta BancoEstado adaptada a alto contraste */
+  --orange: #F77F00;
+  --orange-dark: #D46A00;
+  --orange-light: #FFF2E5;
+  --navy: #0D1B3E;
+  --navy-sheet: #102048;
+  --indigo: #202F7B;
+  --indigo-dark: #141E52;
+  --indigo-soft: #EAEFFA;
+  --teal: #0D8F72;
+  --teal-light: #E0F5EE;
+  --mint: #2EC4A4;
+  --bg: #F4F6FA;
+  --card-bg: #FFFFFF;
+  --ink: #141A29;
+  --muted: #4A5568;
+  --line: #CFD7E6;
+  --red: #C52224;
+  --red-soft: #FDECEC;
+  --yellow-alert: #FFF8E1;
+  --yellow-border: #FFD54F;
+  --focus-ring: #0D8F72;
+
+  /* Accesibilidad Cognitiva y Táctil */
+  --font-main: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Nunito', system-ui, sans-serif;
+  --text-base: 18px;
+  --touch-min: 48px;
+  --touch-btn: 56px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 2px 8px rgba(13, 27, 62, 0.08);
+  --shadow-md: 0 8px 24px rgba(13, 27, 62, 0.14);
+  --shadow-lg: 0 16px 40px rgba(13, 27, 62, 0.22);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Reset y caja */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: #E2E7F0;
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  color: var(--ink);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  touch-action: manipulation;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+/* ================= CONTENEDOR ENTORNO DE ESCRITORIO ================= */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+/* Barra superior de herramientas en escritorio */
+.desktop-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.desktop-bar a, .desktop-bar button {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--indigo);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+/* ================= MARCO DEL CELULAR (390 × 844 px) ================= */
+.device-frame {
+  position: relative;
+  width: 100%;
+  max-width: 412px;
+  height: 844px;
+  max-height: calc(100vh - 24px);
+  background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 60px -15px rgba(13, 27, 62, 0.4), 0 0 0 10px #1E2538;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modo pantalla completa para celulares reales */
+@media (max-width: 480px) {
+  .app-wrapper {
+    padding: 0;
+    min-height: 100dvh;
+    justify-content: flex-start;
+  }
+  .desktop-bar {
+    display: none;
+  }
+  .device-frame {
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* ================= AVISO OBLIGATORIO INACAP ================= */
+.inacap-banner {
+  background: #141E38;
+  color: #F8FAFC;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-bottom: 2px solid var(--orange);
+  z-index: 50;
+  user-select: none;
+  cursor: pointer;
+}
+
+.inacap-banner .badge {
+  background: var(--orange);
+  color: #FFFFFF;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+.inacap-banner .tap-hint {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 600;
+}
+
+/* Banner de Modo Práctica */
+.practice-banner {
+  display: none;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  border-bottom: 1.5px solid #FCD34D;
+  z-index: 45;
+}
+
+.practice-banner.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ================= CONTENEDOR DE VISTAS ================= */
+.screen-container {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.screen-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(25px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s linear 0.3s;
+  overflow: hidden;
+}
+
+.screen-view.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s;
+  z-index: 2;
+}
+
+.screen-view.is-before {
+  transform: translateX(-25px);
+}
+
+.scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 90px;
+}
+
+/* ================= CABECERAS ================= */
+.be-top-header {
+  background: linear-gradient(110deg, var(--orange) 0%, #FFA033 100%);
+  min-height: 130px;
+  border-bottom-left-radius: 40px 32px;
+  padding: 16px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  color: #FFFFFF;
+}
+
+.be-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.be-logo-symbol {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: var(--orange);
+  font-family: var(--font-brand);
+  font-weight: 900;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.be-brand-title {
+  font-family: var(--font-brand);
+  font-size: 22px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.4px;
+}
+
+.be-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-header-round {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cabecera de Trámites */
+.view-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.view-header h1 {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.btn-back {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.btn-back:active {
+  background: var(--line);
+}
+
+/* ================= TARJETAS Y CUENTAS ================= */
+.account-cards-wrap {
+  padding: 0 16px 20px;
+  margin-top: -65px;
+}
+
+.account-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid rgba(207, 215, 230, 0.6);
+  margin-bottom: 16px;
+}
+
+.account-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.account-card-type {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.account-card-type b {
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.account-balance-row {
+  margin: 8px 0 4px;
+}
+
+.account-balance {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+
+.account-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Botones dentro de la tarjeta de cuenta */
+.account-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn-pill {
+  flex: 1;
+  min-height: var(--touch-min);
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-pill:active {
+  transform: scale(0.98);
+}
+
+.btn-pill.primary {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+.btn-pill.primary:hover {
+  background: var(--indigo-dark);
+}
+
+.btn-pill.secondary {
+  border: 2px solid var(--indigo);
+  color: var(--indigo);
+  background: #FFFFFF;
+}
+
+.btn-pill.secondary:hover {
+  background: var(--indigo-soft);
+}
+
+/* Tarjeta Destacada de Transferencia Rápida */
+.quick-transfer-box {
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-transfer-box h2 {
+  font-size: 20px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-transfer-box p {
+  font-size: 16px;
+  color: #E2E8F0;
+  line-height: 1.4;
+}
+
+.btn-cta-big {
+  min-height: var(--touch-btn);
+  background: var(--orange);
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(247, 127, 0, 0.4);
+  transition: all 0.2s var(--ease);
+}
+
+.btn-cta-big:active {
+  transform: scale(0.98);
+  background: var(--orange-dark);
+}
+
+/* Tarjetas Informativas / Secundarias */
+.section-heading {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink);
+  margin: 16px 4px 10px;
+}
+
+.mini-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1.5px solid var(--line);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mini-card-info b {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.mini-card-info span {
+  font-size: 14px;
+  color: var(--muted);
+  display: block;
+}
+
+/* ================= BARRA DE NAVEGACIÓN INFERIOR ================= */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  background: #FFFFFF;
+  border-top: 1.5px solid var(--line);
+  display: flex;
+  z-index: 10;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.nav-tab.active {
+  color: var(--orange);
+}
+
+.nav-tab.active .nav-icon {
+  stroke: var(--orange);
+}
+
+.nav-icon {
+  width: 26px;
+  height: 26px;
+}
+
+/* ================= FORMULARIO DE TRANSFERENCIA ================= */
+.form-step-container {
+  padding: 16px 16px 40px;
+}
+
+.step-indicator-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.step-bullet {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.step-bullet.active {
+  background: var(--indigo);
+}
+
+.step-bullet.completed {
+  background: var(--teal);
+}
+
+/* Pestañas de Destinatario (Guardados vs Nuevo) */
+.recipient-tabs {
+  display: flex;
+  background: #E2E8F0;
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+
+.recipient-tab-btn {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.recipient-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--indigo);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Lista de Destinatarios Guardados */
+.contact-item {
+  background: #FFFFFF;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-item:hover, .contact-item:focus {
+  border-color: var(--indigo);
+  background: #F8FAFC;
+}
+
+.contact-item.selected {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 0 0 3px rgba(46, 196, 164, 0.2);
+}
+
+.contact-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.contact-details {
+  flex: 1;
+}
+
+.contact-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.contact-bank-info {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Formulario Nuevo Destinatario / Campos */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.form-input-wrap {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(32, 47, 123, 0.15);
+}
+
+.form-input.error {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+
+.form-select {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23202F7B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 20px;
+}
+
+.form-helper-text {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.form-error-msg {
+  display: none;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.form-group.has-error .form-error-msg {
+  display: block;
+}
+
+/* Monto Grande en Pantalla */
+.amount-display-box {
+  background: #FFFFFF;
+  border: 2.5px solid var(--indigo);
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.amount-input-big {
+  width: 100%;
+  text-align: center;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--ink);
+  border: none;
+  background: transparent;
+}
+
+.amount-input-big:focus {
+  outline: none;
+}
+
+/* Píldoras de Monto Rápido */
+.quick-amounts {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-quick-amount {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 20px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-size: 15px;
+  font-weight: 800;
+  border: 1px solid var(--line);
+}
+
+.btn-quick-amount:active {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+/* ================= MODAL / PANTALLA RESUMEN SEGURO ================= */
+.safe-summary-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 3px solid var(--indigo);
+  padding: 22px 18px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+}
+
+.safe-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+}
+
+.safe-summary-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.safe-summary-title {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.safe-summary-body {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.safe-summary-body strong {
+  color: var(--indigo);
+  font-weight: 900;
+}
+
+.safe-summary-warning {
+  background: #FFFBEB;
+  border: 2px solid #F59E0B;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #92400E;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.safe-summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-confirm-send {
+  min-height: 58px;
+  background: var(--teal);
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35);
+}
+
+.btn-confirm-send:active {
+  background: #09725a;
+  transform: scale(0.98);
+}
+
+.btn-cancel-review {
+  min-height: 52px;
+  background: #FFFFFF;
+  color: var(--muted);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cancel-review:active {
+  background: var(--bg);
+}
+
+/* ================= MODAL CLAVE DINÁMICA ================= */
+.security-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.75);
+  display: flex;
+  align-items: flex-end;
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s var(--ease);
+}
+
+.security-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.security-modal-card {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px 34px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(100%);
+  transition: transform 0.35s var(--ease);
+}
+
+.security-modal-overlay.active .security-modal-card {
+  transform: none;
+}
+
+.security-code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.security-digit {
+  width: 48px;
+  height: 58px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.security-digit:focus {
+  border-color: var(--indigo);
+  outline: none;
+  background: #FFFFFF;
+}
+
+.security-pedagogic-warning {
+  background: #EFF6FF;
+  border: 2px solid #3B82F6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E40AF;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+/* ================= COMPROBANTE FINAL ================= */
+.receipt-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 24px 18px;
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.receipt-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal);
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--teal);
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 16px;
+}
+
+.receipt-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-row .label {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.receipt-row .value {
+  color: var(--ink);
+  font-weight: 900;
+  text-align: right;
+  max-width: 60%;
+}
+
+/* ================= ESTADOS Y UTILIDADES ================= */
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

@@ -1,1473 +1,817 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#F77F00">
-<title>Interfaz Puente — BancoEstado</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#F77F00">
+  <title>Interfaz Puente — BancoEstado (Simulación Académica INACAP)</title>
 
-<!-- Tipografías oficiales similares a la App BancoEstado (Nunito / Nunito Sans) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800;0,6..12,900;1,6..12,800;1,6..12,900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <!-- Tipografías para la app (Nunito / Nunito Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-<style>
-  :root{
-    --navy:#0D1B3E; --navy-sheet:#102048; --fab:#16244C; --teal:#2EC4A4;
-    --orange:#F77F00; --orange-2:#FF9A3C; --indigo:#29398E; --indigo-soft:#E8ECFB;
-    --ink:#1E2538; --muted:#535F7A; --line:#DCE1EB; --bg:#F4F6FA; --red:#D9383A; --red-soft:#FEECEE;
-    --green:#0D8F72; --mint:#E3F7F0; --blue-pale:#E3EEFC;
-    --ease:cubic-bezier(.22,.61,.36,1);
-    --font-main:'Nunito Sans',system-ui,-apple-system,sans-serif;
-    --font-brand:'Nunito',system-ui,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%;width:100%;overflow:hidden}
-  body{font-family:var(--font-main);background:#dfe3eb;color:var(--ink);-webkit-tap-highlight-color:transparent}
-  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
-  .ic{width:22px;height:22px;display:block}
-
-  /* Aviso si se abre dentro del WebView de la app de Google o WhatsApp */
-  .inapp-warning{
-    display:none;position:relative;z-index:99;background:#1E293B;color:#F8FAFC;
-    padding:10px 14px;font-size:13px;align-items:center;justify-content:space-between;gap:10px;
-    box-shadow:0 2px 10px rgba(0,0,0,.25);
-  }
-  .inapp-warning.show{display:flex}
-  .btn-intent{
-    background:var(--orange);color:#fff;padding:6px 12px;border-radius:8px;
-    font-size:12px;font-weight:900;text-decoration:none;white-space:nowrap;
-  }
-
-  /* Marco móvil proporcionado a escala real */
-  .app{position:relative;width:100%;max-width:440px;margin:0 auto;height:100vh;height:100dvh;background:var(--bg);overflow:hidden}
-  @media (min-width:480px){
-    .app{height:min(840px,calc(100vh - 24px));margin-top:12px;border-radius:28px;box-shadow:0 25px 60px -20px rgba(13,27,62,.4)}
-  }
-  .views{position:absolute;top:0;left:0;right:0;bottom:0}
-  .view{
-    position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:var(--bg);
-    opacity:0;visibility:hidden;transform:translateX(20px);
-    transition:opacity .4s var(--ease),transform .4s var(--ease),visibility 0s linear .4s;
-  }
-  .view.is-before{transform:translateX(-20px)}
-  .view.is-active{opacity:1;visibility:visible;transform:none;transition:opacity .4s var(--ease),transform .4s var(--ease),visibility 0s}
-  .scroll{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
-
-  /* Cabecera BancoEstado a escala y tipografía real */
-  .be-header{
-    background:linear-gradient(100deg,var(--orange) 0%,var(--orange-2) 100%);
-    height:148px;border-bottom-left-radius:44px 36px;
-    padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 0;
-    display:flex;align-items:flex-start;justify-content:space-between;
-  }
-  .brand{display:flex;align-items:center;gap:8px;color:#fff;padding-top:2px}
-  .brand .logo{width:32px;height:32px;border-radius:8px;background:#fff;color:var(--orange);font-family:var(--font-brand);font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center}
-  .brand .wm{font-family:var(--font-brand);font-size:21px;font-weight:900;font-style:italic;letter-spacing:-.4px}
-  .be-actions{display:flex;gap:6px}
-  .round{width:38px;height:38px;border-radius:50%;background:#FFF1E2;color:var(--indigo);display:flex;align-items:center;justify-content:center}
-  .round .ic{width:20px;height:20px}
-
-  /* Tarjetas de cuenta proporcionadas */
-  .cards{padding:0 14px 24px;margin-top:-76px;position:relative}
-  .card{background:#fff;border-radius:16px;box-shadow:0 2px 10px rgba(25,35,70,.06);margin-bottom:12px}
-  .acct{padding:16px}
-  .acct .top{display:flex;justify-content:space-between;align-items:center}
-  .acct .num{font-size:15px;color:var(--ink);letter-spacing:.2px}
-  .acct .num b{font-weight:800}
-  .kebab{width:36px;height:36px;color:var(--indigo);display:flex;align-items:center;justify-content:center;margin-right:-6px}
-  .bal-row{display:flex;align-items:center;gap:10px;margin-top:4px}
-  .bal{font-size:30px;font-weight:900;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
-  .eye{color:var(--indigo);width:24px;height:24px}
-  .acct .lbl{color:var(--muted);font-size:14px;font-weight:600;margin-top:2px}
-  .btn-row{display:flex;gap:10px;margin-top:14px}
-  .pill{flex:1;min-height:44px;border-radius:24px;font-size:15px;font-weight:800;letter-spacing:.1px}
-  .pill.filled{background:var(--indigo);color:#fff}
-  .pill.outline{border:1.8px solid var(--indigo);color:var(--indigo);background:#fff}
-
-  .promo{display:flex;overflow:hidden;min-height:136px}
-  .promo .txt{flex:1;padding:14px 6px 14px 14px;display:flex;flex-direction:column;align-items:flex-start}
-  .promo h3{font-size:16px;font-weight:800;line-height:1.2}
-  .promo p{font-size:13px;line-height:1.3;margin:4px 0 8px;color:var(--ink)}
-  .pill.small{flex:none;min-height:36px;padding:0 16px;font-size:14px}
-  .promo .pic{width:36%;border-radius:44px 0 0 0;background:linear-gradient(160deg,#9db7e8,#5e7fd0);display:flex;align-items:center;justify-content:center}
-  .promo .pic svg{width:46px;height:46px;color:#fff;opacity:.9}
-  .dots{display:flex;justify-content:center;gap:8px;margin:-2px 0 10px}
-  .dots i{width:9px;height:9px;border-radius:50%;background:#D0D4DE;display:block}
-  .dots i:first-child{background:var(--orange)}
-
-  .h2{font-size:16px;margin:8px 2px 6px;color:var(--ink);font-weight:800}
-  .tcard{position:relative;padding:14px 14px 14px 24px;min-height:108px;overflow:hidden}
-  .tcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:10px;background:linear-gradient(180deg,#1d3d97 0 50%,#ef3c4a 50% 100%)}
-  .tcard b{font-size:15px;font-weight:800;display:block}
-  .tcard .mask{font-size:15px;color:var(--ink);margin-top:2px;font-weight:600}
-  .tcard .visa{position:absolute;right:14px;top:16px;font-size:24px;font-weight:900;font-style:italic;color:#1a2f87}
-  
-  .scard{padding:16px;position:relative}
-  .scard b{font-size:15px;font-weight:800;display:block;padding-right:40px}
-  .scard .acc{font-size:14px;margin-top:4px}
-  .scard .amt{font-size:24px;font-weight:900;margin-top:4px;display:flex;align-items:center;gap:8px}
-  .scard .share{position:absolute;right:14px;top:14px;color:var(--indigo)}
-  .scard .next{position:absolute;right:-4px;top:50%;margin-top:-20px;width:40px;height:40px;border-radius:50%;background:var(--indigo-soft);color:var(--indigo);display:flex;align-items:center;justify-content:center}
-  .scard .tot{color:var(--muted);font-size:13px;margin-top:2px;font-weight:600}
-
-  /* Barra de navegación inferior */
-  .bottom-nav{flex:0 0 auto;background:#fff;display:flex;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-  .nav-item{flex:1;position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px 6px;font-size:12px;font-weight:800;color:var(--ink);min-height:58px}
-  .nav-item .ic{width:24px;height:24px}
-  .nav-item.on{color:var(--orange)}
-  .nav-item.on::before{content:'';position:absolute;top:0;left:15%;right:15%;height:3px;background:var(--orange);border-radius:2px}
-
-  /* Vista Transferir */
-  .t-head{background:#fff;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px;display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--line);flex:0 0 auto}
-  .t-head h1{font-size:19px;font-weight:900}
-  .icon-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;color:var(--ink)}
-  .t-scroll{background:#fff;padding:16px 14px 340px}
-  .field{margin-bottom:16px;transition:opacity .4s var(--ease)}
-  .field > .lbl{font-size:14px;font-weight:800;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-  .field .tick{color:var(--green);opacity:0;transform:scale(.5);transition:all .3s var(--ease);width:18px;height:18px}
-  .field.filled .tick{opacity:1;transform:scale(1)}
-  .fcard{border:1.6px solid var(--line);border-radius:14px;padding:14px;background:#fff;transition:all .4s var(--ease)}
-  .field[data-f="origin"] .fcard{background:var(--bg);border-color:transparent}
-  .fcard .big{font-size:17px;font-weight:800;color:var(--ink)}
-  .fcard .sub{font-size:14px;color:var(--muted);margin-top:2px}
-  .fcard .ph{color:#5C677D;font-weight:600;font-size:15px}
-  .fcard .err{color:var(--red)}
-  .field.filled .fcard{border-color:var(--teal);background:var(--mint);box-shadow:0 0 0 3px rgba(46,196,164,.15)}
-  .field.has-error .fcard{border-color:var(--red);background:var(--red-soft);box-shadow:0 0 0 3px rgba(217,56,58,.15)}
-  .amount-big{font-size:24px;font-weight:900}
-  .amount-err{font-size:14px;font-weight:800;color:var(--red);margin-top:6px;line-height:1.3}
-  
-  #viewTransfer[data-focus="dest"] .field:not([data-f="dest"]),
-  #viewTransfer[data-focus="amount"] .field:not([data-f="amount"]){opacity:.4}
-  #viewTransfer[data-focus="summary"] .field[data-f="origin"],
-  #viewTransfer[data-focus="summary"] .field[data-f="msg"]{opacity:.3}
-  #viewTransfer[data-focus="dest"] [data-f="dest"] .fcard,
-  #viewTransfer[data-focus="amount"] [data-f="amount"] .fcard{outline:3px solid var(--teal);outline-offset:2px}
-
-  .cta{width:100%;min-height:50px;border-radius:14px;background:var(--indigo);color:#fff;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
-  .cta:disabled{opacity:.35;cursor:default}
-  .cta:not(:disabled):active{transform:scale(.98)}
-  .cta.ghost{background:#fff;color:var(--indigo);border:2px solid var(--indigo)}
-  .summary{background:var(--blue-pale);border-radius:14px;padding:0 14px;margin-top:14px;font-size:15px;line-height:1.5;color:var(--navy);max-height:0;opacity:0;overflow:hidden;transition:all .4s var(--ease)}
-  .summary.show{max-height:260px;opacity:1;padding:14px}
-  .summary b{display:block;font-size:16px;margin-bottom:4px}
-
-  /* Vista Comprobante */
-  .r-scroll{background:#fff;padding:calc(env(safe-area-inset-top,0px) + 20px) 16px 28px}
-  .r-head{text-align:center;margin-bottom:20px}
-  .r-head .circle{width:64px;height:64px;border-radius:50%;background:var(--mint);color:var(--green);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;border:2.5px solid var(--teal)}
-  .r-head .circle .ic{width:32px;height:32px}
-  .r-head h2{font-size:20px;font-weight:900}
-  .r-row{padding:12px 0;border-bottom:1px solid var(--line)}
-  .r-row .k{font-size:14px;color:var(--muted);font-weight:600}
-  .r-row .v{font-size:17px;font-weight:800;margin-top:2px}
-  .r-row .v small{display:block;font-size:14px;color:var(--muted);font-weight:500;margin-top:2px}
-  .r-btns{display:flex;flex-direction:column;gap:10px;margin-top:22px}
-
-  /* ================= ASISTENTE (INTERFAZ PUENTE) ================= */
-  .dim{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(13,27,62,.6);opacity:0;pointer-events:none;transition:opacity .4s var(--ease);z-index:10}
-  .dim.on{opacity:1;pointer-events:auto}
-  .dim.clear{background-color:transparent}
-
-  .fab{
-    position:absolute;right:14px;bottom:116px;width:66px;height:66px;border-radius:50%;z-index:15;
-    background:var(--fab);border:3px solid var(--teal);color:var(--teal);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 8px 22px rgba(13,27,62,.35);
-    transition:all .35s var(--ease);
-    animation:fab-pulse 3s ease-out infinite;
-  }
-  .fab .ic{width:36px;height:36px}
-  .fab:active{transform:scale(.92)}
-  .fab.hidden{opacity:0;pointer-events:none;transform:scale(.6);animation:none}
-  .app[data-view="transfer"] .fab{bottom:54px}
-  .app[data-view="receipt"] .fab{display:none}
-  @keyframes fab-pulse{0%{box-shadow:0 8px 22px rgba(13,27,62,.35),0 0 0 0 rgba(46,196,164,.55)}70%,100%{box-shadow:0 8px 22px rgba(13,27,62,.35),0 0 0 16px rgba(46,196,164,0)}}
-
-  /* Bottom sheet del Asistente */
-  .sheet{
-    position:absolute;left:0;right:0;bottom:0;z-index:20;max-height:80%;display:flex;flex-direction:column;
-    background:var(--navy-sheet);color:#fff;border-radius:26px 26px 0 0;
-    padding:14px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
-    transform:translateY(106%);transition:transform .5s var(--ease);
-    box-shadow:0 -10px 36px rgba(0,0,0,.35);
-  }
-  .sheet.open{transform:none}
-
-  /* BARRA SUPERIOR: Estado a la izquierda y ✕ a la derecha */
-  .sheet-top{display:flex;align-items:center;justify-content:space-between;min-height:42px}
-  
-  .status{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--teal)}
-  .status.listening{color:#FF8A80}
-  .status.thinking{color:#D5DEFF}
-  .status.waiting{color:#FFD166}
-  .eq{display:flex;gap:2.5px;align-items:flex-end;height:12px;width:15px}
-  .eq i{width:3px;height:3px;background:currentColor;border-radius:1.5px;display:block}
-  .status.speaking .eq i,.status.listening .eq i,.status.thinking .eq i{animation:eq 1s ease-in-out infinite}
-  .eq i:nth-child(2){animation-delay:.15s}.eq i:nth-child(3){animation-delay:.3s}
-  @keyframes eq{0%,100%{height:3px}50%{height:12px}}
-
-  /* Botón Cerrar (✕) */
-  .btn-close-sheet{
-    width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.1);
-    color:#fff;display:flex;align-items:center;justify-content:center;
-    transition:background .2s ease,transform .15s ease;
-  }
-  .btn-close-sheet:active{background:rgba(217,56,58,.4);transform:scale(.92)}
-  .btn-close-sheet .ic{width:22px;height:22px}
-
-  /* Burbuja de Mensaje del Asistente */
-  .msg-wrap{position:relative;margin:10px 0 6px}
-  .msg{font-size:17px;line-height:1.45;font-weight:700;min-height:50px;max-height:180px;overflow-y:auto;color:#FFFFFF}
-  .msg.swap{animation:msg-in .4s var(--ease)}
-  @keyframes msg-in{from{opacity:.2;transform:translateY(4px)}to{opacity:1;transform:none}}
-  
-  /* Botón Repetir integrado de forma natural */
-  .btn-replay{
-    display:inline-flex;align-items:center;gap:5px;margin-top:6px;
-    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#D3DDFA;
-    padding:4px 10px;border-radius:14px;font-size:12px;font-weight:800;
-  }
-  .btn-replay:active{background:rgba(255,255,255,.25)}
-  .btn-replay .ic{width:14px;height:14px}
-
-  .heard{font-size:14px;color:#A2B4DE;font-style:italic;min-height:20px;margin-top:4px}
-
-  /* Banner de diagnóstico/ayuda si el navegador (Chrome móvil / Webview) tiene problemas con el micrófono */
-  .mic-help-banner{
-    display:none;background:#FFEFEF;color:#9B1C1C;border:1.5px solid #F8B4B4;
-    border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-top:10px;font-weight:700;
-  }
-  .mic-help-banner.show{display:block}
-  .btn-grant-mic{
-    margin-top:8px;background:#9B1C1C;color:#fff;font-size:13px;font-weight:800;
-    padding:7px 14px;border-radius:8px;display:inline-block;margin-right:8px;
-  }
-  .btn-help-steps{
-    margin-top:8px;background:#fff;color:#9B1C1C;border:1.5px solid #9B1C1C;font-size:13px;font-weight:800;
-    padding:6px 12px;border-radius:8px;display:inline-block;
-  }
-
-  /* Zona inferior: Chips + Micrófono */
-  .sheet-bottom{display:flex;align-items:flex-end;gap:10px;margin-top:12px}
-  .chips{flex:1;display:flex;flex-wrap:wrap;gap:8px;min-width:0}
-  .chip{
-    min-height:44px;padding:0 14px;border-radius:22px;font-size:15px;font-weight:800;color:#fff;
-    background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.4);
-    display:flex;align-items:center;justify-content:center;text-align:left;
-  }
-  .chip:active{background:rgba(255,255,255,.28);transform:scale(.97)}
-
-  /* Botón Micrófono con pulsación de Barge-In */
-  .mic{
-    position:relative;flex:0 0 auto;width:64px;height:64px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%,#4ff2cc,var(--teal) 70%);color:var(--navy);
-    display:flex;align-items:center;justify-content:center;transition:all .25s ease;
-    box-shadow:0 6px 18px rgba(0,0,0,.25);
-  }
-  .mic:active{transform:scale(.93)}
-  .mic .ic{width:30px;height:30px}
-  .mic .ring{position:absolute;top:-6px;left:-6px;right:-6px;bottom:-6px;border-radius:50%;border:2px solid var(--teal);opacity:0}
-  .mic.listening{background:radial-gradient(circle at 35% 30%,#ff8a65,var(--red) 70%);color:#fff}
-  .mic.listening .ring{border-color:var(--red);animation:ring 1.6s ease-out infinite}
-  .mic.speaking .ring{animation:ring 2s ease-out infinite}
-  .mic.thinking{background:radial-gradient(circle at 35% 30%,#63739d,#2d395a 70%);color:#d2dcf4}
-  @keyframes ring{0%{opacity:.75;transform:scale(.85)}80%,100%{opacity:0;transform:scale(1.6)}}
-
-  .note{font-size:13px;color:#A9BBDF;margin-top:8px;line-height:1.35}
-  .note:empty{display:none}
-  .typebox{margin-top:8px;width:100%;min-height:44px;border-radius:12px;border:none;padding:0 14px;font-size:15px;font-weight:700}
-
-  /* ================= MODAL DE GUÍA PARA ACTIVAR MICRÓFONO EN CHROME ================= */
-  .mic-guide-modal{
-    position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(13,27,62,.85);
-    z-index:60;opacity:0;visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;
-    padding:20px;transition:all .35s var(--ease);
-  }
-  .mic-guide-modal.active{opacity:1;visibility:visible}
-  .mic-guide-card{
-    background:#fff;border-radius:24px;padding:22px 18px;max-width:380px;width:100%;
-    box-shadow:0 15px 40px rgba(0,0,0,.35);
-  }
-  .mic-guide-title{font-size:18px;font-weight:900;color:var(--ink);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-  .mic-step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
-  .mic-step-num{background:var(--orange);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex:none}
-  .mic-step-txt{font-size:14px;line-height:1.4;color:var(--ink)}
-  .mic-step-txt b{font-weight:800;color:var(--indigo)}
-  .mic-guide-btns{display:flex;flex-direction:column;gap:8px;margin-top:16px}
-  .btn-reload{background:var(--indigo);color:#fff;min-height:44px;border-radius:12px;font-size:15px;font-weight:800}
-  .btn-dismiss-guide{color:var(--muted);min-height:38px;font-size:14px;font-weight:700}
-
-  /* ================= MODAL SEGURIDAD BE PASS (SENIOR FRIENDLY) ================= */
-  .auth-overlay{
-    position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(13,27,62,.7);
-    z-index:40;opacity:0;visibility:hidden;display:flex;flex-direction:column;justify-content:flex-end;
-    transition:all .35s var(--ease);
-  }
-  .auth-overlay.active{opacity:1;visibility:visible}
-  .auth-card{
-    background:#fff;border-radius:26px 26px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 20px);
-    box-shadow:0 -10px 36px rgba(0,0,0,.3);transform:translateY(100%);transition:transform .4s var(--ease);
-  }
-  .auth-overlay.active .auth-card{transform:none}
-
-  .auth-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .auth-brand{display:flex;align-items:center;gap:10px}
-  .auth-shield{width:40px;height:40px;border-radius:12px;background:#FFF1E2;color:var(--orange);display:flex;align-items:center;justify-content:center}
-  .auth-title{font-size:18px;font-weight:900;color:var(--ink)}
-
-  .auth-close{width:38px;height:38px;border-radius:50%;color:var(--muted);display:flex;align-items:center;justify-content:center}
-  .auth-close:active{background:var(--bg)}
-
-  .auth-summary{background:var(--bg);border-radius:16px;padding:14px;margin-bottom:16px;border:1.2px solid var(--line)}
-  .auth-row{display:flex;justify-content:space-between;align-items:center;font-size:15px;margin-bottom:4px}
-  .auth-row.tot{font-size:20px;font-weight:900;color:var(--ink);border-top:1px dashed var(--line);padding-top:8px;margin-top:8px}
-
-  .bio-zone{text-align:center;margin:8px 0 16px}
-  .bio-circle-btn{
-    width:78px;height:78px;border-radius:50%;margin:0 auto 10px;
-    background:linear-gradient(135deg,var(--orange) 0%,var(--orange-2) 100%);
-    color:#fff;display:flex;align-items:center;justify-content:center;
-    box-shadow:0 6px 20px rgba(247,127,0,.35);transition:all .2s ease;
-  }
-  .bio-circle-btn:active{transform:scale(.92)}
-  .bio-circle-btn.scanning{background:linear-gradient(135deg,var(--teal) 0%,#1fa385 100%);box-shadow:0 6px 20px rgba(46,196,164,.4)}
-  .bio-circle-btn .ic{width:40px;height:40px}
-  .bio-label{font-size:16px;font-weight:800;color:var(--ink)}
-  .bio-sub{font-size:13px;color:var(--muted);margin-top:2px}
-
-  .auth-alt-link{
-    display:block;text-align:center;color:var(--indigo);font-size:14px;font-weight:800;padding:8px;
-    border-radius:10px;text-decoration:none;
-  }
-  .auth-alt-link:active{background:var(--indigo-soft)}
-
-  .auth-feedback{margin-top:8px;text-align:center;font-size:14px;font-weight:800;min-height:20px}
-  .auth-feedback.err{color:var(--red)}
-  .auth-feedback.ok{color:var(--green)}
-
-  .demo-strip{display:flex;justify-content:center;gap:10px;margin-top:8px;padding-top:10px;border-top:1px solid var(--line)}
-  .demo-tag{font-size:12px;color:var(--muted);padding:4px 12px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-weight:700}
-
-  .toast{position:absolute;left:14px;right:14px;bottom:90px;z-index:50;background:rgba(20,26,45,.96);color:#fff;font-size:14px;line-height:1.4;padding:12px 16px;border-radius:12px;opacity:0;transform:translateY(10px);pointer-events:none;transition:all .3s var(--ease)}
-  .toast.show{opacity:1;transform:none}
-
-  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition-duration:.01ms !important}}
-</style>
+  <!-- Estilos del Proyecto -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/interfaz-puente.css">
+  <link rel="stylesheet" href="css/facilitator.css">
 </head>
 <body>
 
-<!-- Aviso de navegador interno (Google App / WhatsApp) -->
-<div class="inapp-warning" id="inAppWarning">
-  <span>⚠️ Estás en el visor interno de Google (bloquea el micrófono).</span>
-  <a class="btn-intent" id="btnIntentChrome" href="#">Abrir en Chrome</a>
-</div>
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs>
-    <symbol id="i-search" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></g></symbol>
-    <symbol id="i-bell" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17h12l-1.6-2.2V10a4.4 4.4 0 0 0-8.8 0v4.8L6 17Z"/><path d="M10 20h4"/></g></symbol>
-    <symbol id="i-menu" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 8h14M5 12h14M5 16h14"/></g></symbol>
-    <symbol id="i-eye" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12s3.6-6 9.5-6 9.5 6 9.5 6-3.6 6-9.5 6-9.5-6Z"/><circle cx="12" cy="12" r="2.8"/></g></symbol>
-    <symbol id="i-kebab" viewBox="0 0 24 24"><g fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></g></symbol>
-    <symbol id="i-home" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5V20H4v-8.5Z"/><path d="M10 20v-5h4v5"/></g></symbol>
-    <symbol id="i-transfer" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h13l-3.5-3.5M19 16H6l3.5 3.5"/></g></symbol>
-    <symbol id="i-lock" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2.2"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/><circle cx="12" cy="15" r=".9" fill="currentColor"/></g></symbol>
-    <symbol id="i-grid" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="4" y="4" width="4" height="4" rx=".8"/><rect x="10" y="4" width="4" height="4" rx=".8"/><rect x="16" y="4" width="4" height="4" rx=".8"/><rect x="4" y="10" width="4" height="4" rx=".8"/><rect x="10" y="10" width="4" height="4" rx=".8"/><rect x="16" y="10" width="4" height="4" rx=".8"/><rect x="4" y="16" width="4" height="4" rx=".8"/><rect x="10" y="16" width="4" height="4" rx=".8"/><rect x="16" y="16" width="4" height="4" rx=".8"/></g></symbol>
-    <symbol id="i-share" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="18" cy="5.5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="18.5" r="2.5"/><path d="M8.2 10.8l7.6-4M8.2 13.2l7.6 4"/></g></symbol>
-    <symbol id="i-back" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M11 6l-6 6 6 6"/></g></symbol>
-    <symbol id="i-check" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></g></symbol>
-    <symbol id="i-close" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></g></symbol>
-    <symbol id="i-phone" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2.4"/><path d="M11 18.5h2"/></g></symbol>
-    <symbol id="i-mic" viewBox="0 0 24 24"><path fill="currentColor" d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3Zm5-3a1 1 0 0 0-2 0 3 3 0 0 1-6 0 1 1 0 0 0-2 0 5 5 0 0 0 4 4.9V18H9a1 1 0 0 0 0 2h6a1 1 0 0 0 0-2h-2v-2.1A5 5 0 0 0 17 11Z"/></symbol>
-    <symbol id="i-help" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.5a2.8 2.8 0 1 1 4.5 2.2c-1 .7-1.8 1.2-1.8 2.4"/></g><circle cx="12" cy="17.1" r="1.1" fill="currentColor"/></symbol>
-    <symbol id="i-fingerprint" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 11c0-1.66-1.34-3-3-3s-3 1.34-3 3c0 2.5 1.5 4.5 3 6"/><path d="M12 7c-2.76 0-5 2.24-5 5 0 3.5 2 6 5 8"/><path d="M15 11c0-3.31-2.69-6-6-6-2.5 0-4.66 1.53-5.56 3.7"/><path d="M18 11c0-4.97-4.03-9-9-9-3.9 0-7.23 2.5-8.48 6"/><path d="M12 15c0 2-1 4-2.5 5.5"/><path d="M15 15c0 2.8-1.5 5.2-3.5 6.5"/></g></symbol>
-    <symbol id="i-shield" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s8 3 8 9c0 5.5-5.5 8.5-8 9.5-2.5-1-8-4-8-9.5 0-6 8-9 8-9Z"/><path d="M9 12l2 2 4-4"/></g></symbol>
-    <symbol id="i-replay" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></g></symbol>
-  </defs>
-</svg>
-
-<div class="app" id="app" data-view="home">
-
-  <div class="views">
-
-    <!-- ================= INICIO ================= -->
-    <section class="view is-active" id="viewHome" aria-label="Inicio">
-      <div class="scroll" id="homeScroll">
-        <header class="be-header">
-          <div class="brand"><span class="logo">B</span><span class="wm">BancoEstado</span></div>
-          <div class="be-actions">
-            <button class="round dead" aria-label="Buscar"><svg class="ic"><use href="#i-search" xlink:href="#i-search"/></svg></button>
-            <button class="round dead" aria-label="Notificaciones"><svg class="ic"><use href="#i-bell" xlink:href="#i-bell"/></svg></button>
-            <button class="round dead" aria-label="Menú"><svg class="ic"><use href="#i-menu" xlink:href="#i-menu"/></svg></button>
-          </div>
-        </header>
-
-        <div class="cards">
-          <article class="card acct">
-            <div class="top">
-              <div class="num"><b>CuentaRUT</b> 00020920713</div>
-              <button class="kebab dead" aria-label="Más opciones"><svg class="ic"><use href="#i-kebab" xlink:href="#i-kebab"/></svg></button>
-            </div>
-            <div class="bal-row"><span class="bal" data-balance>$100.065</span><svg class="ic eye"><use href="#i-eye" xlink:href="#i-eye"/></svg></div>
-            <div class="lbl">Saldo disponible</div>
-            <div class="btn-row">
-              <button class="pill filled dead">Movimientos</button>
-              <button class="pill outline dead">Cartolas</button>
-            </div>
-          </article>
-
-          <article class="card promo">
-            <div class="txt">
-              <h3>Pide tu Tarjeta de Crédito</h3>
-              <p>Solicita ahora tu tarjeta y disfruta de todos los beneficios.</p>
-              <button class="pill filled small dead">Contáctenme</button>
-            </div>
-            <div class="pic"><svg class="ic"><use href="#i-phone" xlink:href="#i-phone"/></svg></div>
-          </article>
-          <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
-
-          <h2 class="h2">Tus tarjetas</h2>
-          <article class="card tcard">
-            <b>Tarjeta CuentaRUT</b>
-            <div class="mask">**** **** **** 1706</div>
-            <span class="visa">VISA</span>
-          </article>
-
-          <h2 class="h2">Tus ahorros</h2>
-          <article class="card scard">
-            <b>Plazo Vivienda Giro Diferido</b>
-            <div class="acc">30460553225</div>
-            <div class="amt">$307.529 <svg class="ic eye"><use href="#i-eye" xlink:href="#i-eye"/></svg></div>
-            <div class="tot">Total ahorrado</div>
-            <span class="share"><svg class="ic"><use href="#i-share" xlink:href="#i-share"/></svg></span>
-            <button class="next dead" aria-label="Siguiente"><svg class="ic"><use href="#i-chev" xlink:href="#i-chev"/></svg></button>
-          </article>
-        </div>
-      </div>
-
-      <nav class="bottom-nav" aria-label="Navegación principal">
-        <button class="nav-item on"><svg class="ic"><use href="#i-home" xlink:href="#i-home"/></svg>Inicio</button>
-        <button class="nav-item" id="navTransfer"><svg class="ic"><use href="#i-transfer" xlink:href="#i-transfer"/></svg>Transferir</button>
-        <button class="nav-item dead"><svg class="ic"><use href="#i-lock" xlink:href="#i-lock"/></svg>Seguridad</button>
-        <button class="nav-item dead"><svg class="ic"><use href="#i-grid" xlink:href="#i-grid"/></svg>Más</button>
-      </nav>
-    </section>
-
-    <!-- ================= TRANSFERIR ================= -->
-    <section class="view" id="viewTransfer" data-focus="none" aria-label="Transferir">
-      <div class="t-head">
-        <button class="icon-btn" id="backBtn" aria-label="Volver al inicio"><svg class="ic"><use href="#i-back" xlink:href="#i-back"/></svg></button>
-        <h1>Transferir</h1>
-      </div>
-      <div class="scroll t-scroll" id="tScroll">
-
-        <div class="field" data-f="origin">
-          <div class="lbl">Cuenta de origen</div>
-          <div class="fcard">
-            <div class="sub" style="margin:0">CuentaRUT 00020920713</div>
-            <div class="big" style="margin-top:2px"><span data-balance>$100.065</span> <span class="sub" style="font-weight:600">Disponible</span></div>
-          </div>
-        </div>
-
-        <div class="field" id="fDest" data-f="dest">
-          <div class="lbl">Destinatario <svg class="ic tick"><use href="#i-check" xlink:href="#i-check"/></svg></div>
-          <div class="fcard" id="fDestCard">
-            <div class="big ph" id="destName">Aún no lo has dicho</div>
-            <div class="sub" id="destRut">Di, por ejemplo: “a Belén Pardo”</div>
-            <div class="sub" id="destBank"></div>
-          </div>
-        </div>
-
-        <div class="field" id="fAmount" data-f="amount">
-          <div class="lbl">Ingresa un monto <svg class="ic tick"><use href="#i-check" xlink:href="#i-check"/></svg></div>
-          <div class="fcard" id="fAmountCard">
-            <div class="amount-big ph" id="amountVal" style="font-size:16px;font-weight:600">Aún no lo has dicho</div>
-            <div class="amount-err" id="amountErr"></div>
-          </div>
-        </div>
-
-        <div class="field" data-f="msg">
-          <div class="lbl">Incluir mensaje <span style="font-weight:500">(opcional)</span></div>
-          <div class="fcard"><div class="sub" style="margin:0">Ej.: Comida</div></div>
-        </div>
-
-        <button class="cta" id="continueBtn" disabled>Continuar</button>
-        <div class="summary" id="summary"></div>
-      </div>
-    </section>
-
-    <!-- ================= COMPROBANTE ================= -->
-    <section class="view" id="viewReceipt" aria-label="Comprobante de transferencia">
-      <div class="scroll r-scroll">
-        <div class="r-head">
-          <div class="circle"><svg class="ic"><use href="#i-check" xlink:href="#i-check"/></svg></div>
-          <h2>Comprobante emitido</h2>
-        </div>
-        <div class="r-row"><div class="k">Monto transferido</div><div class="v" id="rAmount"></div></div>
-        <div class="r-row"><div class="k">Destinatario</div><div class="v" id="rDest"></div></div>
-        <div class="r-row"><div class="k">Cuenta de origen</div><div class="v">CuentaRUT<small>00020920713</small></div></div>
-        <div class="r-row"><div class="k">Fecha y hora</div><div class="v" id="rDate"></div></div>
-        <div class="r-row"><div class="k">N° de operación</div><div class="v" id="rOp"></div></div>
-        <div class="r-btns">
-          <button class="cta ghost" id="shareBtn">Compartir comprobante</button>
-          <button class="cta" id="exitBtn">Salir al inicio</button>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <!-- ================= ASISTENTE GUIADO ================= -->
-  <div class="dim" id="dim" role="button" aria-label="Cerrar asistente"></div>
-
-  <button class="fab" id="fab" aria-label="Abrir asistente de ayuda por voz"><svg class="ic"><use href="#i-help" xlink:href="#i-help"/></svg></button>
-
-  <div class="sheet" id="sheet" role="dialog" aria-label="Asistente guiado por voz">
+  <!-- Contenedor general para visualización en escritorio -->
+  <div class="app-wrapper">
     
-    <!-- Barra superior: Estado a la izquierda y ✕ a la derecha -->
-    <div class="sheet-top">
-      <div class="status idle" id="status"><span class="eq"><i></i><i></i><i></i></span><span id="statusText">TOCA PARA HABLAR</span></div>
-      <button class="btn-close-sheet" id="btnCloseSheet" aria-label="Cerrar asistente">
-        <svg class="ic"><use href="#i-close" xlink:href="#i-close"/></svg>
+    <!-- Barra de utilidad en escritorio -->
+    <header class="desktop-bar">
+      <span>📱 Vista Móvil (390 × 844 px)</span>
+      <button type="button" id="btnToggleFullScreen" aria-label="Cambiar a pantalla completa">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Pantalla Completa
       </button>
-    </div>
+    </header>
 
-    <!-- Contenido del mensaje + botón repetir integrado al mensaje -->
-    <div class="msg-wrap">
-      <div class="msg" id="msg"></div>
-      <button class="btn-replay" id="repeatBtn" aria-label="Repetir lo que dijo el asistente">
-        <svg class="ic"><use href="#i-replay" xlink:href="#i-replay"/></svg> Escuchar de nuevo
-      </button>
-    </div>
+    <!-- Marco del Celular (iPhone 390x844 px) -->
+    <main class="device-frame" id="appMainContainer">
 
-    <div class="heard" id="heard"></div>
+      <!-- ================= AVISO OBLIGATORIO INACAP ================= -->
+      <div class="inacap-banner" id="inacapBanner" title="Toca 5 veces para abrir el Panel del Facilitador">
+        <span class="badge">ACADÉMICO</span>
+        <span>Simulación académica INACAP — no es la app oficial de BancoEstado</span>
+        <span class="tap-hint">(Panel: 5 toques)</span>
+      </div>
 
-    <!-- Banner de diagnóstico/ayuda si el navegador (Chrome móvil / Webview) tiene problemas con el micrófono -->
-    <div class="mic-help-banner" id="micHelpBanner">
-      <div id="micHelpText">⚠️ El micrófono no está activo en Chrome. Toca abajo para solicitar acceso.</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">
-        <button class="btn-grant-mic" id="btnGrantMic">Activar micrófono</button>
-        <button class="btn-help-steps" id="btnHelpSteps">Ver cómo desbloquearlo</button>
+      <!-- Banner de Modo Práctica -->
+      <div class="practice-banner" id="practiceBanner" role="status">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Estás practicando: no se envía dinero</span>
       </div>
-    </div>
 
-    <div class="sheet-bottom">
-      <div class="chips" id="chips"></div>
-      <button class="mic idle" id="mic" aria-label="Hablar o interrumpir para responder"><svg class="ic"><use href="#i-mic" xlink:href="#i-mic"/></svg><span class="ring"></span></button>
-    </div>
-    <div class="note" id="note"></div>
-  </div>
+      <!-- Contenedor de Pantallas -->
+      <div class="screen-container">
 
-  <!-- ================= MODAL DE GUÍA PARA ACTIVAR MICRÓFONO EN CHROME ================= -->
-  <div class="mic-guide-modal" id="micGuideModal">
-    <div class="mic-guide-card">
-      <div class="mic-guide-title">
-        <svg class="ic" style="color:var(--orange)"><use href="#i-lock" xlink:href="#i-lock"/></svg>
-        Cómo activar el micrófono en Chrome
-      </div>
-      <div class="mic-step">
-        <span class="mic-step-num">1</span>
-        <div class="mic-step-txt">En la barra de direcciones arriba, toca el ícono del <b>candado 🔒</b> o controles a la izquierda de la URL.</div>
-      </div>
-      <div class="mic-step">
-        <span class="mic-step-num">2</span>
-        <div class="mic-step-txt">Toca en <b>"Permisos"</b> (o <i>Configuración de sitios</i>) y activa la opción <b>Micrófono</b>.</div>
-      </div>
-      <div class="mic-step">
-        <span class="mic-step-num">3</span>
-        <div class="mic-step-txt">Toca el botón <b>"Recargar página"</b> para aplicar el permiso y hablar con el asistente.</div>
-      </div>
-      <div class="mic-guide-btns">
-        <button class="btn-reload" id="btnReloadPage">Recargar página ahora</button>
-        <button class="btn-dismiss-guide" id="btnDismissGuide">Entendido, cerrar guía</button>
-      </div>
-    </div>
-  </div>
+        <!-- ================= PANTALLA 1: INICIO ================= -->
+        <section class="screen-view is-active" id="view-home" aria-label="Inicio">
+          <div class="scroll-area">
+            
+            <!-- Cabecera Naranja BancoEstado -->
+            <header class="be-top-header">
+              <div class="be-brand">
+                <span class="be-logo-symbol">B</span>
+                <span class="be-brand-title">BancoEstado</span>
+              </div>
+              <div class="be-header-actions">
+                <button class="btn-header-round" aria-label="Buscar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg></button>
+                <button class="btn-header-round" aria-label="Notificaciones"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+              </div>
+            </header>
 
-  <!-- ================= MODAL SEGURIDAD BE PASS ================= -->
-  <div class="auth-overlay" id="authOverlay" role="dialog" aria-modal="true" aria-label="Autorización BancoEstado BE Pass">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="auth-brand">
-          <div class="auth-shield"><svg class="ic" style="width:24px;height:24px"><use href="#i-shield" xlink:href="#i-shield"/></svg></div>
-          <div>
-            <div class="auth-title">Seguridad BE Pass</div>
-            <div style="font-size:12px;color:var(--muted)">Paso de confirmación</div>
+            <!-- Tarjeta CuentaRUT de Elena Retamales -->
+            <div class="account-cards-wrap">
+              <article class="account-card" id="cardCuentaRut">
+                <div class="account-card-header">
+                  <div class="account-card-type">
+                    <b>CuentaRUT</b> N° 0007845129
+                  </div>
+                  <span style="font-size:14px;color:var(--muted)">Titular: Elena Retamales</span>
+                </div>
+                
+                <div class="account-balance-row">
+                  <div class="account-balance" data-bind="user-balance">$350.000</div>
+                  <div class="account-label">
+                    <span class="term-technical">Saldo disponible</span>
+                    <span class="term-simplified">Dinero que tienes listo para usar</span>
+                    <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('saldo_disponible')">¿Qué es?</button>
+                  </div>
+                </div>
+
+                <div class="account-actions-row">
+                  <button type="button" class="btn-pill secondary" onclick="alert('Consulta de movimientos demostrativa.')">Movimientos</button>
+                  <button type="button" class="btn-pill secondary" onclick="alert('Cartolas de cuenta demostrativas.')">Cartolas</button>
+                </div>
+              </article>
+
+              <!-- Bloque Destacado: Transferir Dinero -->
+              <section class="quick-transfer-box" id="boxQuickTransferAction">
+                <h2>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 8h13l-3.5-3.5M19 16H6l3.5 3.5"/></svg>
+                  <span>¿Deseas enviar dinero?</span>
+                </h2>
+                <p>Envía dinero a tus familiares o amigos desde tu CuentaRUT con respaldo en cada paso.</p>
+                <button type="button" class="btn-cta-big" id="btnQuickTransfer">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  Transferir dinero
+                </button>
+              </section>
+
+              <!-- Tarjetas y Otros Productos -->
+              <h3 class="section-heading">Tus tarjetas asociadas</h3>
+              <div class="mini-card">
+                <div class="mini-card-info">
+                  <b>Tarjeta Débito CuentaRUT</b>
+                  <span>**** **** **** 5129 · Visa Débito</span>
+                </div>
+                <span style="font-weight:900;color:var(--indigo)">Activa</span>
+              </div>
+
+              <h3 class="section-heading">Ahorros</h3>
+              <div class="mini-card">
+                <div class="mini-card-info">
+                  <b>Cuenta Ahorro Vivienda</b>
+                  <span>Saldo: $480.200</span>
+                </div>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Barra de navegación inferior -->
+          <nav class="bottom-nav" aria-label="Navegación principal">
+            <button type="button" class="nav-tab active" id="navBtnHome">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Inicio</span>
+            </button>
+            <button type="button" class="nav-tab" id="navBtnTransfer">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h13l-3.5-3.5M19 16H6l3.5 3.5"/></svg>
+              <span>Transferir</span>
+            </button>
+            <button type="button" class="nav-tab" onclick="alert('Sección demostrativa.')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>Seguridad</span>
+            </button>
+            <button type="button" class="nav-tab" onclick="alert('Sección demostrativa.')">
+              <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+              <span>Más</span>
+            </button>
+          </nav>
+        </section>
+
+        <!-- ================= PANTALLA 2: DESTINATARIO ================= -->
+        <section class="screen-view" id="view-recipient" aria-label="Elegir destinatario">
+          <header class="view-header">
+            <button type="button" class="btn-back" id="btnBackFromRecipient" aria-label="Volver al inicio">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h1>
+              <span class="term-technical">Destinatario</span>
+              <span class="term-simplified">¿A quién le quieres enviar el dinero?</span>
+            </h1>
+          </header>
+
+          <div class="scroll-area form-step-container">
+            
+            <div class="step-indicator-bar" aria-hidden="true">
+              <div class="step-bullet active"></div>
+              <div class="step-bullet"></div>
+              <div class="step-bullet"></div>
+            </div>
+
+            <!-- Pestañas de selección -->
+            <div class="recipient-tabs" role="tablist">
+              <button type="button" class="recipient-tab-btn active" id="tabRecipientSaved" role="tab">Frecuentes / Guardados</button>
+              <button type="button" class="recipient-tab-btn" id="tabRecipientNew" role="tab">Inscribir nuevo</button>
+            </div>
+
+            <!-- Panel de Contactos Frecuentes -->
+            <div id="paneRecipientSaved">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <span style="font-weight:800;color:var(--muted)">Contactos habituales de Elena:</span>
+                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('destinatario')">¿Qué es Destinatario?</button>
+              </div>
+
+              <!-- Contacto Rosa Pérez (Destinatario clave para la prueba) -->
+              <div class="contact-item selected" id="frequentContactRosa" tabindex="0" role="button">
+                <div class="contact-avatar">R</div>
+                <div class="contact-details">
+                  <div class="contact-name">Rosa Pérez Sepúlveda</div>
+                  <div class="contact-bank-info">Banco de Chile · Cta. Corriente</div>
+                  <div style="font-size:13px;color:#64748B">RUT 12.876.543-2</div>
+                </div>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+
+              <!-- Contacto Pedro Retamales (Hijo) -->
+              <div class="contact-item" id="frequentContactPedro" tabindex="0" role="button" onclick="alert('Para esta prueba usaremos a Rosa Pérez Sepúlveda.')">
+                <div class="contact-avatar">P</div>
+                <div class="contact-details">
+                  <div class="contact-name">Pedro Retamales (Hijo)</div>
+                  <div class="contact-bank-info">BancoEstado · CuentaRUT</div>
+                  <div style="font-size:13px;color:#64748B">RUT 18.345.678-4</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel Inscribir Nuevo Destinatario -->
+            <div id="paneRecipientNew" class="hidden">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <span style="font-weight:800;color:var(--muted)">Datos de la nueva persona:</span>
+                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('inscribir_destinatario')">¿Qué es Inscribir?</button>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newRecipientName">
+                  <span class="term-technical">Nombre completo</span>
+                  <span class="term-simplified">¿Cómo se llama la persona?</span>
+                </label>
+                <input type="text" class="form-input" id="newRecipientName" placeholder="Ej: Carmen Gloria Morales">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newRecipientRut">RUT de la persona</label>
+                <input type="text" class="form-input" id="newRecipientRut" placeholder="Ej: 15.678.910-K">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newRecipientBank">
+                  <span class="term-technical">Banco de destino</span>
+                  <span class="term-simplified">¿En qué banco tiene su cuenta?</span>
+                </label>
+                <select class="form-select" id="newRecipientBank">
+                  <option value="BancoEstado">BancoEstado</option>
+                  <option value="Banco de Chile" selected>Banco de Chile / Edwards</option>
+                  <option value="Banco Santander">Banco Santander</option>
+                  <option value="BCI">BCI / Mach</option>
+                  <option value="Scotiabank">Scotiabank</option>
+                  <option value="Itaú">Itaú</option>
+                  <option value="Banco Falabella">Banco Falabella</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newRecipientType">
+                  <span class="term-technical">Tipo de cuenta</span>
+                  <span class="term-simplified">¿Qué clase de cuenta tiene?</span>
+                </label>
+                <select class="form-select" id="newRecipientType">
+                  <option value="Cuenta Corriente" selected>Cuenta Corriente</option>
+                  <option value="CuentaRUT">CuentaRUT</option>
+                  <option value="Cuenta Vista">Cuenta Vista</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="newRecipientNum">Número de cuenta</label>
+                <input type="text" class="form-input" id="newRecipientNum" placeholder="Ej: 00-128-45920-01">
+              </div>
+            </div>
+
+            <!-- Botón Continuar -->
+            <button type="button" class="btn-cta-big" id="btnContinueRecipient" style="margin-top:24px">
+              Continuar
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+          </div>
+        </section>
+
+        <!-- ================= PANTALLA 3: MONTO Y GLOSA ================= -->
+        <section class="screen-view" id="view-amount" aria-label="Ingresar monto">
+          <header class="view-header">
+            <button type="button" class="btn-back" id="btnBackFromAmount" aria-label="Volver a destinatario">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h1>
+              <span class="term-technical">Monto y Glosa</span>
+              <span class="term-simplified">¿Cuánto dinero quieres enviar?</span>
+            </h1>
+          </header>
+
+          <div class="scroll-area form-step-container">
+            
+            <div class="step-indicator-bar" aria-hidden="true">
+              <div class="step-bullet completed"></div>
+              <div class="step-bullet active"></div>
+              <div class="step-bullet"></div>
+            </div>
+
+            <!-- Cuenta de Cargo / Origen -->
+            <div class="mini-card" style="margin-bottom:16px;background:var(--indigo-soft);border-color:#C3D4FB">
+              <div class="mini-card-info">
+                <span style="color:var(--indigo);font-weight:800">
+                  <span class="term-technical">Cuenta de cargo</span>
+                  <span class="term-simplified">¿De qué cuenta sale tu dinero?</span>
+                </span>
+                <b>CuentaRUT de Elena</b>
+                <div style="font-size:15px;color:var(--ink);margin-top:2px">Saldo disponible: <strong data-bind="user-balance">$350.000</strong></div>
+              </div>
+              <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('cuenta_cargo')">¿Qué es?</button>
+            </div>
+
+            <!-- Input de Monto Grande -->
+            <div class="amount-display-box" id="amountBox">
+              <label for="inputAmount" style="font-size:16px;font-weight:800;color:var(--muted);display:block;margin-bottom:6px">
+                <span class="term-technical">Monto a transferir</span>
+                <span class="term-simplified">Cantidad exacta de dinero a enviar</span>
+              </label>
+              
+              <input type="text" class="amount-input-big" id="inputAmount" value="$50.000" inputmode="numeric" aria-label="Monto en pesos chilenos">
+              
+              <!-- Píldoras de Monto Rápido -->
+              <div class="quick-amounts">
+                <button type="button" class="btn-quick-amount" data-amount="10000">$10.000</button>
+                <button type="button" class="btn-quick-amount" data-amount="30000">$30.000</button>
+                <button type="button" class="btn-quick-amount" data-amount="50000">$50.000</button>
+                <button type="button" class="btn-quick-amount" data-amount="100000">$100.000</button>
+              </div>
+
+              <!-- Mensaje de Error si supera saldo -->
+              <div class="form-error-msg" id="amountErrorBox" style="margin-top:12px;font-size:16px"></div>
+            </div>
+
+            <!-- Campo de Glosa / Mensaje Opcional -->
+            <div class="form-group" style="margin-top:20px">
+              <label class="form-label" for="inputGlosa">
+                <span>
+                  <span class="term-technical">Glosa</span>
+                  <span class="term-simplified">Mensaje para la otra persona (opcional)</span>
+                </span>
+                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('glosa')">¿Qué es Glosa?</button>
+              </label>
+              <input type="text" class="form-input" id="inputGlosa" placeholder="Ej: Regalo de cumpleaños o Pago de almuerzo">
+              <p class="form-helper-text">La otra persona podrá leer este mensaje cuando reciba la transferencia.</p>
+            </div>
+
+            <!-- Botón Continuar -->
+            <button type="button" class="btn-cta-big" id="btnContinueAmount" style="margin-top:20px">
+              Revisar antes de enviar
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+
+          </div>
+        </section>
+
+        <!-- ================= PANTALLA 4: RESUMEN SEGURO (A/B) ================= -->
+        <section class="screen-view" id="view-summary" aria-label="Confirmar transferencia">
+          <header class="view-header">
+            <button type="button" class="btn-back" onclick="window.appRouter.goTo('amount')" aria-label="Volver a monto">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <h1 id="safeSummaryTitle">Resumen Seguro</h1>
+          </header>
+
+          <div class="scroll-area form-step-container">
+            
+            <div class="step-indicator-bar" aria-hidden="true">
+              <div class="step-bullet completed"></div>
+              <div class="step-bullet completed"></div>
+              <div class="step-bullet active"></div>
+            </div>
+
+            <!-- Tarjeta Principal del Resumen Seguro -->
+            <article class="safe-summary-card" id="safeSummaryCard">
+              <div class="safe-summary-header">
+                <div class="safe-summary-icon">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <div>
+                  <h2 class="safe-summary-title">Lee esto antes de confirmar</h2>
+                  <span style="font-size:14px;color:var(--muted)">Verificación protegida</span>
+                </div>
+              </div>
+
+              <!-- Microcopy determinista requerido por el enunciado -->
+              <div class="safe-summary-body" id="safeSummaryText">
+                Vas a enviar <strong>$50.000</strong> a <strong>Rosa Pérez Sepúlveda</strong>, a su cuenta en <strong>Banco de Chile</strong>.<br><br>
+                Una vez enviado, <strong>no se puede deshacer</strong>.
+              </div>
+
+              <!-- Aviso de advertencia de irreversibilidad -->
+              <div class="safe-summary-warning">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex:none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>Por tu seguridad: revisa bien el monto y el nombre antes de autorizar.</span>
+              </div>
+
+              <!-- Alerta si se inyectó el error de $500.000 -->
+              <div id="summaryBalanceWarning" class="form-error-msg hidden" style="font-size:16px;margin-bottom:14px"></div>
+
+              <!-- Botón para escuchar en voz alta -->
+              <button type="button" class="btn-speech-trigger" id="btnListenSummary" style="width:100%;margin-bottom:16px">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                Escuchar este resumen en voz alta
+              </button>
+
+              <!-- Dos botones claros según requerimiento -->
+              <div class="safe-summary-actions">
+                <button type="button" class="btn-confirm-send" id="btnConfirmSummary">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Sí, enviar
+                </button>
+                <button type="button" class="btn-cancel-review" id="btnReviewSummary">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 17l-5-5 5-5M18 12H6"/></svg>
+                  No, quiero revisar
+                </button>
+              </div>
+
+            </article>
+
+          </div>
+        </section>
+
+        <!-- ================= PANTALLA 5: COMPROBANTE FINAL ================= -->
+        <section class="screen-view" id="view-receipt" aria-label="Comprobante de transferencia">
+          <div class="scroll-area form-step-container" style="padding-top:24px">
+            
+            <article class="receipt-card">
+              <div class="receipt-icon-circle">
+                <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+
+              <h2 style="font-size:23px;font-weight:900;text-align:center;color:var(--navy);margin-bottom:4px">
+                ¡Transferencia Exitosa!
+              </h2>
+              <p style="text-align:center;color:var(--muted);font-size:15px;margin-bottom:20px">
+                Tu dinero fue enviado correctamente
+              </p>
+
+              <div class="receipt-row">
+                <span class="label">Monto transferido</span>
+                <span class="value" id="receiptAmount" style="color:var(--orange);font-size:22px">$50.000</span>
+              </div>
+
+              <div class="receipt-row">
+                <span class="label">Destinatario</span>
+                <span class="value" id="receiptRecipientName">Rosa Pérez Sepúlveda</span>
+              </div>
+
+              <div class="receipt-row">
+                <span class="label">Cuenta de destino</span>
+                <span class="value" id="receiptRecipientDetails" style="font-size:14px">Banco de Chile · Cta. Corriente</span>
+              </div>
+
+              <div class="receipt-row">
+                <span class="label">Cuenta de origen</span>
+                <span class="value">CuentaRUT 0007845129</span>
+              </div>
+
+              <div class="receipt-row">
+                <span class="label">Fecha y hora</span>
+                <span class="value" id="receiptDate">15/10/2026</span>
+              </div>
+
+              <div class="receipt-row">
+                <span class="label">N° de operación</span>
+                <span class="value" id="receiptOpNumber">84592019</span>
+              </div>
+            </article>
+
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <button type="button" class="btn-pill secondary" id="btnShareReceipt" style="min-height:52px;font-size:17px">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                Compartir comprobante
+              </button>
+              <button type="button" class="btn-cta-big" id="btnExitToHome">
+                Volver al inicio
+              </button>
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ================= MODAL CLAVE DINÁMICA SIMULADA ================= -->
+      <div class="security-modal-overlay" id="securityModalOverlay" role="dialog" aria-modal="true" aria-label="Confirmación con clave dinámica">
+        <div class="security-modal-card">
+          <h2 style="font-size:20px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:10px;margin-bottom:6px">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span class="term-technical">Autorizar con clave dinámica</span>
+            <span class="term-simplified">Confirmar con código de seguridad</span>
+          </h2>
+          <p style="font-size:15px;color:var(--muted);margin-bottom:12px">
+            Ingresa tu clave BE Pass de 6 dígitos para autorizar el envío.
+          </p>
+
+          <!-- Aviso pedagógico requerido -->
+          <div class="security-pedagogic-warning">
+            🛡️ <strong>Simulación pedagógica:</strong> Nunca escribas aquí tu clave real. Usa el código de prueba <strong>123456</strong>.
+          </div>
+
+          <!-- Inputs de 6 dígitos -->
+          <div class="security-code-inputs" id="securityCodeBox">
+            <input type="password" class="security-digit" maxlength="1" value="1" inputmode="numeric">
+            <input type="password" class="security-digit" maxlength="1" value="2" inputmode="numeric">
+            <input type="password" class="security-digit" maxlength="1" value="3" inputmode="numeric">
+            <input type="password" class="security-digit" maxlength="1" value="4" inputmode="numeric">
+            <input type="password" class="security-digit" maxlength="1" value="5" inputmode="numeric">
+            <input type="password" class="security-digit" maxlength="1" value="6" inputmode="numeric">
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px">
+            <button type="button" class="btn-cta-big" id="btnAuthorizeTransfer">
+              Autorizar y transferir
+            </button>
+            <button type="button" class="btn-pill secondary" id="btnCancelAuth">
+              Cancelar
+            </button>
           </div>
         </div>
-        <button class="auth-close" id="authCloseBtn" aria-label="Cerrar y cancelar"><svg class="ic"><use href="#i-close" xlink:href="#i-close"/></svg></button>
       </div>
 
-      <div class="auth-summary">
-        <div class="auth-row"><span>Destinatario:</span> <b id="authDest">Belén Pardo</b></div>
-        <div class="auth-row tot"><span>Monto:</span> <span id="authAmount" style="color:var(--orange)">$30.000</span></div>
+      <!-- ================= MODAL EXPLICATIVO DE TÉRMINO (GLOSARIO) ================= -->
+      <div class="term-modal-overlay" id="termModalOverlay" role="dialog" aria-modal="true">
+        <div class="term-modal-card">
+          <h3 class="term-modal-title" id="termModalTitle">Término bancario</h3>
+          <div class="term-modal-subtitle" id="termModalSubtitle">En lenguaje cotidiano</div>
+          <div class="term-modal-meaning" id="termModalMeaning">Explicación simple.</div>
+          <div class="term-modal-example" id="termModalExample">Ejemplo de uso.</div>
+          <div class="term-modal-btns">
+            <button type="button" class="btn-listen-term" id="btnListenTermAudio" onclick="window.puenteSpeech.speak(document.getElementById('termModalMeaning').textContent)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              Escuchar
+            </button>
+            <button type="button" class="btn-close-term" id="btnCloseTermModal">
+              Entendido
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div class="bio-zone">
-        <button class="bio-circle-btn" id="authBioBtn" aria-label="Tocar el sensor para autorizar con huella digital">
-          <svg class="ic"><use href="#i-fingerprint" xlink:href="#i-fingerprint"/></svg>
-        </button>
-        <div class="bio-label" id="bioLabel">Toca el círculo con tu huella</div>
-        <div class="bio-sub">Autorización protegida</div>
+      <!-- ================= BIENVENIDA / ONBOARDING (5 SEGUNDOS) ================= -->
+      <div class="puente-onboarding-overlay" id="puenteOnboardingOverlay" role="dialog" aria-modal="true">
+        <div class="puente-onboarding-card">
+          <span class="onboarding-badge">BIENVENIDA ELENA</span>
+          <h2>Tu pasamanos digital está listo para acompañarte</h2>
+          <p>
+            Creamos el botón verde <strong>"¿Te ayudo?"</strong> para que hagas tus transferencias sola y sin miedo. Si tienes dudas con alguna palabra o no sabes dónde continuar, tócalo en cualquier momento.
+          </p>
+          <button type="button" id="btnDismissOnboarding">
+            Comenzar con confianza
+          </button>
+        </div>
       </div>
 
-      <button class="auth-alt-link" id="authPinBtn">O ingresa tu clave BE Pass de 6 dígitos</button>
-
-      <div class="auth-feedback" id="authFeedback"></div>
-
-      <div class="demo-strip">
-        <button class="demo-tag" id="authFailBtn">🧪 Probar error de huella</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast" role="status"></div>
-</div>
-
-<script>
-// ===== PURE:START =====
-const CONTACTS = {
-  elena:   { name:'Elena Ramírez',         rut:'12.345.678-9', aliases:['elena','helena','ramirez'] },
-  luis:    { name:'Luis Olate',            rut:'8.123.456-7',  aliases:['luis','olate'] },
-  carlos:  { name:'Carlos Valdés',         rut:'9.876.543-2',  aliases:['carlos','valdes'] },
-  ana:     { name:'Ana Salas',             rut:'11.222.333-4', aliases:['ana','anna','salas'] },
-  belen:   { name:'Belén Pardo Escobar',   rut:'20.968.963-3', aliases:['belen','pardo','escobar'] },
-  armando: { name:'Armando Paredes Rojas', rut:'20.358.963-3', aliases:['armando','paredes','rojas'] }
-};
-
-function norm(s){
-  return String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
-}
-function hasPhrase(t,p){ return (' '+t+' ').indexOf(' '+p+' ') !== -1; }
-function hasAny(t,list){ return list.some(function(p){ return hasPhrase(t,norm(p)); }); }
-function own(o,k){ return Object.prototype.hasOwnProperty.call(o,k); }
-
-const UNITS = {un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,
-  once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,
-  veinte:20,veintiuno:21,veintidos:22,veintitres:23,veinticuatro:24,veinticinco:25,veintiseis:26,
-  veintisiete:27,veintiocho:28,veintinueve:29};
-const TENS = {treinta:30,cuarenta:40,cincuenta:50,sesenta:60,setenta:70,ochenta:80,noventa:90};
-const HUNDREDS = {cien:100,ciento:100,doscientos:200,trescientos:300,cuatrocientos:400,quinientos:500,
-  seiscientos:600,setecientos:700,ochocientos:800,novecientos:900};
-
-function isNumWord(w){
-  return own(UNITS,w)||own(TENS,w)||own(HUNDREDS,w)||w==='mil'||w==='millon'||w==='millones'||w==='medio'||w==='media';
-}
-function runValue(run){
-  var total=0, cur=0;
-  run.forEach(function(w){
-    if(own(UNITS,w)) cur+=UNITS[w];
-    else if(own(TENS,w)) cur+=TENS[w];
-    else if(own(HUNDREDS,w)) cur+=HUNDREDS[w];
-    else if(w==='medio'||w==='media') cur+=0.5;
-    else if(w==='mil'){ total+=(cur||1)*1000; cur=0; }
-    else if(w==='millon'||w==='millones'){ total+=(cur||1)*1000000; cur=0; }
-  });
-  return Math.round(total+cur);
-}
-function wordsToNumber(t){
-  t = t.replace(/\bluca(s)?\b/g,'mil');
-  var toks=t.split(' '), best=0, i=0;
-  while(i<toks.length){
-    if(isNumWord(toks[i])){
-      var run=[], j=i;
-      while(j<toks.length){
-        if(isNumWord(toks[j])){ run.push(toks[j]); j++; }
-        else if(toks[j]==='y' && run.length && j+1<toks.length && isNumWord(toks[j+1])){ j++; }
-        else break;
-      }
-      best=Math.max(best,runValue(run));
-      i=j;
-    } else i++;
-  }
-  return best||null;
-}
-function extractAmount(raw){
-  var k=String(raw).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[\u00a0\u202f\u2009\u2007]/g,' ').replace(/\$/g,' ').replace(/\s+/g,' ');
-  var m;
-  m=k.match(/(\d+(?:[.,]\d+)?)\s*(millones|millon|mil|lucas?|k)\b/);
-  if(m){ var n=parseFloat(m[1].replace(',','.')); var v=Math.round(n*(/millon/.test(m[2])?1e6:1e3)); if(v>0) return v; }
-  m=k.match(/(^|[^\d])(\d{1,3}(?:[.,' ]\d{3})+)(?!\d)/);
-  if(m){ var g=parseInt(m[2].replace(/[.,' ]/g,''),10); if(g>0) return g; }
-  m=k.match(/(^|[^\d])(\d{1,9})(?!\d)/);
-  if(m){ var d=parseInt(m[2],10); if(d>0) return d; }
-  var w=wordsToNumber(norm(raw));
-  if(w && (w>=100 || /\bpesos?\b/.test(norm(raw)))) return w;
-  return null;
-}
-function extractContact(raw){
-  var t=' '+norm(raw)+' ', best=null, pos=1e9;
-  Object.keys(CONTACTS).forEach(function(key){
-    CONTACTS[key].aliases.forEach(function(a){
-      var i=t.indexOf(' '+a+' ');
-      if(i!==-1 && i<pos){ pos=i; best=key; }
-    });
-  });
-  return best;
-}
-function numberToWords(n){
-  var U=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince',
-    'dieciseis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidos','veintitres','veinticuatro','veinticinco',
-    'veintiseis','veintisiete','veintiocho','veintinueve'];
-  var T=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'];
-  var H=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'];
-  function below(x){
-    if(x===100) return 'cien';
-    var out=[], h=Math.floor(x/100), r=x%100;
-    if(h) out.push(H[h]);
-    if(r){
-      if(r<30) out.push(r===1?'un':(r===21?'veintiun':U[r]));
-      else { var t=Math.floor(r/10), u=r%10; out.push(u?T[t]+' y '+(u===1?'un':U[u]):T[t]); }
-    }
-    return out.join(' ');
-  }
-  n=Math.round(n); if(n===0) return 'cero';
-  var parts=[], mill=Math.floor(n/1e6), mil=Math.floor((n%1e6)/1000), rest=n%1000;
-  if(mill) parts.push(mill===1?'un millon':below(mill)+' millones');
-  if(mil) parts.push(mil===1?'mil':below(mil)+' mil');
-  if(rest) parts.push(below(rest));
-  return parts.join(' ');
-}
-function spokenMoney(n){
-  n=Math.round(n);
-  if(n===1) return 'un peso';
-  return numberToWords(n)+((n>=1e6 && n%1e6===0)?' de pesos':' pesos');
-}
-function money(n){ return '$'+String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.'); }
-function rutSpoken(r){ return r.replace(/\./g,'').replace('-',', guion ').replace(/k$/i,'ka'); }
-function firstName(n){ return n.split(' ')[0]; }
-
-const YES = ['confirmar','confirmo','confirma','confirmado','si','claro','correcto','es correcto','exacto','acepto',
-  'de acuerdo','dale','ya','ok','okey','esta bien','asi es','adelante','hazlo','envialo','mandalo','por supuesto','autorizar','autorizo'];
-const NO  = ['cancelar','cancelo','cancela','cancelado','no','nop','detente','detener','espera','alto','mejor no',
-  'olvidalo','anulalo','anular','no quiero','retrocede','incorrecto','equivocado','otra persona'];
-const EXIT = ['salir','inicio','volver','menu principal','pagina principal','cancelar','cancela'];
-
-function yesNo(raw){
-  var t=norm(raw), y=hasAny(t,YES), n=hasAny(t,NO);
-  if(y&&n){
-    if(/\bno (confirmo|confirmar|confirma|acepto|esta bien|dale|quiero|es correcto)\b/.test(t)) return 'no';
-    return 'both';
-  }
-  return y?'yes':(n?'no':null);
-}
-function isExit(raw){ return hasAny(norm(raw),EXIT); }
-function detectIntent(raw){
-  var t=norm(raw);
-  if(/\b(transfer\w*|transfier\w*|enviar|envia|enviale|mandar|manda|mandale|depositar|deposita|girar|gira)\b/.test(t)) return 'transfer';
-  if(/\b(saldo|cuanto tengo|cuanto me queda|cuanta plata tengo|cuanto dinero tengo)\b/.test(t)) return 'saldo';
-  if(/\b(ayuda|ayudame|no se|que puedo|opciones|repite|repetir|otra vez)\b/.test(t)) return 'help';
-  if(isExit(raw)) return 'exit';
-  return null;
-}
-// ===== PURE:END =====
-</script>
-
-<script>
-(function(){
-  'use strict';
-  var $ = function(id){ return document.getElementById(id); };
-  var app=$('app');
-  var views={home:$('viewHome'),transfer:$('viewTransfer'),receipt:$('viewReceipt')};
-  var dim=$('dim'),fab=$('fab'),sheet=$('sheet'),statusEl=$('status'),statusText=$('statusText'),msgEl=$('msg'),heard=$('heard'),
-      chipsEl=$('chips'),mic=$('mic'),note=$('note'),toastEl=$('toast'),repeatBtn=$('repeatBtn'),btnCloseSheet=$('btnCloseSheet'),
-      micHelpBanner=$('micHelpBanner'),btnGrantMic=$('btnGrantMic'),micHelpText=$('micHelpText'),btnHelpSteps=$('btnHelpSteps'),
-      micGuideModal=$('micGuideModal'),btnReloadPage=$('btnReloadPage'),btnDismissGuide=$('btnDismissGuide'),
-      inAppWarning=$('inAppWarning'),btnIntentChrome=$('btnIntentChrome');
-
-  var fDest=$('fDest'),destName=$('destName'),destRut=$('destRut'),destBank=$('destBank'),
-      fAmount=$('fAmount'),amountVal=$('amountVal'),amountErr=$('amountErr'),
-      summary=$('summary'),continueBtn=$('continueBtn');
-
-  var authOverlay=$('authOverlay'),authBioBtn=$('authBioBtn'),bioLabel=$('bioLabel'),
-      authPinBtn=$('authPinBtn'),authFailBtn=$('authFailBtn'),authCloseBtn=$('authCloseBtn'),
-      authFeedback=$('authFeedback'),authDest=$('authDest'),authAmount=$('authAmount');
-
-  var S={view:'home',step:'home',dest:null,amount:null,pending:null,balance:100065};
-  var panelOpen=false,wantListen=false,busy=false,speaking=false,listening=false,thinking=false;
-  var gotFinal=false,session=0,greeted=false,thinkingLabel='';
-  var lastSpokenText='', lastDisplayText='';
-
-  var inactivityTimer=null, inactivityCount=0, INACTIVITY_LIMIT_MS=30000;
-
-  function resetInactivityWatchdog(){
-    clearTimeout(inactivityTimer);
-    if(!panelOpen || S.step==='done' || S.step==='auth') return;
-    inactivityTimer=setTimeout(handleInactivityTrigger, INACTIVITY_LIMIT_MS);
-  }
-
-  async function handleInactivityTrigger(){
-    if(!panelOpen || busy || speaking || S.step==='done') return;
-    inactivityCount++;
-    if(inactivityCount===1){
-      statusEl.className='status waiting';
-      statusText.textContent='ESPERANDO RESPUESTA';
-      await say('¿Sigues ahí? Dime en qué te puedo ayudar, o toca una opción abajo con tu dedo.');
-      resetInactivityWatchdog();
-      afterTurn();
-    } else {
-      wantListen=false; stopListening(); renderStatus();
-      setHeard('');
-      setMsg('Pausé la escucha para que puedas leer con calma. Toca el micrófono cuando quieras continuar.');
-    }
-  }
-
-  function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
-
-  /* ================= DETECCIÓN DE WEBVIEW (APP DE GOOGLE / WHATSAPP) ================= */
-  function isWebview(){
-    var ua = navigator.userAgent || '';
-    return /; wv\)|Android.*Version\/[0-9.]+|GSA\/|FBAN|FBAV|Instagram|WhatsApp|Line/i.test(ua);
-  }
-
-  // Si está dentro de la app de Google, ofrecemos abrir en Chrome oficial mediante Intent de Android
-  if(isWebview() && inAppWarning && btnIntentChrome){
-    var cleanUrl = location.href.replace(/^https?:\/\//, '');
-    btnIntentChrome.href = 'intent://' + cleanUrl + '#Intent;scheme=https;package=com.android.chrome;end';
-    inAppWarning.classList.add('show');
-  }
-
-  /* ================= SÍNTESIS DE VOZ TTS CON INTERRUPCIÓN (BARGE-IN) ================= */
-  var synthSupported='speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
-  var voice=null;
-  var currentUtterFinish=null;
-
-  function pickVoice(){
-    if(!synthSupported) return;
-    var vs=speechSynthesis.getVoices()||[];
-    var prefs=['es-CL','es-MX','es-US','es-419','es-AR','es-ES'];
-    for(var i=0;i<prefs.length;i++){
-      for(var j=0;j<vs.length;j++){ if(vs[j].lang && vs[j].lang.replace('_','-')===prefs[i]){ voice=vs[j]; return; } }
-    }
-    for(var k=0;k<vs.length;k++){ if(vs[k].lang && vs[k].lang.toLowerCase().indexOf('es')===0){ voice=vs[k]; return; } }
-  }
-  if(synthSupported){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; }
-
-  function renderStatus(){
-    var kind='idle', txt='TOCA PARA HABLAR';
-    if(thinking){ kind='thinking'; txt=thinkingLabel; }
-    else if(speaking){ kind='speaking'; txt='ASISTENTE HABLANDO'; }
-    else if(listening){ kind='listening'; txt='TE ESCUCHO CON CALMA…'; }
-    statusText.textContent=txt;
-    statusEl.className='status '+kind;
-    mic.className='mic '+kind;
-  }
-  function setMsg(t){ 
-    lastDisplayText=t;
-    msgEl.textContent=t; msgEl.classList.remove('swap'); void msgEl.offsetWidth; msgEl.classList.add('swap'); 
-  }
-  function setHeard(t){ heard.textContent = t ? 'Dijiste: “'+t+'”' : ''; }
-  function toast(t){ toastEl.textContent=t; toastEl.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(function(){ toastEl.classList.remove('show'); },3200); }
-  function updateDim(){ dim.classList.toggle('on', panelOpen); dim.classList.toggle('clear', S.view!=='home'); }
-  function settle(el){ el.style.animation='none'; void el.offsetWidth; el.style.animation='msg-in .4s cubic-bezier(.22,.61,.36,1)'; }
-
-  function goView(name){
-    if(S.view===name) return;
-    var order=['home','transfer','receipt'];
-    S.view=name;
-    Object.keys(views).forEach(function(k){
-      views[k].classList.toggle('is-active',k===name);
-      views[k].classList.toggle('is-before',k!==name && order.indexOf(k)<order.indexOf(name));
-    });
-    app.setAttribute('data-view',name);
-    var sc=views[name].querySelector('.scroll'); if(sc) sc.scrollTop=0;
-    updateDim();
-  }
-  function setFocus(which){
-    views.transfer.setAttribute('data-focus',which);
-    var el = (which==='dest'||which==='summary') ? fDest : (which==='amount' ? fAmount : null);
-    var sc=$('tScroll');
-    if(el && sc){
-      var top=Math.max(0,el.offsetTop-14);
-      if(sc.scrollTo) sc.scrollTo({top:top,behavior:'smooth'}); else sc.scrollTop=top;
-    }
-  }
-  function updateBalances(){
-    Array.prototype.forEach.call(document.querySelectorAll('[data-balance]'),function(e){ e.textContent=money(S.balance); });
-  }
-
-  function fillDest(){
-    var c=CONTACTS[S.dest];
-    destName.textContent=c.name; destName.classList.remove('ph');
-    destRut.textContent='RUT '+c.rut; destBank.textContent='BancoEstado · CuentaRUT';
-    fDest.classList.add('filled'); settle($('fDestCard'));
-  }
-  function clearDest(){
-    destName.textContent='Aún no lo has dicho'; destName.classList.add('ph');
-    destRut.textContent='Di, por ejemplo: “a Belén Pardo”'; destBank.textContent='';
-    fDest.classList.remove('filled');
-  }
-  function fillAmount(){
-    amountVal.textContent=money(S.amount); amountVal.classList.remove('ph','err');
-    amountVal.style.cssText='';
-    fAmount.classList.remove('has-error'); fAmount.classList.add('filled'); amountErr.textContent=''; settle($('fAmountCard'));
-  }
-  function clearAmount(){
-    amountVal.textContent='Aún no lo has dicho'; amountVal.className='amount-big ph'; amountVal.style.cssText='font-size:16px;font-weight:600';
-    fAmount.classList.remove('filled','has-error'); amountErr.textContent='';
-  }
-  function showAmountError(a){
-    amountVal.textContent=money(a); amountVal.className='amount-big err'; amountVal.style.cssText='';
-    fAmount.classList.remove('filled'); fAmount.classList.add('has-error');
-    amountErr.textContent='No cuentas con ese monto. Saldo disponible: '+money(S.balance)+'.'; settle($('fAmountCard'));
-  }
-  function showSummary(){
-    var c=CONTACTS[S.dest];
-    summary.innerHTML='<b>¿Confirmas esta transferencia?</b>Vas a enviar <strong>'+money(S.amount)+'</strong> a <strong>'+c.name+'</strong> (RUT '+c.rut+').<br>Después de enviar te quedarían '+money(S.balance-S.amount)+'.';
-    summary.classList.add('show'); continueBtn.disabled=false;
-  }
-  function hideSummary(){ summary.classList.remove('show'); continueBtn.disabled=true; }
-  function resetTransfer(){
-    S.dest=null; S.amount=null; S.pending=null;
-    clearDest(); clearAmount(); hideSummary(); setFocus('none');
-  }
-
-  /* Síntesis TTS */
-  function say(display, spoken){
-    setMsg(display); renderChips();
-    lastSpokenText=spoken||display;
-    if(!panelOpen) return Promise.resolve();
-    return new Promise(function(resolve){
-      speaking=true; stopListening(); renderStatus();
-      var finished=false, guard=null;
-      function finish(){
-        if(finished) return; finished=true; clearTimeout(guard);
-        currentUtterFinish = null;
-        speaking=false; renderStatus(); 
-        resetInactivityWatchdog();
-        setTimeout(resolve, 100);
-      }
-      currentUtterFinish = finish;
-      var text=(spoken||display).replace(/[“”"]/g,'');
-      guard=setTimeout(finish, 1400+text.length*80);
-      if(!synthSupported){ setTimeout(finish, Math.min(3000,700+text.length*30)); return; }
-      try{ speechSynthesis.cancel(); }catch(e){}
-      var u=new SpeechSynthesisUtterance(text);
-      u.lang=voice?voice.lang:'es-CL'; if(voice) u.voice=voice; u.rate=0.92; u.pitch=1.0;
-      u.onend=finish; u.onerror=finish;
-      try{ speechSynthesis.speak(u); }catch(e){ finish(); }
-    });
-  }
-
-  /* Interrupción inmediata de voz (Barge-In) */
-  function skipSpeech(){
-    try{ speechSynthesis.cancel(); }catch(e){}
-    if(currentUtterFinish){
-      currentUtterFinish();
-    } else {
-      speaking = false;
-      renderStatus();
-    }
-  }
-
-  /* ================= RECONOCIMIENTO DE VOZ AUTO-RECUPERABLE ================= */
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition || null;
-  var rec = null;
-
-  function createRecognitionInstance(){
-    if(!SR) return null;
-    try {
-      var r = new SR();
-      r.lang = 'es-CL';
-      r.continuous = false;
-      r.interimResults = true;
-      r.maxAlternatives = 1;
-
-      r.onstart = function(){
-        listening = true;
-        gotFinal = false;
-        micHelpBanner.classList.remove('show');
-        renderStatus();
-      };
-
-      r.onresult = function(e){
-        inactivityCount = 0;
-        resetInactivityWatchdog();
-        var interim = '', final = '';
-        for(var i=e.resultIndex; i<e.results.length; i++){
-          var tr = e.results[i][0].transcript;
-          if(e.results[i].isFinal) final += tr; else interim += tr;
-        }
-        if(final.trim()){
-          gotFinal = true;
-          handleUtterance(final.trim());
-        } else if(interim){
-          heard.textContent = 'Dijiste: “' + interim + '…”';
-        }
-      };
-
-      r.onerror = function(e){
-        listening = false;
-        renderStatus();
-        if(e.error === 'no-speech' || e.error === 'aborted') return;
+      <!-- ================= WIDGET INTERFAZ PUENTE (BOTÓN FLOTANTE) ================= -->
+      <div class="puente-fab-container" id="puenteFabContainer">
         
-        console.warn('SpeechRecognition error:', e.error);
-        if(e.error === 'not-allowed' || e.error === 'service-not-allowed'){
-          wantListen = false;
-          showMicBlockedNotice();
-        } else if(e.error === 'network' || e.error === 'language-not-supported'){
-          // Fallback automático de dialecto si el teléfono no tiene el paquete chileno offline
-          if(r.lang === 'es-CL'){
-            r.lang = 'es-419'; // Español neutro
-            try { r.start(); return; } catch(err){}
-          }
-          micHelpText.innerHTML = '⚠️ <b>Conexión de voz:</b> Revisa tu conexión o desactiva bloqueadores para este sitio.';
-          micHelpBanner.classList.add('show');
-        } else {
-          setMsg('Toca el micrófono para intentar hablar de nuevo.');
+        <!-- Burbuja de oferta tras 15s de inactividad -->
+        <div class="inactivity-offer-bubble" id="inactivityOfferBubble">
+          <p>¿Quieres que te muestre dónde seguir?</p>
+          <div class="inactivity-offer-btns">
+            <button type="button" class="btn-offer-yes" id="btnOfferYes">Sí, muéstrame</button>
+            <button type="button" class="btn-offer-no" id="btnOfferNo">No, voy bien</button>
+          </div>
+        </div>
+
+        <!-- Botón Flotante Principal -->
+        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Abrir ayuda de Interfaz Puente">
+          <span class="puente-fab-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </span>
+          <span class="puente-fab-label">¿Te ayudo?</span>
+        </button>
+      </div>
+
+      <!-- Bottom Sheet de Interfaz Puente -->
+      <div class="puente-sheet-backdrop" id="puenteSheetBackdrop"></div>
+      <div class="puente-sheet" id="puenteSheet" role="dialog" aria-label="Menú de apoyo Interfaz Puente">
+        <div class="puente-sheet-header">
+          <div class="puente-sheet-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span>Interfaz Puente</span>
+          </div>
+          <button type="button" class="btn-close-puente" id="btnClosePuente" aria-label="Cerrar ayuda">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+
+        <!-- Opción 1: Foco Dinámico -->
+        <div class="puente-card-option">
+          <div class="puente-option-info">
+            <h3>Foco iluminado</h3>
+            <p>Oscurece la pantalla y te muestra exactamente el campo que debes completar.</p>
+          </div>
+          <button type="button" class="btn-puente-action" id="btnTriggerDynamicFocus" style="width:auto;padding:0 14px">
+            Iluminar
+          </button>
+        </div>
+
+        <!-- Opción 2: Traducción Semántica -->
+        <div class="puente-card-option">
+          <div class="puente-option-info">
+            <h3>Modo lenguaje claro</h3>
+            <p>Reemplaza palabras técnicas del banco por preguntas sencillas.</p>
+          </div>
+          <label class="switch-control" for="switchSemanticMode">
+            <input type="checkbox" id="switchSemanticMode" checked>
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+
+        <!-- Opción 3: Lectura por Voz -->
+        <div class="puente-card-option">
+          <div class="puente-option-info">
+            <h3>Escuchar esta pantalla</h3>
+            <p>Una voz pausada te lee lo que ves en pantalla para no forzar la vista.</p>
+          </div>
+          <button type="button" class="btn-speech-trigger" id="btnTriggerSpeech" style="width:auto;padding:0 14px">
+            Escuchar
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= FOCO DINÁMICO (SPOTLIGHT 85%) ================= -->
+      <div class="dynamic-focus-overlay" id="dynamicFocusOverlay" aria-hidden="true"></div>
+
+      <!-- Tarjeta flotante explicativa del foco -->
+      <div class="spotlight-guide-card" id="spotlightGuideCard">
+        <h4 id="spotlightGuideTitle">Paso a completar</h4>
+        <p id="spotlightGuideText">Aquí debes indicar a quién le vas a transferir.</p>
+        <div class="spotlight-guide-btns">
+          <button type="button" class="btn-spotlight-voice" id="btnSpotlightVoice" aria-label="Escuchar esta guía">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          </button>
+          <button type="button" class="btn-spotlight-done" id="btnSpotlightDone">
+            Entendido, gracias
+          </button>
+        </div>
+      </div>
+
+      <!-- ================= PANEL DEL FACILITADOR (5 TOQUES) ================= -->
+      <div class="facilitator-overlay" id="facilitatorOverlay" role="dialog" aria-modal="true" aria-label="Panel del facilitador para pruebas INACAP">
+        <div class="facilitator-card">
+          <div class="facilitator-header">
+            <h2>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              Panel del Facilitador (INACAP)
+            </h2>
+            <button type="button" class="btn-close-facilitator" id="btnCloseFacilitator" aria-label="Cerrar panel">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <!-- Pestañas del Facilitador -->
+          <div class="facilitator-tabs">
+            <button type="button" class="fac-tab-btn active" data-target="facPaneControls">Controles de Prueba</button>
+            <button type="button" class="fac-tab-btn" data-target="facPaneLogs">Registro CSV</button>
+          </div>
+
+          <div class="facilitator-body">
+            
+            <!-- Panel 1: Controles de la sesión -->
+            <div class="fac-tab-pane active" id="facPaneControls">
+              
+              <div class="fac-control-group">
+                <div class="fac-control-title">Participante en prueba</div>
+                <div class="fac-control-desc">Código anónimo según pauta de investigación (P01 a P08):</div>
+                <select class="fac-participant-select" id="facParticipantSelect">
+                  <option value="P01">Participante P01</option>
+                  <option value="P02">Participante P02</option>
+                  <option value="P03">Participante P03</option>
+                  <option value="P04">Participante P04</option>
+                  <option value="P05">Participante P05</option>
+                  <option value="P06">Participante P06</option>
+                  <option value="P07">Participante P07</option>
+                  <option value="P08">Participante P08</option>
+                </select>
+              </div>
+
+              <!-- Comparación con / sin ayuda -->
+              <div class="fac-control-group">
+                <div class="fac-row">
+                  <div>
+                    <div class="fac-control-title">Interfaz Puente Activa</div>
+                    <div class="fac-control-desc">Desactivar para grupo de control (banca estándar).</div>
+                  </div>
+                  <label class="switch-control" for="facSwitchBridge">
+                    <input type="checkbox" id="facSwitchBridge" checked>
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Selector A/B de Nombre de Pantalla Final -->
+              <div class="fac-control-group">
+                <div class="fac-control-title">Nombre de la pantalla final (Prueba A/B)</div>
+                <div class="fac-control-desc">Elige qué título mostrará la pantalla de confirmación:</div>
+                <div class="fac-segmented">
+                  <button type="button" class="fac-segmented-btn fac-summary-variant active" data-variant="resumen_seguro">Resumen Seguro</button>
+                  <button type="button" class="fac-segmented-btn fac-summary-variant" data-variant="revisa_antes">Revisa antes de enviar</button>
+                </div>
+              </div>
+
+              <!-- Inyección de Error de Monto ($500.000) -->
+              <div class="fac-control-group" style="border-color:#F59E0B;background:#FFFBEB">
+                <div class="fac-row">
+                  <div>
+                    <div class="fac-control-title" style="color:#B45309">Inyectar error: $500.000</div>
+                    <div class="fac-control-desc" style="color:#92400E">Precarga un cero extra para evaluar si detectan el error en el resumen.</div>
+                  </div>
+                  <label class="switch-control" for="facSwitchError">
+                    <input type="checkbox" id="facSwitchError">
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Modo Práctica -->
+              <div class="fac-control-group">
+                <div class="fac-row">
+                  <div>
+                    <div class="fac-control-title">Modo Práctica</div>
+                    <div class="fac-control-desc">Muestra banner visible de práctica sin dinero real.</div>
+                  </div>
+                  <label class="switch-control" for="facSwitchPractice">
+                    <input type="checkbox" id="facSwitchPractice">
+                    <span class="switch-slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Métricas en vivo de la sesión -->
+              <div class="fac-control-group">
+                <div class="fac-control-title">Métricas de la sesión en curso</div>
+                <div class="fac-metrics-grid">
+                  <div class="fac-metric-box">
+                    <div class="fac-metric-value" id="facMetricTimer">0s</div>
+                    <div class="fac-metric-label">Tiempo total</div>
+                  </div>
+                  <div class="fac-metric-box">
+                    <div class="fac-metric-value" id="facMetricHelp">0</div>
+                    <div class="fac-metric-label">Usos de ayuda</div>
+                  </div>
+                  <div class="fac-metric-box">
+                    <div class="fac-metric-value" id="facMetricErrors">0</div>
+                    <div class="fac-metric-label">Errores</div>
+                  </div>
+                  <div class="fac-metric-box">
+                    <div class="fac-metric-value" id="facMetricCorrected">NO</div>
+                    <div class="fac-metric-label">Corrigió resumen</div>
+                  </div>
+                </div>
+              </div>
+
+              <button type="button" class="btn-fac-action btn-fac-primary" id="btnFacResetSession">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Reiniciar sesión y bienvenida
+              </button>
+
+            </div>
+
+            <!-- Panel 2: Registro CSV y Resultados -->
+            <div class="fac-tab-pane" id="facPaneLogs">
+              <div class="fac-control-desc">
+                Registro local de sesiones de prueba para los participantes P01 a P08.
+              </div>
+
+              <div class="fac-table-wrap">
+                <table class="fac-table">
+                  <thead>
+                    <tr>
+                      <th>P</th>
+                      <th>Modo</th>
+                      <th>Tiempo</th>
+                      <th>Ayudas</th>
+                      <th>Corrigió</th>
+                      <th>Error $</th>
+                      <th>Resultado</th>
+                    </tr>
+                  </thead>
+                  <tbody id="facTableBody">
+                    <!-- Dinámico -->
+                  </tbody>
+                </table>
+              </div>
+
+              <button type="button" class="btn-fac-action btn-fac-primary" id="btnFacExportCsv">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar registro en CSV (Excel)
+              </button>
+
+              <button type="button" class="btn-fac-action btn-fac-danger" id="btnFacClearLogs">
+                Limpiar historial de pruebas
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Scripts del Prototipo -->
+  <script src="js/speech.js"></script>
+  <script src="js/interfaz-puente.js"></script>
+  <script src="js/facilitator.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    // Alternancia de pantalla completa en escritorio
+    document.getElementById('btnToggleFullScreen').addEventListener('click', function() {
+      const frame = document.getElementById('appMainContainer');
+      if (!document.fullscreenElement) {
+        if (frame.requestFullscreen) {
+          frame.requestFullscreen();
+        } else if (frame.webkitRequestFullscreen) {
+          frame.webkitRequestFullscreen();
         }
-      };
-
-      r.onend = function(){
-        listening = false;
-        renderStatus();
-        if(!panelOpen || !wantListen || busy || speaking || gotFinal) return;
-        if(panelOpen && wantListen && !busy && !speaking && S.step !== 'done'){
-          setTimeout(function(){
-            if(panelOpen && wantListen && !busy && !speaking && !listening) startListening();
-          }, 250);
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
         }
-      };
-
-      return r;
-    } catch(err){
-      console.error('Error creando SpeechRecognition:', err);
-      return null;
-    }
-  }
-
-  rec = createRecognitionInstance();
-
-  function stopListening(){
-    if(rec){
-      try { rec.abort(); } catch(e){}
-    }
-    listening = false;
-    renderStatus();
-  }
-
-  function startListening(){
-    if(!panelOpen || busy || speaking || listening || S.step==='done') return;
-    if(!rec){
-      rec = createRecognitionInstance();
-      if(!rec) return;
-    }
-    gotFinal = false;
-    try {
-      rec.start();
-    } catch(e){
-      console.warn('Recreando SpeechRecognition:', e.name);
-      try { rec.abort(); } catch(err){}
-      rec = createRecognitionInstance();
-      try { rec.start(); } catch(err){
-        console.error('No se pudo iniciar rec:', err);
       }
-    }
-  }
-
-  function showMicBlockedNotice(){
-    if(isWebview()){
-      micHelpText.innerHTML = '⚠️ <b>Estás en el visor interno de Google o WhatsApp:</b> No permite micrófono. Toca los tres puntos <b>⋮</b> arriba a la derecha y selecciona <b>"Abrir en Chrome"</b>.';
-    } else {
-      micHelpText.innerHTML = '⚠️ <b>Micrófono bloqueado en Chrome:</b> Toca el candado o icono 🔒/⚙️ a la izquierda de la dirección web, entra a <b>Permisos</b>, activa el <b>Micrófono</b> y recarga la página.';
-    }
-    micHelpBanner.classList.add('show');
-  }
-
-  /* Solicita permiso explícito mediante getUserMedia en User Gesture */
-  async function requestMicExplicitly(){
-    if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
-      try {
-        var stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Pausa de 300ms antes de detener tracks para que Chrome registre el permiso en el perfil
-        setTimeout(function(){
-          stream.getTracks().forEach(function(t){ t.stop(); });
-        }, 300);
-        micHelpBanner.classList.remove('show');
-        toast('✓ Micrófono habilitado');
-        wantListen = true;
-        setTimeout(function(){
-          startListening();
-        }, 400);
-        return true;
-      } catch(err){
-        console.warn('getUserMedia falló:', err);
-        showMicBlockedNotice();
-        micGuideModal.classList.add('active');
-        return false;
-      }
-    }
-    showMicBlockedNotice();
-    micGuideModal.classList.add('active');
-    return false;
-  }
-
-  function afterTurn(){ 
-    if(panelOpen && wantListen && !busy && !speaking && S.step!=='done'){
-      startListening(); 
-    }
-  }
-
-  async function handleUtterance(raw){
-    if(busy||!panelOpen) return;
-    busy=true; inactivityCount=0; wantListen=true; var my=session;
-    stopListening(); setHeard(raw);
-    thinking=true; thinkingLabel='REVISANDO…'; renderStatus();
-    await sleep(500);
-    thinking=false; renderStatus();
-    if(!panelOpen||my!==session){ busy=false; return; }
-    try{ await route(raw); }catch(err){ console.error(err); }
-    busy=false; afterTurn();
-  }
-
-  function route(raw){
-    switch(S.step){
-      case 'home': return stepHome(raw);
-      case 'recipient': return stepRecipient(raw);
-      case 'confirm_recipient': return stepConfirmRecipient(raw);
-      case 'amount': return stepAmount(raw);
-      case 'confirm_send': return stepConfirmSend(raw);
-      case 'auth': return stepAuth(raw);
-    }
-    return Promise.resolve();
-  }
-
-  function recipientAsk(c, prefix){
-    prefix=prefix||'';
-    return say(prefix+'Encontré a '+c.name+', RUT '+c.rut.replace('-','\u2011')+'. ¿Es la persona correcta? Di sí o no.',
-               prefix+'Encontré a '+c.name+', RUT '+rutSpoken(c.rut)+'. ¿Es la persona correcta? Di sí, o no.');
-  }
-  function sendAsk(){
-    var c=CONTACTS[S.dest], left=S.balance-S.amount;
-    return say('Vas a enviar '+money(S.amount)+' a '+c.name+'. Después te quedarían '+money(left)+'. Con calma, di “confirmo” para enviar.',
-               'Vas a enviar '+spokenMoney(S.amount)+' a '+c.name+'. Después te quedarían '+spokenMoney(left)+'. Con calma, di confirmo para enviar.');
-  }
-  function amountAsk(){
-    var c=CONTACTS[S.dest];
-    return say('¿Cuánto dinero quieres enviarle a '+firstName(c.name)+'? Por ejemplo: “treinta mil pesos”.',
-               '¿Cuánto dinero quieres enviarle a '+firstName(c.name)+'? Por ejemplo: treinta mil pesos.');
-  }
-  function promptForStep(){
-    switch(S.step){
-      case 'home':
-        if(!greeted){ greeted=true;
-          return say('¡Hola! Seré quien te ayude para que completes tu proceso sin errores. Dime qué necesitas. Por ejemplo: “quiero transferir”.',
-                     'Hola. Seré quien te ayude para que completes tu proceso sin errores. Dime qué necesitas. Por ejemplo: quiero transferir.'); }
-        return say('Hola de nuevo. ¿Qué necesitas hacer? Por ejemplo: “quiero transferir”.','Hola de nuevo. ¿Qué necesitas hacer? Por ejemplo: quiero transferir.');
-      case 'recipient': return say('¿A quién le quieres enviar dinero? Dime su nombre.');
-      case 'confirm_recipient': return recipientAsk(CONTACTS[S.dest]);
-      case 'amount': return amountAsk();
-      case 'confirm_send': return sendAsk();
-      case 'auth': return say('Para proteger tu dinero, confirma con tu huella digital o clave BE Pass en la pantalla.');
-    }
-    return Promise.resolve();
-  }
-
-  async function stepHome(raw){
-    var intent=detectIntent(raw);
-    if(intent==='transfer') return enterTransfer(raw);
-    if(intent==='saldo')
-      return say('Tu saldo disponible es '+money(S.balance)+'. Si quieres, puedes decir: “quiero transferir”.',
-                 'Tu saldo disponible es '+spokenMoney(S.balance)+'. Si quieres, puedes decir: quiero transferir.');
-    if(intent==='help') return promptForStep();
-    return say('No te entendí bien, no te preocupes. Puedes decir: “quiero transferir”, o preguntar: “¿cuál es mi saldo?”.');
-  }
-  async function enterTransfer(raw){
-    thinking=true; thinkingLabel='PREPARANDO…'; renderStatus();
-    await sleep(250);
-    resetTransfer(); goView('transfer'); S.step='recipient'; setFocus('dest');
-    await sleep(300);
-    thinking=false; renderStatus();
-    var a=extractAmount(raw); if(a) S.pending=a;
-    var c=extractContact(raw);
-    if(c){ S.dest=c; S.step='confirm_recipient'; fillDest(); return recipientAsk(CONTACTS[c],'Muy bien, vamos a transferir. '); }
-    return say('Muy bien, vamos a transferir. ¿A quién le quieres enviar dinero? Dime su nombre.');
-  }
-  async function foundRecipient(key,prefix){
-    S.dest=key; S.step='confirm_recipient'; fillDest(); setFocus('dest');
-    return recipientAsk(CONTACTS[key],prefix);
-  }
-  async function stepRecipient(raw){
-    var c=extractContact(raw);
-    if(c){ var a=extractAmount(raw); if(a) S.pending=a; return foundRecipient(c); }
-    var intent=detectIntent(raw);
-    if(intent==='exit') return leaveToHome(true);
-    if(intent==='help') return promptForStep();
-    return say('No encontré a esa persona en tus contactos. Puedes decir Luis Olate, Elena Ramírez o Belén Pardo.');
-  }
-  async function stepConfirmRecipient(raw){
-    var c=extractContact(raw), yn=yesNo(raw);
-    if(c && c!==S.dest) return foundRecipient(c,'Está bien. ');
-    if(yn==='yes' || (c && c===S.dest && yn!=='no')){
-      S.step='amount'; setFocus('amount');
-      if(S.pending){ var a=S.pending; S.pending=null; return setAmount(a); }
-      return amountAsk();
-    }
-    if(yn==='no'){
-      S.dest=null; clearDest(); S.step='recipient'; setFocus('dest');
-      return say('Está bien. ¿A quién le quieres enviar dinero? Dime su nombre.');
-    }
-    if(isExit(raw)) return leaveToHome(true);
-    if(yn==='both') return say('No te entendí con claridad. Para seguir con este contacto di “sí”. Para cambiar di “no”.');
-    return say('No te entendí bien. ¿Es la persona correcta? Di sí o no.');
-  }
-  async function setAmount(a){
-    if(a>S.balance){
-      showAmountError(a); S.amount=null; hideSummary(); S.step='amount'; setFocus('amount');
-      return say('No cuentas con ese monto. Tu saldo disponible es '+money(S.balance)+'. Prueba con otro monto menor.',
-                 'No cuentas con ese monto. Tu saldo disponible es '+spokenMoney(S.balance)+'. Prueba con otro monto menor.');
-    }
-    S.amount=a; fillAmount(); S.step='confirm_send'; showSummary(); setFocus('summary');
-    return sendAsk();
-  }
-  async function stepAmount(raw){
-    var a=extractAmount(raw);
-    if(a) return setAmount(a);
-    var c=extractContact(raw);
-    if(c && c!==S.dest) return foundRecipient(c,'Cambiemos de destinatario. ');
-    var intent=detectIntent(raw);
-    if(intent==='exit') return leaveToHome(true);
-    if(intent==='help') return promptForStep();
-    return say('No logré entender el monto, no te preocupes. Dime, por ejemplo: “treinta mil pesos”.');
-  }
-
-  async function stepConfirmSend(raw){
-    var yn=yesNo(raw);
-    if(yn==='yes') return promptSecurityAuth();
-    if(yn==='no') return cancelTransfer();
-    if(yn==='both') return say('Para enviar di “confirmo”. Para detenerte di “cancelar”.');
-    var a=extractAmount(raw);
-    if(a) return setAmount(a);
-    var c=extractContact(raw);
-    if(c && c!==S.dest){ S.pending=S.amount; S.amount=null; clearAmount(); hideSummary(); return foundRecipient(c,'Cambiemos de persona entonces. '); }
-    return say('Para enviar di “confirmo”. Si prefieres cambiar algo, dime qué corregir.');
-  }
-
-  /* Paso BE Pass */
-  async function promptSecurityAuth(){
-    S.step='auth';
-    var c=CONTACTS[S.dest];
-    authDest.textContent=c.name;
-    authAmount.textContent=money(S.amount);
-    authFeedback.textContent=''; authFeedback.className='auth-feedback';
-    bioLabel.textContent='Toca el círculo con tu huella';
-    authBioBtn.classList.remove('scanning');
-    authOverlay.classList.add('active');
-    
-    return say('Por seguridad, autoriza la transferencia con tu huella en pantalla o con tu clave BE Pass.',
-               'Por seguridad, autoriza la transferencia con tu huella en la pantalla o con tu clave BE Pass.');
-  }
-
-  async function stepAuth(raw){
-    if(isExit(raw) || hasAny(norm(raw),NO)) {
-      closeSecurityAuth();
-      return cancelTransfer();
-    }
-    if(hasAny(norm(raw),['autorizar','autorizo','huella','clave','si','confirmo','confirmar'])){
-      return triggerBiometricSuccess();
-    }
-    return say('Toca el círculo de huella en pantalla para autorizar, o cierra la ventana para detener.');
-  }
-
-  function closeSecurityAuth(){
-    authOverlay.classList.remove('active');
-  }
-
-  async function triggerBiometricSuccess(){
-    authBioBtn.classList.add('scanning');
-    bioLabel.textContent='Verificando identidad…';
-    authFeedback.textContent='✓ Sensor reconocido correctamente';
-    authFeedback.className='auth-feedback ok';
-    await sleep(900);
-    closeSecurityAuth();
-    return executeTransfer();
-  }
-
-  async function triggerBiometricFailure(){
-    authFeedback.textContent='✕ Huella no reconocida. Intenta de nuevo.';
-    authFeedback.className='auth-feedback err';
-    say('Validación fallida. No se reconoció la huella. Intenta de nuevo o ingresa tu clave.');
-  }
-
-  async function cancelTransfer(){
-    closeSecurityAuth();
-    resetTransfer(); S.step='recipient'; setFocus('dest');
-    return say('Listo, cancelé la operación. Tu dinero no se tocó. Si quieres intentar otra transferencia, dime el nombre.');
-  }
-
-  async function executeTransfer(){
-    if(!S.dest||!S.amount||S.amount>S.balance) return;
-    thinking=true; thinkingLabel='PROCESANDO ENVÍO…'; renderStatus();
-    await sleep(800); thinking=false; renderStatus();
-    var c=CONTACTS[S.dest], amt=S.amount;
-    S.balance-=amt; updateBalances();
-    var d=new Date(), p=function(n){ return (n<10?'0':'')+n; };
-    $('rAmount').textContent=money(amt);
-    $('rDest').innerHTML=c.name+'<small>RUT '+c.rut+'</small><small>BancoEstado · CuentaRUT</small>';
-    $('rDate').textContent=p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear()+' · '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
-    $('rOp').textContent=String(8000000+Math.floor(Math.random()*999999));
-    goView('receipt'); S.step='done';
-    await say('¡Listo! Enviaste '+money(amt)+' a '+c.name+'. Aquí está tu comprobante sin errores.',
-               'Listo. Enviaste '+spokenMoney(amt)+' a '+c.name+'. Aquí está tu comprobante sin errores.');
-    closeAssistant();
-  }
-
-  async function leaveToHome(speak){
-    closeSecurityAuth();
-    resetTransfer(); S.step='home'; goView('home');
-    if(speak) return say('Listo, volvimos al inicio. Dime cuando quieras transferir.');
-  }
-
-  /* Píldoras con soporte de interrupción instantánea (Barge-In) */
-  function chipsFor(step){
-    switch(step){
-      case 'home': return ['Quiero transferir','¿Cuál es mi saldo?'];
-      case 'recipient': return ['Belén Pardo','Luis Olate','Elena Ramírez'];
-      case 'confirm_recipient': return ['Sí, es correcto','Cambiar persona'];
-      case 'amount': return ['10 mil pesos','30 mil pesos','50 mil pesos'];
-      case 'confirm_send': return ['Sí, confirmo','Cambiar monto'];
-      case 'auth': return ['Autorizar con huella'];
-    }
-    return [];
-  }
-  function renderChips(){
-    chipsEl.innerHTML='';
-    chipsFor(S.step).forEach(function(t){
-      var b=document.createElement('button'); b.type='button'; b.className='chip'; 
-      b.textContent=t;
-      b.addEventListener('click', async function(){ 
-        resetInactivityWatchdog();
-        // Si el usuario toca un botón mientras habla el asistente en CUALQUIER paso, cortar la voz
-        if(speaking){
-          skipSpeech();
-          await sleep(50);
-        }
-        if(t==='Cambiar persona') { S.dest=null; clearDest(); S.step='recipient'; setFocus('dest'); promptForStep(); }
-        else if(t==='Cambiar monto') { S.amount=null; clearAmount(); hideSummary(); S.step='amount'; setFocus('amount'); promptForStep(); }
-        else if(panelOpen) handleUtterance(t); 
-      });
-      chipsEl.appendChild(b);
     });
-  }
+  </script>
 
-  /* Control de apertura / cierre */
-  async function openAssistant(){
-    if(panelOpen) return;
-    panelOpen=true; wantListen=true; var my=++session;
-    inactivityCount=0;
-    sheet.classList.add('open'); fab.classList.add('hidden'); updateDim(); renderChips(); renderStatus(); setHeard('');
-    resetInactivityWatchdog();
-
-    if(!SR){
-      note.textContent='Este navegador no tiene soporte de voz nativo. Puedes usar los botones en pantalla o escribir tu mensaje.';
-      if(!$('typebox')){
-        var inp=document.createElement('input'); inp.id='typebox'; inp.className='typebox'; inp.placeholder='Escribe tu respuesta aquí';
-        inp.addEventListener('keydown',function(e){ if(e.key==='Enter' && inp.value.trim()){ var v=inp.value.trim(); inp.value=''; handleUtterance(v); } });
-        sheet.appendChild(inp);
-      }
-    }
-
-    if(!panelOpen||my!==session) return;
-    
-    // Primero el asistente habla su saludo; una vez que termina de hablar, se activa el micrófono
-    await promptForStep();
-    if(panelOpen && wantListen && !busy && my===session && !speaking){
-      startListening();
-    }
-  }
-
-  function closeAssistant(){
-    if(!panelOpen) return;
-    panelOpen=false; wantListen=false; session++; busy=false; thinking=false; speaking=false;
-    clearTimeout(inactivityTimer);
-    stopListening(); skipSpeech();
-    sheet.classList.remove('open'); fab.classList.remove('hidden'); updateDim(); renderStatus();
-  }
-
-  /* ================= EVENTOS Y LISTENERS ================= */
-  fab.addEventListener('click', openAssistant);
-  btnCloseSheet.addEventListener('click', closeAssistant);
-  btnGrantMic.addEventListener('click', requestMicExplicitly);
-  btnHelpSteps.addEventListener('click', function(){ micGuideModal.classList.add('active'); });
-  btnDismissGuide.addEventListener('click', function(){ micGuideModal.classList.remove('active'); });
-  btnReloadPage.addEventListener('click', function(){ location.reload(); });
-  
-  repeatBtn.addEventListener('click', function(e){
-    e.stopPropagation();
-    if(lastDisplayText) say(lastDisplayText, lastSpokenText);
-  });
-
-  dim.addEventListener('click', closeAssistant);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeAssistant(); });
-  
-  /* ================= BARGE-IN UNIVERSAL: INTERRUPCIÓN EN TODOS LOS PASOS ================= */
-  mic.addEventListener('click', function(){
-    if(!panelOpen) return;
-    resetInactivityWatchdog();
-
-    // BARGE-IN: Si el asistente está hablando en CUALQUIER paso de la transferencia
-    // (Destinatario, Monto, Confirmación, BE Pass, etc.), cortamos la voz al instante y pasamos a escuchar
-    if(speaking){
-      wantListen = true;
-      heard.textContent = '';
-      skipSpeech();
-      renderStatus();
-      setTimeout(function(){
-        if(panelOpen && wantListen && !speaking){
-          startListening();
-        }
-      }, 80);
-      return;
-    }
-
-    // Si la app está pensando o transicionando de vista, no hacer nada
-    if(thinking) return;
-
-    // Si ya estaba escuchando: pausar
-    if(listening){
-      wantListen = false;
-      stopListening();
-      renderStatus();
-      return;
-    }
-
-    // Si estaba inactivo: empezar a escuchar
-    wantListen = true;
-    heard.textContent = '';
-    startListening();
-  });
-
-  $('navTransfer').addEventListener('click',function(){
-    resetTransfer(); S.step='recipient'; goView('transfer'); setFocus('dest');
-    if(panelOpen) promptForStep();
-  });
-  $('backBtn').addEventListener('click',function(){
-    leaveToHome(false);
-    if(panelOpen) promptForStep();
-  });
-  continueBtn.addEventListener('click',function(){ if(!panelOpen) openAssistant(); else if(S.step==='confirm_send') sendAsk(); });
-  $('shareBtn').addEventListener('click',function(){
-    var t='Comprobante de transferencia por '+$('rAmount').textContent+' · N° '+$('rOp').textContent;
-    if(navigator.share){ navigator.share({title:'Comprobante',text:t}).catch(function(){}); } else toast('Comprobante simulado.');
-  });
-  $('exitBtn').addEventListener('click',function(){ resetTransfer(); S.step='home'; goView('home'); });
-  
-  authBioBtn.addEventListener('click',triggerBiometricSuccess);
-  authPinBtn.addEventListener('click',triggerBiometricSuccess);
-  authFailBtn.addEventListener('click',triggerBiometricFailure);
-  authCloseBtn.addEventListener('click',cancelTransfer);
-
-  app.addEventListener('click',function(e){
-    var d=e.target.closest ? e.target.closest('.dead') : null;
-    if(d) toast('Esta sección no está activa en la prueba.');
-  });
-
-  updateBalances(); renderStatus(); renderChips();
-})();
-</script>
 </body>
 </html>

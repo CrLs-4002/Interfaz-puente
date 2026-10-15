@@ -1,0 +1,70 @@
+{
+  "usuario_activo": {
+    "nombre": "Elena Retamales Morales",
+    "edad": 68,
+    "ciudad": "Los Andes",
+    "ocupacion": "Profesora jubilada",
+    "cuenta": {
+      "tipo": "CuentaRUT",
+      "numero": "0007845129",
+      "rut": "7.845.129-3",
+      "saldo_inicial": 350000,
+      "tarjeta_mascara": "**** **** **** 5129"
+    }
+  },
+  "destinatarios_frecuentes": [
+    {
+      "id": "rosa_perez",
+      "nombre": "Rosa Pérez Sepúlveda",
+      "rut": "12.876.543-2",
+      "banco": "Banco de Chile",
+      "tipo_cuenta": "Cuenta Corriente",
+      "numero_cuenta": "00-128-45920-01",
+      "email": "rosa.perez@correo.cl",
+      "frecuente": true,
+      "icono": "R"
+    },
+    {
+      "id": "pedro_retamales",
+      "nombre": "Pedro Retamales (Hijo)",
+      "rut": "18.345.678-4",
+      "banco": "BancoEstado",
+      "tipo_cuenta": "CuentaRUT",
+      "numero_cuenta": "00018345678",
+      "email": "pedro.retamales@gmail.com",
+      "frecuente": true,
+      "icono": "P"
+    },
+    {
+      "id": "carlos_valdes",
+      "nombre": "Carlos Valdés",
+      "rut": "19.876.543-1",
+      "banco": "Banco Santander",
+      "tipo_cuenta": "Cuenta Vista",
+      "numero_cuenta": "7009845123",
+      "email": "carlos.valdes@inacapmail.cl",
+      "frecuente": false,
+      "icono": "C"
+    }
+  ],
+  "bancos_chile": [
+    "BancoEstado",
+    "Banco de Chile / Edwards",
+    "Banco Santander",
+    "BCI / Mach",
+    "Scotiabank",
+    "Itaú",
+    "Banco Falabella",
+    "Banco Ripley",
+    "Banco Security",
+    "Banco BICE",
+    "Banco Consorcio",
+    "Tenpo / Prepago"
+  ],
+  "tipos_cuenta": [
+    "CuentaRUT",
+    "Cuenta Vista",
+    "Cuenta Corriente",
+    "Cuenta de Ahorro"
+  ]
+}
