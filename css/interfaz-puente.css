@@ -700,6 +700,44 @@ input:checked + .switch-slider:before {
   align-items: center;
 }
 
+/* Botón Agregar Nuevo Centrado Superior */
+.add-new-recipient-header-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.btn-add-new-recipient-top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--navy);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 27, 62, 0.18);
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-add-new-recipient-top:hover {
+  background: #1E293B;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 27, 62, 0.24);
+}
+
+.btn-add-new-recipient-top:active {
+  transform: scale(0.98);
+}
+
 .recipient-search-input-wrap svg {
   position: absolute;
   left: 14px;

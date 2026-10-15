@@ -135,11 +135,11 @@ class AppRouter {
   /* Paso 1: Destinatario */
   setupRecipientStep() {
     const tabSaved = document.getElementById('tabRecipientSaved');
-    const tabNew = document.getElementById('tabRecipientNew');
     const tabFavorites = document.getElementById('tabRecipientFavorites');
+    const btnGoToNewRecipientScreen = document.getElementById('btnGoToNewRecipientScreen');
+    const btnBackFromNewRecipient = document.getElementById('btnBackFromNewRecipient');
 
     const paneSaved = document.getElementById('paneRecipientSaved');
-    const paneNew = document.getElementById('paneRecipientNew');
     const paneFavorites = document.getElementById('paneRecipientFavorites');
     const savedActions = document.getElementById('recipientSavedBottomActions');
 
@@ -147,41 +147,44 @@ class AppRouter {
     const stepDetails = document.getElementById('newRecipientStepDetails');
 
     const showSavedTab = () => {
-      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      [tabSaved, tabFavorites].forEach(t => t && t.classList.remove('active'));
       if (tabSaved) tabSaved.classList.add('active');
       if (paneSaved) paneSaved.classList.remove('hidden');
-      if (paneNew) paneNew.classList.add('hidden');
       if (paneFavorites) paneFavorites.classList.add('hidden');
       if (savedActions) savedActions.classList.remove('hidden');
       this.transferState.isNewRecipient = false;
     };
 
     const showFavoritesTab = () => {
-      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      [tabSaved, tabFavorites].forEach(t => t && t.classList.remove('active'));
       if (tabFavorites) tabFavorites.classList.add('active');
       if (paneSaved) paneSaved.classList.add('hidden');
-      if (paneNew) paneNew.classList.add('hidden');
       if (paneFavorites) paneFavorites.classList.remove('hidden');
       if (savedActions) savedActions.classList.remove('hidden');
       this.transferState.isNewRecipient = false;
     };
 
-    const showNewTab = () => {
-      [tabSaved, tabNew, tabFavorites].forEach(t => t && t.classList.remove('active'));
-      if (tabNew) tabNew.classList.add('active');
-      if (paneSaved) paneSaved.classList.add('hidden');
-      if (paneFavorites) paneFavorites.classList.add('hidden');
-      if (paneNew) paneNew.classList.remove('hidden');
-      if (savedActions) savedActions.classList.add('hidden');
-      // Mostrar solo la etapa RUT inicialmente
-      if (stepRut) stepRut.classList.remove('hidden');
-      if (stepDetails) stepDetails.classList.add('hidden');
-      this.transferState.isNewRecipient = true;
-    };
-
     if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
     if (tabFavorites) tabFavorites.addEventListener('click', showFavoritesTab);
-    if (tabNew) tabNew.addEventListener('click', showNewTab);
+
+    // Botón Agregar Nuevo: Abre una nueva pantalla independiente (view-new-recipient)
+    const openNewRecipientScreen = () => {
+      this.transferState.isNewRecipient = true;
+      if (stepRut) stepRut.classList.remove('hidden');
+      if (stepDetails) stepDetails.classList.add('hidden');
+      this.goTo('new-recipient');
+    };
+
+    if (btnGoToNewRecipientScreen) {
+      btnGoToNewRecipientScreen.addEventListener('click', openNewRecipientScreen);
+    }
+
+    if (btnBackFromNewRecipient) {
+      btnBackFromNewRecipient.addEventListener('click', () => {
+        this.transferState.isNewRecipient = false;
+        this.goTo('recipient');
+      });
+    }
 
     // Buscador superior "¿A quién quieres transferir?"
     const searchInput = document.getElementById('recipientSearchInput');
@@ -412,8 +415,14 @@ class AppRouter {
     const btnCancelForm = document.getElementById('btnCancelAddRecipientForm');
 
     if (btnCancelSaved) btnCancelSaved.addEventListener('click', () => this.goTo('home'));
-    if (btnCancelRut) btnCancelRut.addEventListener('click', showSavedTab);
-    if (btnCancelForm) btnCancelForm.addEventListener('click', showSavedTab);
+    if (btnCancelRut) btnCancelRut.addEventListener('click', () => {
+      this.transferState.isNewRecipient = false;
+      this.goTo('recipient');
+    });
+    if (btnCancelForm) btnCancelForm.addEventListener('click', () => {
+      this.transferState.isNewRecipient = false;
+      this.goTo('recipient');
+    });
   }
 
   /* Paso 2: Monto y Glosa */

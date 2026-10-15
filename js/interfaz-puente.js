@@ -280,79 +280,77 @@ class InterfazPuente {
         }
       ];
     } else if (currentView === 'recipient') {
-      if (isNewRecipientTab) {
-        const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
-        if (isStepRutVisible) {
-          // Etapa A: Ingreso de RUT
-          return [
-            {
-              target: '#groupRecipientRut',
-              title: 'Paso 1: RUT de la persona',
-              message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
-              speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.'
-            },
-            {
-              target: '#btnConfirmRutNext',
-              title: 'Paso 2: Continuar a los datos',
-              message: 'Una vez anotado el RUT, toca este botón para completar el nombre y banco de la persona.',
-              speech: 'Paso 2: Toca el botón verde Continuar a datos del destinatario.'
-            }
-          ];
-        } else {
-          // Etapa B: Formulario con nombre, banco, píldoras y cuenta
-          return [
-            {
-              target: '#groupRecipientName',
-              title: 'Paso 1: Nombre y Apellido',
-              message: 'Anota el nombre y apellido de la persona a quien le enviarás dinero.',
-              speech: 'Paso 1: Escribe el nombre y apellido de la persona.'
-            },
-            {
-              target: '#groupRecipientBank',
-              title: 'Paso 2: Banco',
-              message: 'Elige el banco donde la persona tiene su cuenta.',
-              speech: 'Paso 2: Elige el banco de quien recibe.'
-            },
-            {
-              target: '#groupRecipientType',
-              title: 'Paso 3: Tipo de cuenta',
-              message: 'Toca una de las opciones: CuentaRut, Corriente, Vista o Ahorro.',
-              speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.'
-            },
-            {
-              target: '#groupRecipientNum',
-              title: 'Paso 4: Número de cuenta',
-              message: 'Anota los números de la cuenta bancaria.',
-              speech: 'Paso 4: Anota el número de cuenta de la persona.'
-            },
-            {
-              target: '#btnContinueRecipient',
-              title: 'Paso 5: Continuar al monto',
-              message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
-              speech: 'Paso 5: Toca Continuar al monto para avanzar.'
-            }
-          ];
+      // Paso a paso en pantalla de contactos guardados / favoritos
+      return [
+        {
+          target: '#btnGoToNewRecipientScreen',
+          title: '¿Quieres agregar a alguien nuevo?',
+          message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
+          speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.'
+        },
+        {
+          target: '#frequentContactRosa',
+          title: 'O elige un contacto guardado',
+          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
+          speech: 'O toca a Rosa Pérez para seleccionarla como destinataria.'
+        },
+        {
+          target: '#btnContinueRecipientSaved',
+          title: 'Continuar',
+          message: 'Toca el botón Continuar ubicado abajo para avanzar a la pantalla de monto.',
+          speech: 'Toca el botón verde Continuar para ingresar el monto a enviar.'
         }
-      } else {
-        // Paso a paso con contacto guardado o favorito
+      ];
+    } else if (currentView === 'new-recipient') {
+      const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+      if (isStepRutVisible) {
+        // Etapa A: Ingreso de RUT en la nueva pantalla
         return [
           {
-            target: '#frequentContactRosa',
-            title: 'Paso 1: Elegir contacto',
-            message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
-            speech: 'Paso 1: Toca a Rosa Pérez para seleccionarla.'
+            target: '#groupRecipientRut',
+            title: 'Paso 1: RUT de la persona',
+            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
+            speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.'
           },
           {
-            target: '#tabRecipientNew',
-            title: '¿Quieres agregar a alguien nuevo?',
-            message: 'Si necesitas transferirle a otra persona, toca el botón Agregar nuevo.',
-            speech: 'Si deseas transferirle a alguien que no está en la lista, toca Agregar nuevo.'
+            target: '#btnConfirmRutNext',
+            title: 'Paso 2: Continuar a los datos',
+            message: 'Una vez anotado el RUT, toca este botón para completar el nombre y banco de la persona.',
+            speech: 'Paso 2: Toca el botón verde Continuar a datos del destinatario.'
+          }
+        ];
+      } else {
+        // Etapa B: Formulario con nombre, banco, píldoras y cuenta
+        return [
+          {
+            target: '#groupRecipientName',
+            title: 'Paso 1: Nombre y Apellido',
+            message: 'Anota el nombre y apellido de la persona a quien le enviarás dinero.',
+            speech: 'Paso 1: Escribe el nombre y apellido de la persona.'
           },
           {
-            target: '#btnContinueRecipientSaved',
-            title: 'Paso 2: Continuar',
-            message: 'Toca el botón Continuar ubicado abajo para avanzar a la pantalla de monto.',
-            speech: 'Paso 2: Toca el botón verde Continuar para ingresar el monto a enviar.'
+            target: '#groupRecipientBank',
+            title: 'Paso 2: Banco',
+            message: 'Elige el banco donde la persona tiene su cuenta.',
+            speech: 'Paso 2: Elige el banco de quien recibe.'
+          },
+          {
+            target: '#groupRecipientType',
+            title: 'Paso 3: Tipo de cuenta',
+            message: 'Toca una de las opciones: CuentaRut, Corriente, Vista o Ahorro.',
+            speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.'
+          },
+          {
+            target: '#groupRecipientNum',
+            title: 'Paso 4: Número de cuenta',
+            message: 'Anota los números de la cuenta bancaria.',
+            speech: 'Paso 4: Anota el número de cuenta de la persona.'
+          },
+          {
+            target: '#btnContinueRecipient',
+            title: 'Paso 5: Continuar al monto',
+            message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
+            speech: 'Paso 5: Toca Continuar al monto para avanzar.'
           }
         ];
       }
