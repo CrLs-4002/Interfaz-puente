@@ -286,8 +286,8 @@ class InterfazPuente {
         {
           target: '#btnQuickTransfer',
           title: 'Comenzar a transferir',
-          message: 'Toca este botón naranja para iniciar el envío de dinero a otra persona.',
-          speech: 'Paso 2: Toca el botón naranja Transferir dinero para comenzar.'
+          message: 'Toca este botón verde para iniciar el envío de dinero a otra persona.',
+          speech: 'Paso 2: Toca el botón verde Transferir dinero para comenzar.'
         }
       ];
     } else if (currentView === 'recipient') {

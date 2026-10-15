@@ -471,10 +471,36 @@ input:checked + .switch-slider:before {
   z-index: 10 !important;
   box-shadow: 0 0 0 3.5px var(--teal), 0 6px 20px rgba(13, 143, 114, 0.25) !important;
   border-color: var(--teal) !important;
-  background: #FFFFFF !important;
   border-radius: 16px !important;
-  padding: 8px 10px 12px 10px !important;
   transition: all 0.25s var(--ease);
+}
+
+.form-group.spotlight-active,
+.amount-display-box.spotlight-active,
+.account-card.spotlight-active,
+.mini-card.spotlight-active {
+  background: #FFFFFF !important;
+  padding: 8px 10px 12px 10px !important;
+}
+
+/* Botones en Modo Tutorial: se iluminan de color verde con texto e icono legibles */
+button.spotlight-active,
+.btn-cta-big.spotlight-active,
+.btn-confirm-send.spotlight-active,
+.btn-add-new-recipient-top.spotlight-active,
+#btnQuickTransfer.spotlight-active {
+  background: var(--teal) !important;
+  color: #FFFFFF !important;
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 3.5px #FFFFFF, 0 0 0 6.5px var(--teal), 0 8px 24px rgba(13, 143, 114, 0.45) !important;
+}
+
+button.spotlight-active *,
+.btn-cta-big.spotlight-active *,
+.btn-confirm-send.spotlight-active *,
+#btnQuickTransfer.spotlight-active * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
 }
 
 .spotlight-active .form-input,
