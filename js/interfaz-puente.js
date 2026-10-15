@@ -461,12 +461,65 @@ class InterfazPuente {
       btnDismissOnboarding.addEventListener('click', () => this.dismissOnboarding());
     }
 
+    // Botones individuales de lectura por voz para cada sección/campo
+    document.addEventListener('click', (e) => {
+      const speakBtn = e.target.closest('.btn-speak-section');
+      if (speakBtn) {
+        e.stopPropagation();
+        const textToRead = speakBtn.getAttribute('data-speak') || '';
+        if (textToRead && window.puenteSpeech) {
+          window.puenteSpeech.speak(textToRead);
+        }
+      }
+    });
+
+    // Oscurecimiento y destaque automático (Foco Dinámico) al interactuar con campos del formulario
+    const focusableSelectors = 'input, select, textarea, .contact-item';
+    document.addEventListener('focusin', (e) => {
+      if (!this.enabled) return;
+      const target = e.target;
+      if (!target.matches(focusableSelectors)) return;
+      // No activar foco en la clave o controles del facilitador/puente
+      if (target.closest('.security-modal-overlay') || target.closest('.facilitator-overlay') || target.closest('.puente-sheet')) return;
+
+      const group = target.closest('.form-group') || target.closest('.amount-display-box') || target.closest('.contact-item') || target;
+      const label = group.querySelector('.form-label') || group.querySelector('label');
+      const labelText = label ? label.textContent.trim() : 'Campo a completar';
+      
+      this.activateSectionFocus(group, labelText);
+    });
+
+    // Cerrar foco al hacer click en el overlay oscuro
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.addEventListener('click', () => {
+        this.clearSpotlight();
+      });
+    }
+
     // Escucha de estado de voz para animar botones de audio
     if (window.puenteSpeech) {
       window.puenteSpeech.onStatusChange = (speaking) => {
-        const triggers = document.querySelectorAll('.btn-speech-trigger');
+        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section');
         triggers.forEach(t => t.classList.toggle('speaking', speaking));
       };
+    }
+  }
+
+  /* Foco dinámico en sección específica con oscurecimiento del fondo al 85% */
+  activateSectionFocus(targetElement, labelText) {
+    if (!this.enabled || !targetElement) return;
+    this.clearSpotlight();
+
+    this.activeSpotlightElement = targetElement;
+    targetElement.classList.add('spotlight-active');
+
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    // Registrar en métricas
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('spotlight');
     }
   }
 

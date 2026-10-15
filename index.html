@@ -208,23 +208,38 @@
                 <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('inscribir_destinatario')">¿Qué es Inscribir?</button>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" id="groupRecipientName">
                 <label class="form-label" for="newRecipientName">
-                  <span class="term-technical">Nombre completo</span>
-                  <span class="term-simplified">¿Cómo se llama la persona?</span>
+                  <span>
+                    <span class="term-technical">Nombre completo</span>
+                    <span class="term-simplified">¿Cómo se llama la persona?</span>
+                  </span>
+                  <button type="button" class="btn-speak-section" data-speak="Nombre completo. Escribe aquí el nombre y apellido de la persona a quien le enviarás el dinero." aria-label="Escuchar explicación de este campo" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
                 </label>
                 <input type="text" class="form-input" id="newRecipientName" placeholder="Ej: Carmen Gloria Morales">
               </div>
 
-              <div class="form-group">
-                <label class="form-label" for="newRecipientRut">RUT de la persona</label>
+              <div class="form-group" id="groupRecipientRut">
+                <label class="form-label" for="newRecipientRut">
+                  <span>RUT de la persona</span>
+                  <button type="button" class="btn-speak-section" data-speak="RUT de la persona. Escribe el número de carnet o RUT del destinatario, por ejemplo 15 millones 678 mil 910 guión K." aria-label="Escuchar explicación de este campo" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
+                </label>
                 <input type="text" class="form-input" id="newRecipientRut" placeholder="Ej: 15.678.910-K">
               </div>
 
-              <div class="form-group">
+              <div class="form-group" id="groupRecipientBank">
                 <label class="form-label" for="newRecipientBank">
-                  <span class="term-technical">Banco de destino</span>
-                  <span class="term-simplified">¿En qué banco tiene su cuenta?</span>
+                  <span>
+                    <span class="term-technical">Banco de destino</span>
+                    <span class="term-simplified">¿En qué banco tiene su cuenta?</span>
+                  </span>
+                  <button type="button" class="btn-speak-section" data-speak="Banco de destino. Selecciona en la lista el banco donde la otra persona tiene su cuenta guardada." aria-label="Escuchar explicación de este campo" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
                 </label>
                 <select class="form-select" id="newRecipientBank">
                   <option value="BancoEstado">BancoEstado</option>
@@ -237,10 +252,15 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="form-group" id="groupRecipientType">
                 <label class="form-label" for="newRecipientType">
-                  <span class="term-technical">Tipo de cuenta</span>
-                  <span class="term-simplified">¿Qué clase de cuenta tiene?</span>
+                  <span>
+                    <span class="term-technical">Tipo de cuenta</span>
+                    <span class="term-simplified">¿Qué clase de cuenta tiene?</span>
+                  </span>
+                  <button type="button" class="btn-speak-section" data-speak="Tipo de cuenta. Indica si es Cuenta Corriente, CuentaRUT o Cuenta Vista." aria-label="Escuchar explicación de este campo" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
                 </label>
                 <select class="form-select" id="newRecipientType">
                   <option value="Cuenta Corriente" selected>Cuenta Corriente</option>
@@ -249,8 +269,13 @@
                 </select>
               </div>
 
-              <div class="form-group">
-                <label class="form-label" for="newRecipientNum">Número de cuenta</label>
+              <div class="form-group" id="groupRecipientNum">
+                <label class="form-label" for="newRecipientNum">
+                  <span>Número de cuenta</span>
+                  <button type="button" class="btn-speak-section" data-speak="Número de cuenta. Escribe el número exacto de la cuenta bancaria de la persona." aria-label="Escuchar explicación de este campo" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
+                </label>
                 <input type="text" class="form-input" id="newRecipientNum" placeholder="Ej: 00-128-45920-01">
               </div>
             </div>
@@ -298,10 +323,15 @@
             </div>
 
             <!-- Input de Monto Grande -->
-            <div class="amount-display-box" id="amountBox">
-              <label for="inputAmount" style="font-size:16px;font-weight:800;color:var(--muted);display:block;margin-bottom:6px">
-                <span class="term-technical">Monto a transferir</span>
-                <span class="term-simplified">Cantidad exacta de dinero a enviar</span>
+            <div class="amount-display-box" id="amountBox" tabindex="0">
+              <label for="inputAmount" style="font-size:16px;font-weight:800;color:var(--muted);display:flex;align-items:center;justify-content:center;margin-bottom:6px">
+                <span>
+                  <span class="term-technical">Monto a transferir</span>
+                  <span class="term-simplified">Cantidad exacta de dinero a enviar</span>
+                </span>
+                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Escribe la cantidad de dinero en pesos chilenos que deseas enviar a la otra persona, o toca uno de los montos sugeridos abajo." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                </button>
               </label>
               
               <input type="text" class="amount-input-big" id="inputAmount" value="$50.000" inputmode="numeric" aria-label="Monto en pesos chilenos">
@@ -319,13 +349,18 @@
             </div>
 
             <!-- Campo de Glosa / Mensaje Opcional -->
-            <div class="form-group" style="margin-top:20px">
+            <div class="form-group" id="groupGlosa" style="margin-top:20px">
               <label class="form-label" for="inputGlosa">
                 <span>
                   <span class="term-technical">Glosa</span>
                   <span class="term-simplified">Mensaje para la otra persona (opcional)</span>
                 </span>
-                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('glosa')">¿Qué es Glosa?</button>
+                <span style="display:inline-flex;align-items:center">
+                  <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('glosa')">¿Qué es Glosa?</button>
+                  <button type="button" class="btn-speak-section" data-speak="Glosa o mensaje. Es un texto opcional para dejarle una nota a la otra persona, como regalo o pago de almuerzo." aria-label="Escuchar explicación de la glosa" title="Escuchar qué rellenar">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  </button>
+                </span>
               </label>
               <input type="text" class="form-input" id="inputGlosa" placeholder="Ej: Regalo de cumpleaños o Pago de almuerzo">
               <p class="form-helper-text">La otra persona podrá leer este mensaje cuando reciba la transferencia.</p>

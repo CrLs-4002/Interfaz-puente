@@ -359,10 +359,41 @@ input:checked + .switch-slider:before {
 .spotlight-active {
   position: relative !important;
   z-index: 36 !important;
-  box-shadow: 0 0 0 4px var(--mint), 0 0 35px rgba(46, 196, 164, 0.6) !important;
+  box-shadow: 0 0 0 4px var(--mint), 0 0 35px rgba(46, 196, 164, 0.7) !important;
   border-color: var(--mint) !important;
   background: #FFFFFF !important;
+  border-radius: 14px;
   transition: all 0.3s var(--ease);
+}
+
+/* Botón accesible de lectura por voz para cada sección/campo */
+.btn-speak-section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  border: 1.5px solid #C3D4FB;
+  cursor: pointer;
+  margin-left: 8px;
+  flex: none;
+  transition: all 0.2s ease;
+}
+
+.btn-speak-section:hover, .btn-speak-section:focus {
+  background: var(--indigo);
+  color: #FFFFFF;
+  transform: scale(1.08);
+}
+
+.btn-speak-section.speaking {
+  background: var(--orange);
+  color: #FFFFFF;
+  border-color: var(--orange-dark);
+  animation: pulse-speaking 1s infinite alternate;
 }
 
 /* Tarjeta de guía explicativa en el foco */
