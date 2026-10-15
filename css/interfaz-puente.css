@@ -589,7 +589,7 @@ input:checked + .switch-slider:before {
 .btn-spotlight-done {
   flex: 1;
   min-height: 48px;
-  border-radius: 14px;
+  border-radius: 28px;
   background: var(--teal);
   color: #FFFFFF;
   font-size: 16px;

@@ -445,7 +445,7 @@ class InterfazPuente {
         prevBtn.style.display = this.currentStepIndex > 0 ? 'inline-flex' : 'none';
       }
       if (nextBtn) {
-        nextBtn.textContent = (this.currentStepIndex === steps.length - 1) ? 'Finalizar guía' : 'Siguiente paso';
+        nextBtn.textContent = (this.currentStepIndex === steps.length - 1) ? 'Listo' : 'Siguiente';
       }
 
       this.spotlightCard.classList.add('show');
