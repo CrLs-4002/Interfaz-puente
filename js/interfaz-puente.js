@@ -526,8 +526,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla, o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca para escribir cuánto dinero quieres transferir, o elige una de las opciones sugeridas.'
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
+          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.'
         },
         {
           target: '#groupGlosa',

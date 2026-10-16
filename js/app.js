@@ -460,6 +460,8 @@ class AppRouter {
     const btnContinue = document.getElementById('btnContinueAmount');
     const amountErrorBox = document.getElementById('amountErrorBox');
 
+    const MAX_AMOUNT = 200000;
+
     if (inputAmount) {
       inputAmount.addEventListener('focus', () => {
         if (inputAmount.value === '$0' || inputAmount.value === '$ 0' || !this.transferState.amount) {
@@ -468,17 +470,25 @@ class AppRouter {
       });
 
       inputAmount.addEventListener('input', (e) => {
-        const val = this.parseCLP(e.target.value);
-        this.transferState.amount = val;
-        e.target.value = val > 0 ? this.formatCLP(val) : '$0';
+        let val = this.parseCLP(e.target.value);
 
-        // Validación inmediata de saldo
-        if (val > this.user.balance) {
+        // Límite máximo para transferir y digitar: $200.000
+        if (val > MAX_AMOUNT) {
+          val = MAX_AMOUNT;
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
+        } else if (val > this.user.balance) {
+          inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
         } else {
+          inputAmount.classList.remove('has-error');
           amountErrorBox.classList.add('hidden');
         }
+
+        this.transferState.amount = val;
+        e.target.value = val > 0 ? this.formatCLP(val) : '$0';
       });
     }
 
@@ -490,6 +500,7 @@ class AppRouter {
         this.transferState.amount = amt;
         if (inputAmount) {
           inputAmount.value = this.formatCLP(amt);
+          inputAmount.classList.remove('has-error');
         }
         amountErrorBox.classList.add('hidden');
       });
@@ -507,10 +518,34 @@ class AppRouter {
       btnContinue.addEventListener('click', () => {
         const val = this.transferState.amount;
         if (!val || val <= 0) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = 'Por favor ingresa una cantidad de dinero a transferir.';
           alert('Por favor ingresa una cantidad de dinero a transferir.');
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
+
+        if (val > MAX_AMOUNT) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          alert(`El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`);
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (val > this.user.balance) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
+          alert(`El monto supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`);
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        inputAmount.classList.remove('has-error');
+        amountErrorBox.classList.add('hidden');
 
         if (inputGlosa) {
           this.transferState.glosa = inputGlosa.value.trim();
@@ -573,11 +608,15 @@ class AppRouter {
       textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
     }
 
-    // Si el monto excede el saldo (por ejemplo en la inyección de $500.000)
+    // Si el monto excede el saldo o el límite máximo de $200.000
     if (warnBox) {
-      if (this.transferState.amount > this.user.balance) {
+      if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
         warnBox.classList.remove('hidden');
-        warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+        if (this.transferState.amount > this.user.balance) {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+        } else {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
+        }
       } else {
         warnBox.classList.add('hidden');
       }
