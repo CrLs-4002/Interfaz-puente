@@ -11,10 +11,2402 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800;6..12,900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Estilos del Proyecto -->
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/interfaz-puente.css">
-  <link rel="stylesheet" href="css/facilitator.css">
+  <!-- Estilos del Proyecto (Empaquetados Standalone) -->
+  <style>
+/* ==========================================
+   1. MAIN.CSS
+   ========================================== */
+/* ==========================================================================
+   INTERFAZ PUENTE — PROTOTIPO ACADÉMICO INACAP
+   Estilo Base y Flujo Bancario BancoEstado Accesible (WCAG 2.2 AA & COGA)
+   Autores: Carlos Valdés & Sebastián Mardones
+   ========================================================================== */
+
+:root {
+  /* Paleta BancoEstado adaptada a alto contraste */
+  --orange: #F77F00;
+  --orange-dark: #D46A00;
+  --orange-light: #FFF2E5;
+  --navy: #0D1B3E;
+  --navy-sheet: #102048;
+  --indigo: #202F7B;
+  --indigo-dark: #141E52;
+  --indigo-soft: #EAEFFA;
+  --teal: #0D8F72;
+  --teal-light: #E0F5EE;
+  --mint: #2EC4A4;
+  --bg: #F4F6FA;
+  --card-bg: #FFFFFF;
+  --ink: #141A29;
+  --muted: #4A5568;
+  --line: #CFD7E6;
+  --red: #C52224;
+  --red-soft: #FDECEC;
+  --yellow-alert: #FFF8E1;
+  --yellow-border: #FFD54F;
+  --focus-ring: #0D8F72;
+
+  /* Accesibilidad Cognitiva y Táctil */
+  --font-main: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+  --font-brand: 'Nunito', system-ui, sans-serif;
+  --text-base: 18px;
+  --touch-min: 48px;
+  --touch-btn: 56px;
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 8px;
+  --shadow-sm: 0 2px 8px rgba(13, 27, 62, 0.08);
+  --shadow-md: 0 8px 24px rgba(13, 27, 62, 0.14);
+  --shadow-lg: 0 16px 40px rgba(13, 27, 62, 0.22);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Reset y caja */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: #E2E7F0;
+  font-family: var(--font-main);
+  font-size: var(--text-base);
+  color: var(--ink);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  touch-action: manipulation;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 18px;
+  color: var(--ink);
+}
+
+/* ================= CONTENEDOR ENTORNO DE ESCRITORIO ================= */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 12px;
+}
+
+/* Barra superior de herramientas en escritorio */
+.desktop-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 420px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.desktop-bar a, .desktop-bar button {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 800;
+  font-size: 13px;
+  color: var(--indigo);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  text-decoration: none;
+}
+
+/* ================= MARCO DEL CELULAR (390 × 844 px) ================= */
+.device-frame {
+  position: relative;
+  width: 100%;
+  max-width: 412px;
+  height: 844px;
+  max-height: calc(100vh - 24px);
+  background: var(--bg);
+  border-radius: 40px;
+  box-shadow: 0 25px 60px -15px rgba(13, 27, 62, 0.4), 0 0 0 10px #1E2538;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  overscroll-behavior: none;
+}
+
+/* Modo pantalla completa para celulares reales */
+@media (max-width: 480px) {
+  .app-wrapper {
+    padding: 0;
+    min-height: 100dvh;
+    justify-content: flex-start;
+  }
+  .desktop-bar {
+    display: none;
+  }
+  .device-frame {
+    max-width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* ================= AVISO ACADÉMICO (ELIMINADO) ================= */
+.inacap-banner {
+  display: none !important;
+}
+
+/* Banner de Modo Práctica */
+.practice-banner {
+  display: none;
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  border-bottom: 1.5px solid #FCD34D;
+  z-index: 45;
+}
+
+.practice-banner.active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ================= CONTENEDOR DE VISTAS ================= */
+.screen-container {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: hidden;
+  background: var(--bg);
+  overscroll-behavior: none;
+}
+
+.screen-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(25px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s linear 0.3s;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.screen-view.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0s;
+  z-index: 2;
+}
+
+.screen-view.is-before {
+  transform: translateX(-25px);
+}
+
+.scroll-area {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 90px;
+}
+
+/* ================= CABECERAS ================= */
+.be-top-header {
+  background: linear-gradient(110deg, var(--orange) 0%, #FFA033 100%);
+  min-height: 130px;
+  border-bottom-left-radius: 40px 32px;
+  padding: 16px 18px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  color: #FFFFFF;
+}
+
+.be-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.be-logo-symbol {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #FFFFFF;
+  color: var(--orange);
+  font-family: var(--font-brand);
+  font-weight: 900;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.be-brand-title {
+  font-family: var(--font-brand);
+  font-size: 22px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.4px;
+}
+
+.be-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-header-round {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cabecera de Trámites */
+.view-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.view-header h1 {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.btn-back {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.btn-back:active {
+  background: var(--line);
+}
+
+/* ================= TARJETAS Y CUENTAS ================= */
+.account-cards-wrap {
+  padding: 0 16px 20px;
+  margin-top: -65px;
+}
+
+.account-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  border: 1.5px solid rgba(207, 215, 230, 0.6);
+  margin-bottom: 16px;
+}
+
+.account-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.account-card-type {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.account-card-type b {
+  color: var(--ink);
+  font-size: 17px;
+}
+
+.account-balance-row {
+  margin: 8px 0 4px;
+}
+
+.account-balance {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--ink);
+  letter-spacing: -0.5px;
+}
+
+.account-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Botones dentro de la tarjeta de cuenta */
+.account-actions-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn-pill {
+  flex: 1;
+  min-height: var(--touch-min);
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 16px;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-pill:active {
+  transform: scale(0.98);
+}
+
+.btn-pill.primary {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+.btn-pill.primary:hover {
+  background: var(--indigo-dark);
+}
+
+.btn-pill.secondary {
+  border: 2px solid var(--indigo);
+  color: var(--indigo);
+  background: #FFFFFF;
+}
+
+.btn-pill.secondary:hover {
+  background: var(--indigo-soft);
+}
+
+/* Tarjeta Destacada de Transferencia Rápida */
+.quick-transfer-box {
+  background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+  color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-transfer-box h2 {
+  font-size: 20px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-transfer-box p {
+  font-size: 16px;
+  color: #E2E8F0;
+  line-height: 1.4;
+}
+
+.btn-cta-big {
+  min-height: var(--touch-btn);
+  background: var(--orange);
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 16px rgba(247, 127, 0, 0.4);
+  transition: all 0.2s var(--ease);
+}
+
+.btn-cta-big:active {
+  transform: scale(0.98);
+  background: var(--orange-dark);
+}
+
+/* Tarjetas Informativas / Secundarias */
+.section-heading {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--ink);
+  margin: 16px 4px 10px;
+}
+
+.mini-card {
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1.5px solid var(--line);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mini-card-info b {
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.mini-card-info span {
+  font-size: 14px;
+  color: var(--muted);
+  display: block;
+}
+
+/* ================= BARRA DE NAVEGACIÓN INFERIOR ================= */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  background: #FFFFFF;
+  border-top: 1.5px solid var(--line);
+  display: flex;
+  z-index: 10;
+}
+
+.nav-tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.nav-tab.active {
+  color: var(--orange);
+}
+
+.nav-tab.active .nav-icon {
+  stroke: var(--orange);
+}
+
+.nav-icon {
+  width: 26px;
+  height: 26px;
+}
+
+/* ================= FORMULARIO DE TRANSFERENCIA ================= */
+.form-step-container {
+  padding: 16px 16px 40px;
+}
+
+.step-indicator-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.step-bullet {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line);
+}
+
+.step-bullet.active {
+  background: var(--indigo);
+}
+
+.step-bullet.completed {
+  background: var(--teal);
+}
+
+/* Pestañas de Destinatario (Guardados vs Nuevo) */
+.recipient-tabs {
+  display: flex;
+  background: #E2E8F0;
+  padding: 4px;
+  border-radius: 14px;
+  margin-bottom: 18px;
+}
+
+.recipient-tab-btn {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+  transition: all 0.2s ease;
+}
+
+.recipient-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--indigo);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Lista de Destinatarios Guardados */
+.contact-item {
+  background: #FFFFFF;
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.contact-item:hover, .contact-item:focus {
+  border-color: var(--indigo);
+  background: #F8FAFC;
+}
+
+.contact-item.selected {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  box-shadow: 0 0 0 3px rgba(46, 196, 164, 0.2);
+}
+
+.contact-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-size: 22px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.contact-details {
+  flex: 1;
+}
+
+.contact-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.contact-bank-info {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Formulario Nuevo Destinatario / Campos */
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.form-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.form-input-wrap {
+  position: relative;
+}
+
+.form-input {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--indigo);
+  box-shadow: 0 0 0 3px rgba(32, 47, 123, 0.15);
+}
+
+.form-input.error {
+  border-color: var(--red);
+  background: var(--red-soft);
+}
+
+.form-select {
+  width: 100%;
+  min-height: 54px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 16px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23202F7B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 20px;
+}
+
+.form-helper-text {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 6px;
+  line-height: 1.35;
+}
+
+.form-error-msg {
+  display: none;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.form-group.has-error .form-error-msg {
+  display: block;
+}
+
+/* Monto Grande en Pantalla */
+.amount-display-box {
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 18px;
+  padding: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.amount-input-big {
+  width: 100%;
+  max-width: 290px;
+  min-height: 64px;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 38px;
+  font-weight: 900;
+  color: var(--navy);
+  background: #F8FAFC;
+  border: 2.5px solid #94A3B8;
+  border-radius: 16px;
+  padding: 8px 16px;
+  box-shadow: inset 0 2px 4px rgba(13, 27, 62, 0.06), 0 2px 8px rgba(13, 27, 62, 0.04);
+  transition: all 0.2s ease;
+  cursor: text;
+}
+
+.amount-input-big:hover {
+  border-color: var(--indigo);
+  background: #FFFFFF;
+}
+
+.amount-input-big:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: #FFFFFF;
+  box-shadow: 0 0 0 4px rgba(13, 143, 114, 0.2), inset 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.amount-input-big.has-error {
+  border-color: var(--red) !important;
+  background: var(--red-soft) !important;
+  color: var(--red) !important;
+}
+
+/* Píldoras de Monto Rápido */
+.quick-amounts {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-quick-amount {
+  min-height: 42px;
+  padding: 0 14px;
+  border-radius: 20px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-size: 15px;
+  font-weight: 800;
+  border: 1px solid var(--line);
+}
+
+.btn-quick-amount:active {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+/* ================= MODAL / PANTALLA RESUMEN SEGURO ================= */
+.safe-summary-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 3px solid var(--indigo);
+  padding: 22px 18px;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+}
+
+.safe-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--line);
+}
+
+.safe-summary-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.safe-summary-title {
+  font-size: 21px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.safe-summary-body {
+  font-size: 19px;
+  line-height: 1.5;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.safe-summary-body strong {
+  color: var(--indigo);
+  font-weight: 900;
+}
+
+.safe-summary-warning {
+  background: #FFFBEB;
+  border: 2px solid #F59E0B;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #92400E;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.safe-summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-confirm-send {
+  min-height: 58px;
+  background: var(--teal);
+  color: #FFFFFF;
+  border-radius: 16px;
+  font-size: 19px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35);
+}
+
+.btn-confirm-send:active {
+  background: #09725a;
+  transform: scale(0.98);
+}
+
+.btn-cancel-review {
+  min-height: 52px;
+  background: #FFFFFF;
+  color: var(--muted);
+  border: 2px solid var(--line);
+  border-radius: 16px;
+  font-size: 17px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-cancel-review:active {
+  background: var(--bg);
+}
+
+/* ================= MODAL CLAVE DINÁMICA ================= */
+.security-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.75);
+  display: flex;
+  align-items: flex-end;
+  z-index: 60;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s var(--ease);
+}
+
+.security-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.security-modal-card {
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 28px 28px 0 0;
+  padding: 24px 20px 34px;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(100%);
+  transition: transform 0.35s var(--ease);
+}
+
+.security-modal-overlay.active .security-modal-card {
+  transform: none;
+}
+
+.security-code-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.security-digit {
+  width: 48px;
+  height: 58px;
+  border-radius: 12px;
+  border: 2px solid var(--line);
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  background: var(--bg);
+  color: var(--navy);
+  user-select: none;
+  pointer-events: none;
+  transition: all 0.15s ease;
+}
+
+.security-digit.filled {
+  border-color: var(--teal);
+  background: #FFFFFF;
+  color: var(--navy);
+  box-shadow: 0 0 0 2px rgba(13, 143, 114, 0.2);
+}
+
+.security-digit.active-cell {
+  border-color: var(--orange);
+  background: #FFFBEB;
+}
+
+.security-pedagogic-warning {
+  background: #EFF6FF;
+  border: 2px solid #3B82F6;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1E40AF;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+/* ================= COMPROBANTE FINAL ================= */
+.receipt-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 24px 18px;
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.receipt-icon-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  color: var(--teal);
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--teal);
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 16px;
+}
+
+.receipt-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-row .label {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.receipt-row .value {
+  color: var(--ink);
+  font-weight: 900;
+  text-align: right;
+  max-width: 60%;
+}
+
+/* ================= ESTADOS Y UTILIDADES ================= */
+.hidden {
+  display: none !important;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+
+/* ==========================================
+   2. INTERFAZ-PUENTE.CSS
+   ========================================== */
+/* ==========================================================================
+   INTERFAZ PUENTE — WIDGET "EL PASAMANOS DIGITAL"
+   Estilos del botón flotante arrastrable, Foco Dinámico (85%),
+   Traducción Semántica, Lectura por voz y Onboarding
+   ========================================================================== */
+
+/* ================= BOTÓN FLOTANTE "¿TE AYUDO?" (ARRASTRABLE) ================= */
+.puente-fab-container {
+  position: absolute;
+  right: 16px;
+  bottom: 84px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  touch-action: none; /* Permite arrastrar libremente */
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.15s ease, opacity 0.25s ease;
+}
+
+.puente-fab-container:active {
+  cursor: grabbing;
+}
+
+/* Ocultar el botón flotante mientras la tarjeta de guía paso a paso esté activa para que no la tape */
+body.dynamic-focus-active .puente-fab-container {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.puente-fab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  background: linear-gradient(135deg, #102048 0%, #1A2F6C 100%);
+  color: #FFFFFF;
+  border: 3px solid var(--mint);
+  border-radius: 50%;
+  box-shadow: 0 8px 26px rgba(13, 27, 62, 0.45);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  animation: puente-pulse 3s infinite ease-out;
+  cursor: pointer;
+  padding: 0;
+}
+
+.puente-fab-btn:active {
+  transform: scale(0.92);
+}
+
+.puente-fab-btn.is-active {
+  animation: none;
+  background: var(--navy);
+  border-color: #EF4444;
+  box-shadow: 0 8px 26px rgba(239, 68, 68, 0.45);
+}
+
+.puente-fab-btn.is-active .icon-open {
+  display: none !important;
+}
+
+.puente-fab-btn.is-active .icon-close {
+  display: block !important;
+}
+
+.puente-fab-btn.is-active .puente-fab-icon {
+  background: #EF4444 !important;
+  color: #FFFFFF !important;
+}
+
+/* ================= WIDGET BACKDROP Y MENÚ DESLIZANTE ================= */
+.puente-widget-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.35);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 38;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.puente-widget-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.puente-widget-menu {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(24px) scale(0.92);
+  transform-origin: bottom right;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.25s ease;
+  z-index: 45;
+}
+
+.puente-widget-menu.open {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.puente-widget-menu .btn-widget-action {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s ease,
+              border-color 0.2s ease,
+              background 0.2s ease;
+}
+
+.puente-widget-menu.open .btn-widget-action:nth-child(1) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.10s;
+}
+
+.puente-widget-menu.open .btn-widget-action:nth-child(2) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.05s;
+}
+
+.puente-widget-menu.open .btn-widget-action:nth-child(3) {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0s;
+}
+
+.btn-widget-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #FFFFFF;
+  color: var(--navy);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 8px 16px 8px 10px;
+  box-shadow: 0 8px 24px rgba(13, 27, 62, 0.22);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 900;
+  min-height: 52px;
+}
+
+.btn-widget-action:hover {
+  transform: translateY(-2px) !important;
+  border-color: var(--teal);
+  box-shadow: 0 10px 28px rgba(13, 27, 62, 0.28);
+}
+
+.btn-widget-action:active {
+  transform: scale(0.96) !important;
+}
+
+.btn-widget-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.btn-widget-text {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: -0.2px;
+}
+
+.btn-widget-badge {
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--teal-light);
+  color: var(--teal);
+  margin-left: 2px;
+  transition: all 0.2s ease;
+}
+
+.btn-widget-action.inactive .btn-widget-badge {
+  background: #F1F5F9;
+  color: var(--muted);
+}
+
+.puente-fab-icon {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--mint);
+  color: #0D1B3E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+
+.puente-fab-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.puente-fab-icon .fab-question-mark {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  color: #0D1B3E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  margin-top: -2px;
+}
+
+.puente-fab-label {
+  display: none;
+}
+
+/* Estado de autoocultamiento (después de 3 trámites exitosos sin ayuda) */
+.puente-fab-container.is-minimized .puente-fab-btn {
+  padding: 6px;
+  border-radius: 50%;
+  animation: none;
+}
+
+.puente-fab-container.is-minimized .puente-fab-label {
+  display: none;
+}
+
+@keyframes puente-pulse {
+  0% {
+    box-shadow: 0 8px 24px rgba(13, 27, 62, 0.4), 0 0 0 0 rgba(46, 196, 164, 0.6);
+  }
+  70%, 100% {
+    box-shadow: 0 8px 24px rgba(13, 27, 62, 0.4), 0 0 0 16px rgba(46, 196, 164, 0);
+  }
+}
+
+/* ================= OFERTA INACTIVIDAD TRAS 15 SEGUNDOS ================= */
+.inactivity-offer-bubble {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: #FFFFFF;
+  border: 2.5px solid var(--teal);
+  border-radius: 20px;
+  padding: 16px;
+  width: 280px;
+  box-shadow: 0 12px 32px rgba(13, 27, 62, 0.3);
+  z-index: 45;
+  display: none;
+  animation: bubble-appear 0.3s var(--ease);
+}
+
+.inactivity-offer-bubble.show {
+  display: block;
+}
+
+.inactivity-offer-bubble p {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.inactivity-offer-btns {
+  display: flex;
+  gap: 8px;
+}
+
+.inactivity-offer-btns button {
+  flex: 1;
+  min-height: 40px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.btn-offer-yes {
+  background: var(--teal);
+  color: #FFFFFF;
+}
+
+.btn-offer-no {
+  background: var(--bg);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+
+@keyframes bubble-appear {
+  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ================= PANEL / BOTTOM SHEET DE INTERFAZ PUENTE (ELIMINADO) ================= */
+.puente-sheet-backdrop,
+.puente-sheet {
+  display: none !important;
+}
+
+.puente-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+
+.puente-sheet-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--mint);
+}
+
+.btn-close-puente {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-puente:active {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Opciones de Asistencia en el Panel */
+.puente-card-option {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.puente-option-info h3 {
+  font-size: 17px;
+  font-weight: 900;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.puente-option-info p {
+  font-size: 14px;
+  color: #CBD5E1;
+  line-height: 1.3;
+}
+
+/* Switch de Accesibilidad */
+.switch-control {
+  position: relative;
+  display: inline-block;
+  width: 58px;
+  height: 34px;
+  flex: none;
+}
+
+.switch-control input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: .3s;
+  border-radius: 34px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .switch-slider {
+  background-color: var(--mint);
+}
+
+input:checked + .switch-slider:before {
+  transform: translateX(24px);
+  background-color: #0D1B3E;
+}
+
+/* Botón de Foco Inmediato */
+.btn-puente-action {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  background: var(--mint);
+  color: #0D1B3E;
+  font-size: 17px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(46, 196, 164, 0.3);
+}
+
+.btn-puente-action:active {
+  transform: scale(0.98);
+}
+
+/* Botón para Escuchar Explicación */
+.btn-speech-trigger {
+  min-height: 48px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 16px;
+}
+
+.btn-speech-trigger.speaking {
+  background: #C52224;
+  border-color: #EF4444;
+  animation: pulse-speaking 1.2s infinite ease-in-out;
+}
+
+@keyframes pulse-speaking {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* ================= FOCO DINÁMICO (RESALTADO DE CASILLA SIN OSCURECER) ================= */
+.dynamic-focus-overlay {
+  display: none !important; /* Desactivado el oscurecimiento de la pantalla */
+}
+
+/* Casilla de formulario o elemento que se remarca sin alterar su tamaño ni espaciado */
+.spotlight-active {
+  position: relative !important;
+  z-index: 10 !important;
+  box-shadow: 0 0 0 3.5px var(--teal), 0 6px 20px rgba(13, 143, 114, 0.25) !important;
+  border-color: var(--teal) !important;
+  transition: box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+/* Botones en Modo Tutorial: se iluminan de color verde con texto e icono legibles */
+button.spotlight-active,
+.btn-cta-big.spotlight-active,
+.btn-confirm-send.spotlight-active,
+.btn-add-new-recipient-top.spotlight-active,
+#btnQuickTransfer.spotlight-active {
+  background: var(--teal) !important;
+  color: #FFFFFF !important;
+  border-color: var(--teal) !important;
+  box-shadow: 0 0 0 3.5px #FFFFFF, 0 0 0 6.5px var(--teal), 0 8px 24px rgba(13, 143, 114, 0.45) !important;
+}
+
+button.spotlight-active *,
+.btn-cta-big.spotlight-active *,
+.btn-confirm-send.spotlight-active *,
+#btnQuickTransfer.spotlight-active * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
+.spotlight-active .form-input,
+.spotlight-active .form-select {
+  background: #FFFFFF !important;
+  border-color: var(--teal) !important;
+  color: var(--ink) !important;
+}
+
+.spotlight-active .form-label {
+  color: var(--teal) !important;
+  font-weight: 900 !important;
+}
+
+/* Botón accesible de lectura por voz para cada sección/campo */
+.btn-speak-section {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  border: 1.5px solid #C3D4FB;
+  cursor: pointer;
+  margin-left: 8px;
+  flex: none;
+  transition: all 0.2s ease;
+}
+
+.btn-speak-section:hover, .btn-speak-section:focus {
+  background: var(--indigo);
+  color: #FFFFFF;
+  transform: scale(1.08);
+}
+
+.btn-speak-section.speaking {
+  background: var(--orange);
+  color: #FFFFFF;
+  border-color: var(--orange-dark);
+  animation: pulse-speaking 1s infinite alternate;
+}
+
+/* Tarjeta flotante de guía explicativa tipo globo de ayuda (Wireframe style) */
+.spotlight-guide-card {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 20px;
+  z-index: 55;
+  background: #FFFFFF;
+  border: 2px solid var(--teal);
+  border-radius: 22px;
+  padding: 18px 16px;
+  box-shadow: 0 16px 40px rgba(13, 27, 62, 0.28);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              visibility 0.25s ease,
+              box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+.spotlight-guide-card.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.spotlight-guide-card.is-docked-top {
+  box-shadow: 0 20px 44px rgba(13, 27, 62, 0.35);
+}
+
+.spotlight-guide-card h4 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.spotlight-guide-card p {
+  font-size: 16px;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.spotlight-guide-btns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-spotlight-voice {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  border: 1.5px solid #C3D4FB;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-spotlight-voice:hover, .btn-spotlight-voice:focus {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+.btn-spotlight-voice.speaking {
+  background: var(--orange);
+  color: #FFFFFF;
+  border-color: var(--orange-dark);
+}
+
+.btn-spotlight-done {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 28px;
+  background: var(--teal);
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(13, 143, 114, 0.3);
+}
+
+.btn-close-spotlight-x {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 1.5px solid #CBD5E1;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: none;
+}
+
+.btn-close-spotlight-x:hover,
+.btn-close-spotlight-x:focus {
+  background: var(--red-soft);
+  color: var(--red);
+  border-color: var(--red);
+  transform: scale(1.08);
+}
+
+/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
+.semantic-translation-badge {
+  display: none !important;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--indigo-soft);
+  border: 1.5px solid var(--indigo);
+  color: var(--indigo);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  margin-left: 6px;
+  flex: none;
+  line-height: 1;
+  padding: 0;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+}
+
+.semantic-translation-badge:hover, .semantic-translation-badge:focus {
+  background: var(--indigo);
+  color: #FFFFFF;
+  transform: scale(1.1);
+}
+
+/* ================= CONTROL DE LENGUAJE SIMPLE / BANCA ESTÁNDAR ================= */
+
+/* 1. ESTADO INACTIVO (Lenguaje simple apagado / Banca estándar) */
+.term-simplified {
+  display: none !important;
+}
+
+.term-technical {
+  display: inline-block;
+}
+
+/* Ocultar textos explicativos que ayudan al adulto mayor a entender lo que se está haciendo */
+.semantic-helper-text {
+  display: none !important;
+}
+
+.form-helper-text {
+  display: none !important;
+}
+
+/* 2. ESTADO ACTIVO (Lenguaje simple encendido en appMainContainer) */
+.app-semantic-active .term-technical {
+  display: none !important;
+}
+
+.app-semantic-active .term-simplified {
+  display: inline-block !important;
+}
+
+.app-semantic-active .semantic-translation-badge {
+  display: inline-flex !important;
+}
+
+.app-semantic-active .semantic-helper-text {
+  display: block !important;
+}
+
+.app-semantic-active span.semantic-helper-text {
+  display: inline-block !important;
+}
+
+.app-semantic-active .form-helper-text {
+  display: block !important;
+}
+
+/* Modal explicativo de un término del glosario */
+.term-modal-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 62, 0.7);
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.term-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.term-modal-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 24px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.35);
+}
+
+.term-modal-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--indigo);
+  margin-bottom: 4px;
+}
+
+.term-modal-subtitle {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.term-modal-meaning {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.term-modal-example {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 18px;
+}
+
+.term-modal-btns {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-listen-term {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  font-weight: 800;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-close-term {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 12px;
+  background: var(--indigo);
+  color: #FFFFFF;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+/* ================= BIENVENIDA / ONBOARDING CONDICIONAL (5 SEG) ================= */
+.puente-onboarding-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 62, 0.88);
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s var(--ease);
+}
+
+.puente-onboarding-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.puente-onboarding-card {
+  background: #FFFFFF;
+  border-radius: 26px;
+  padding: 24px 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  animation: bubble-appear 0.4s var(--ease);
+}
+
+.onboarding-badge {
+  display: inline-block;
+  background: var(--mint);
+  color: #0D1B3E;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.puente-onboarding-card h2 {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+
+.puente-onboarding-card p {
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+.puente-onboarding-card button {
+  width: 100%;
+  min-height: 52px;
+  background: var(--indigo);
+  color: #FFFFFF;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+/* ================= NUEVOS ESTILOS: BUSCADOR, TABS Y BOTONES DE CUENTA ================= */
+.recipient-search-box {
+  margin-bottom: 16px;
+}
+
+.recipient-search-box label {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.recipient-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Botón Agregar Nuevo Centrado Superior */
+.add-new-recipient-header-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.btn-add-new-recipient-top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--navy);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 27, 62, 0.18);
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-add-new-recipient-top:hover {
+  background: #1E293B;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 27, 62, 0.24);
+}
+
+.btn-add-new-recipient-top:active {
+  transform: scale(0.98);
+}
+
+.recipient-search-input-wrap svg {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.recipient-search-input {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 14px 12px 46px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.recipient-search-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13, 143, 114, 0.15);
+}
+
+/* Botones de Tipo de Cuenta tipo Píldoras */
+.account-type-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn-account-type-option {
+  min-height: 50px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  color: var(--navy);
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-account-type-option:hover {
+  border-color: var(--indigo);
+  background: #F8FAFC;
+}
+
+.btn-account-type-option.selected {
+  border-color: var(--teal) !important;
+  background: var(--teal-light) !important;
+  color: var(--teal) !important;
+  box-shadow: 0 0 0 2px rgba(46, 196, 164, 0.3);
+}
+
+/* Teclado numérico en pantalla */
+.virtual-num-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  max-width: 320px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-keypad-digit {
+  min-height: 54px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 2px solid var(--line);
+  color: var(--navy);
+  font-size: 24px;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+
+.btn-keypad-digit:active {
+  background: var(--indigo-soft);
+  transform: scale(0.95);
+}
+
+.btn-keypad-action {
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  background: #F1F5F9 !important;
+}
+
+/* Botón Continuar y Cancelar extendidos a lo largo */
+.form-bottom-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 26px;
+  width: 100%;
+}
+
+.btn-cta-full-width {
+  width: 100% !important;
+  min-height: 56px;
+  border-radius: 16px;
+  font-size: 18px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.btn-cancel-full-width {
+  width: 100% !important;
+  min-height: 48px;
+  background: transparent;
+  color: var(--muted);
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-cancel-full-width:hover {
+  color: var(--ink);
+}
+
+
+
+/* ==========================================
+   3. FACILITATOR.CSS
+   ========================================== */
+/* ==========================================================================
+   INTERFAZ PUENTE — PANEL DEL FACILITADOR (MODAL OCULTO)
+   Acceso: 5 toques en el banner superior INACAP
+   Métricas de pruebas con personas mayores (P01 a P08) y exportación CSV
+   ========================================================================== */
+
+.facilitator-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(13, 27, 62, 0.85);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s var(--ease);
+}
+
+.facilitator-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.facilitator-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 390px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  border: 2px solid var(--navy);
+}
+
+.facilitator-header {
+  background: #141E38;
+  color: #FFFFFF;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.facilitator-header h2 {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--mint);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-close-facilitator {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pestañas del Panel */
+.facilitator-tabs {
+  display: flex;
+  background: #E2E8F0;
+  border-bottom: 1.5px solid var(--line);
+  padding: 4px;
+}
+
+.fac-tab-btn {
+  flex: 1;
+  min-height: 38px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.fac-tab-btn.active {
+  background: #FFFFFF;
+  color: var(--navy);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.facilitator-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 16px;
+  font-size: 15px;
+}
+
+.fac-tab-pane {
+  display: none;
+}
+
+.fac-tab-pane.active {
+  display: block;
+}
+
+/* Secciones y controles */
+.fac-control-group {
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.fac-control-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.fac-control-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 10px;
+  line-height: 1.35;
+}
+
+.fac-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Opciones de Radio / Segmented */
+.fac-segmented {
+  display: flex;
+  background: #E2E8F0;
+  border-radius: 10px;
+  padding: 3px;
+  width: 100%;
+}
+
+.fac-segmented-btn {
+  flex: 1;
+  min-height: 36px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.fac-segmented-btn.active {
+  background: #FFFFFF;
+  color: var(--indigo);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Selector de participante */
+.fac-participant-select {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  padding: 8px 12px;
+  font-size: 15px;
+  font-weight: 800;
+  background: #FFFFFF;
+}
+
+/* Métricas en vivo */
+.fac-metrics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.fac-metric-box {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+
+.fac-metric-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--indigo);
+}
+
+.fac-metric-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Tabla de Registro CSV */
+.fac-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 12px;
+  max-height: 220px;
+}
+
+.fac-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.fac-table th {
+  background: #E2E8F0;
+  padding: 8px 6px;
+  text-align: left;
+  font-weight: 800;
+  color: var(--navy);
+  border-bottom: 1.5px solid var(--line);
+  white-space: nowrap;
+}
+
+.fac-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.btn-fac-action {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-fac-primary {
+  background: var(--indigo);
+  color: #FFFFFF;
+}
+
+.btn-fac-secondary {
+  background: #FFFFFF;
+  border: 1.5px solid var(--line);
+  color: var(--navy);
+}
+
+.btn-fac-danger {
+  background: var(--red-soft);
+  color: var(--red);
+  border: 1px solid #FECACA;
+}
+
+  </style>
 </head>
 <body>
 
@@ -1021,28 +3413,2571 @@
     </main>
   </div>
 
-  <!-- Scripts del Prototipo -->
-  <script src="js/speech.js"></script>
-  <script src="js/interfaz-puente.js"></script>
-  <script src="js/facilitator.js"></script>
-  <script src="js/app.js"></script>
-
+  <!-- Scripts del Prototipo (Empaquetados Standalone) -->
   <script>
-    // Alternancia de pantalla completa en escritorio
-    document.getElementById('btnToggleFullScreen').addEventListener('click', function() {
-      const frame = document.getElementById('appMainContainer');
-      if (!document.fullscreenElement) {
-        if (frame.requestFullscreen) {
-          frame.requestFullscreen();
-        } else if (frame.webkitRequestFullscreen) {
-          frame.webkitRequestFullscreen();
+/* ==========================================
+   GLOSARIO DE TÉRMINOS BANCARIOS (Datos Embebidos)
+   ========================================== */
+window.PUENTE_GLOSSARY_DATA = {
+  "version": "1.0.0",
+  "descripcion": "Glosario de Traducción Semántica de Interfaz Puente — BancoEstado (Simulación Académica INACAP)",
+  "terminos": [
+    {
+      "id": "transferencia_terceros",
+      "termino_bancario": "Transferencia a terceros",
+      "traduccion_simple": "Enviar dinero a otra persona",
+      "pregunta_guia": "¿A quién deseas pasarle dinero hoy?",
+      "explicacion": "Significa mover dinero de tu CuentaRUT a la cuenta de otra persona, ya sea un familiar, amigo o conocido.",
+      "ejemplo": "Por ejemplo: pasarle $50.000 a tu amiga Rosa Pérez."
+    },
+    {
+      "id": "destinatario",
+      "termino_bancario": "Destinatario",
+      "traduccion_simple": "¿A quién le quieres enviar el dinero?",
+      "pregunta_guia": "¿Quién es la persona que recibirá tu dinero?",
+      "explicacion": "Es el nombre y datos de la persona que va a recibir tu dinero.",
+      "ejemplo": "Ejemplo: Rosa Pérez."
+    },
+    {
+      "id": "inscribir_destinatario",
+      "termino_bancario": "Inscribir destinatario",
+      "traduccion_simple": "Guardar los datos de una persona nueva",
+      "pregunta_guia": "¿Quieres guardar a esta persona para no volver a escribir sus datos?",
+      "explicacion": "Es como anotar el nombre y cuenta de alguien en tu libreta telefónica, para que la próxima vez sea más rápido.",
+      "ejemplo": "Anotar el RUT y cuenta de Rosa por primera vez."
+    },
+    {
+      "id": "cuenta_cargo",
+      "termino_bancario": "Cuenta de cargo",
+      "traduccion_simple": "¿De qué cuenta sale tu dinero?",
+      "pregunta_guia": "¿De dónde sacaremos el dinero para enviar?",
+      "explicacion": "Es tu propia cuenta bancaria desde donde se descuenta el monto que vas a transferir.",
+      "ejemplo": "Tu CuentaRUT donde tienes tus $350.000 disponibles."
+    },
+    {
+      "id": "cuenta_destino",
+      "termino_bancario": "Cuenta de destino",
+      "traduccion_simple": "¿Dónde llegará el dinero?",
+      "pregunta_guia": "¿A qué número de cuenta de la otra persona enviamos la plata?",
+      "explicacion": "Es la cuenta bancaria de la persona que recibirá tu transferencia.",
+      "ejemplo": "La Cuenta Corriente de Rosa Pérez."
+    },
+    {
+      "id": "tipo_cuenta",
+      "termino_bancario": "Tipo de cuenta (CuentaRUT, Cuenta Vista, Cuenta Corriente)",
+      "traduccion_simple": "¿Qué clase de cuenta tiene esa persona?",
+      "pregunta_guia": "¿Qué tipo de cuenta bancaria te dio la persona?",
+      "explicacion": "Los bancos tienen distintos tipos de cuentas: CuentaRUT (la más común de BancoEstado), Cuenta Vista o Cuenta Corriente.",
+      "ejemplo": "Rosa tiene Cuenta Corriente en Banco de Chile."
+    },
+    {
+      "id": "banco_destino",
+      "termino_bancario": "Banco de destino",
+      "traduccion_simple": "¿En qué banco está la cuenta de la otra persona?",
+      "pregunta_guia": "¿En qué institución bancaria tiene su cuenta la otra persona?",
+      "explicacion": "Es la institución donde la otra persona tiene su dinero guardado.",
+      "ejemplo": "BancoEstado, Banco de Chile, BCI, Santander, etc."
+    },
+    {
+      "id": "monto",
+      "termino_bancario": "Monto",
+      "traduccion_simple": "¿Cuánto dinero quieres enviar?",
+      "pregunta_guia": "¿Qué cantidad exacta en pesos vas a transferir?",
+      "explicacion": "Es la cifra en pesos chilenos que deseas enviar a la otra persona.",
+      "ejemplo": "Por ejemplo: $50.000 (cincuenta mil pesos)."
+    },
+    {
+      "id": "glosa",
+      "termino_bancario": "Glosa",
+      "traduccion_simple": "Mensaje para la otra persona (opcional)",
+      "pregunta_guia": "¿Quieres dejarle un mensaje o recordatorio sobre este pago?",
+      "explicacion": "Es un texto breve y voluntario para explicar el motivo del pago.",
+      "ejemplo": "Por ejemplo: 'Regalo cumpleaños' o 'Pago del almuerzo'."
+    },
+    {
+      "id": "saldo_disponible",
+      "termino_bancario": "Saldo disponible",
+      "traduccion_simple": "Dinero que tienes listo para usar",
+      "pregunta_guia": "¿Cuánta plata tienes en tu cuenta en este momento?",
+      "explicacion": "Es el dinero real que puedes gastar o transferir hoy mismo, sin retenciones.",
+      "ejemplo": "Tu saldo disponible actual es de $350.000."
+    },
+    {
+      "id": "autorizar_clave_dinamica",
+      "termino_bancario": "Autorizar con clave dinámica",
+      "traduccion_simple": "Confirmar con código de seguridad",
+      "pregunta_guia": "¿Confirmas el envío con tu código de seguridad BE Pass?",
+      "explicacion": "Es un candado de seguridad: un código de 6 números que solo tú conoces para asegurar que nadie envíe dinero por ti.",
+      "ejemplo": "En esta prueba simulada usaremos el código 123456."
+    },
+    {
+      "id": "comprobante",
+      "termino_bancario": "Comprobante",
+      "traduccion_simple": "Recibo que demuestra que el dinero fue enviado",
+      "pregunta_guia": "¿Deseas ver o guardar el recibo de tu transferencia?",
+      "explicacion": "Es como la boleta de una compra: el respaldo oficial que demuestra la hora, el monto y a quién le enviaste el dinero.",
+      "ejemplo": "Puedes guardarlo o mostrárselo a Rosa si te lo pide."
+    }
+  ]
+};
+
+/* ==========================================
+   1. SPEECH.JS - Síntesis de Voz (TTS)
+   ========================================== */
+/**
+ * INTERFAZ PUENTE — MÓDULO DE SÍNTESIS DE VOZ (TTS)
+ * Cumple con accesibilidad COGA y Web Speech API.
+ * Voz optimizada para español de Chile y Latinoamérica con cadencia pausada.
+ */
+
+class PuenteSpeech {
+  constructor() {
+    this.synth = window.speechSynthesis || null;
+    this.voice = null;
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    this.onStatusChange = null;
+
+    if (this.synth) {
+      this.initVoices();
+      if (this.synth.onvoiceschanged !== undefined) {
+        this.synth.onvoiceschanged = () => this.initVoices();
+      }
+    }
+  }
+
+  initVoices() {
+    if (!this.synth) return;
+    const voices = this.synth.getVoices() || [];
+    // Prioridad: español de Chile, neutro latinoamericano o variantes hispanas
+    const preferredLangs = ['es-CL', 'es-419', 'es-MX', 'es-US', 'es-AR', 'es-ES'];
+
+    for (const pref of preferredLangs) {
+      const match = voices.find(v => v.lang && v.lang.replace('_', '-').toLowerCase() === pref.toLowerCase());
+      if (match) {
+        this.voice = match;
+        return;
+      }
+    }
+
+    // Fallback: cualquier voz en español
+    const anyEs = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('es'));
+    if (anyEs) {
+      this.voice = anyEs;
+    }
+  }
+
+  prepareTextForSpeech(text) {
+    if (!text) return '';
+    let clean = text.replace(/[*_#]/g, '').trim();
+
+    // 1. Quitar prefijos técnicos de moneda (CLP, CLP$)
+    clean = clean.replace(/\bCLP\s*\$?/gi, '');
+
+    // 2. Reemplazar $ seguido de cifras por su valor numérico acompañado exclusivamente de la palabra "pesos" (o "peso" si es 1)
+    // Ejemplo: $50.000 -> 50.000 pesos; $ 350.000 -> 350.000 pesos; $1 -> 1 peso
+    clean = clean.replace(/\$\s*(\d{1,3}(?:\.\d{3})+|\d+)/g, (match, numStr) => {
+      const cleanNum = numStr.trim();
+      return cleanNum === '1' ? '1 peso' : `${cleanNum} pesos`;
+    });
+
+    // 3. Reemplazar cualquier mención de dólares o pesos chilenos para que la voz solo diga "pesos"
+    clean = clean.replace(/\b(d[oó]lares\s+americanos?|d[oó]lares|d[oó]lar)\b/gi, 'pesos');
+    clean = clean.replace(/\bpesos\s+chilenos?\b/gi, 'pesos');
+
+    // 4. Si queda algún símbolo $ residual
+    clean = clean.replace(/\$/g, 'pesos');
+
+    // 5. Evitar redundancias como "pesos pesos"
+    clean = clean.replace(/\bpesos\s+pesos\b/gi, 'pesos');
+
+    // 6. Normalizar espacios
+    clean = clean.replace(/\s+/g, ' ').trim();
+
+    return clean;
+  }
+
+  speak(text, onEnd) {
+    if (!this.synth) {
+      console.warn('Síntesis de voz no soportada en este navegador.');
+      if (onEnd) onEnd();
+      return;
+    }
+
+    // Si ya está hablando, detener para evitar solapamientos
+    this.stop();
+
+    const cleanText = this.prepareTextForSpeech(text);
+    if (!cleanText) return;
+
+    this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
+    this.currentUtterance.lang = this.voice ? this.voice.lang : 'es-CL';
+    if (this.voice) {
+      this.currentUtterance.voice = this.voice;
+    }
+    // Velocidad pausada (0.88 - 0.90) para que Elena y personas mayores comprendan sin apuro
+    this.currentUtterance.rate = 0.88;
+    this.currentUtterance.pitch = 1.0;
+
+    this.isSpeaking = true;
+    if (this.onStatusChange) this.onStatusChange(true);
+
+    this.currentUtterance.onend = () => {
+      this.isSpeaking = false;
+      this.currentUtterance = null;
+      if (this.onStatusChange) this.onStatusChange(false);
+      if (onEnd) onEnd();
+    };
+
+    this.currentUtterance.onerror = (e) => {
+      console.warn('Error en SpeechSynthesis:', e);
+      this.isSpeaking = false;
+      this.currentUtterance = null;
+      if (this.onStatusChange) this.onStatusChange(false);
+      if (onEnd) onEnd();
+    };
+
+    try {
+      this.synth.speak(this.currentUtterance);
+    } catch (err) {
+      console.error('Error al ejecutar speak():', err);
+      this.isSpeaking = false;
+      if (this.onStatusChange) this.onStatusChange(false);
+      if (onEnd) onEnd();
+    }
+  }
+
+  stop() {
+    if (this.synth) {
+      try {
+        this.synth.cancel();
+      } catch (e) {}
+    }
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    if (this.onStatusChange) this.onStatusChange(false);
+  }
+}
+
+// Instancia global
+window.puenteSpeech = new PuenteSpeech();
+
+
+/* ==========================================
+   2. INTERFAZ-PUENTE.JS - Pasamanos Digital
+   ========================================== */
+/**
+ * INTERFAZ PUENTE — PASAMANOS DIGITAL
+ * Autores: Carlos Valdés & Sebastián Mardones (INACAP Santiago Centro)
+ * Funciones: Botón arrastrable, Foco Dinámico (85%), Traducción Semántica (12 términos),
+ * Inactividad a los 15s, Resumen Seguro determinista, Modo Práctica y Autoocultamiento.
+ */
+
+class InterfazPuente {
+  constructor() {
+    this.enabled = true; // Controlado por el Facilitador
+    this.semanticMode = true; // Traducción activa por defecto
+    this.practiceMode = false;
+    this.inactivitySeconds = 0;
+    this.inactivityTimer = null;
+    this.INACTIVITY_THRESHOLD = 15; // 15 segundos requeridos
+    this.successiveIndependentRuns = 0; // Para autoocultamiento
+    this.glossary = [];
+    this.activeSpotlightElement = null;
+    this.isTutorialActive = false; // Solo se cierra con la 'x' o con 'Listo' al final
+
+    // Elementos DOM
+    this.fabContainer = null;
+    this.fabBtn = null;
+    this.sheetBackdrop = null;
+    this.sheet = null;
+    this.inactivityBubble = null;
+    this.dynamicFocusOverlay = null;
+    this.spotlightCard = null;
+    this.practiceBanner = null;
+    this.onboardingOverlay = null;
+    this.termModalOverlay = null;
+
+    this.init();
+  }
+
+  async init() {
+    this.cacheElements();
+    await this.loadGlossary();
+    this.setupDraggable();
+    this.setupEventListeners();
+    this.setupInactivityWatchdog();
+    this.checkOnboarding();
+    this.toggleSemanticMode(this.semanticMode, false);
+    this.updateLanguageWidgetBadge();
+    this.setupScrollGuards();
+  }
+
+  cacheElements() {
+    this.fabContainer = document.getElementById('puenteFabContainer');
+    this.fabBtn = document.getElementById('puenteFabBtn');
+    this.widgetMenu = document.getElementById('puenteWidgetMenu');
+    this.widgetBackdrop = document.getElementById('puenteWidgetBackdrop');
+    this.btnWidgetSpeech = document.getElementById('btnWidgetSpeech');
+    this.btnWidgetTutorial = document.getElementById('btnWidgetTutorial');
+    this.btnWidgetLanguage = document.getElementById('btnWidgetLanguage');
+    this.badgeWidgetLanguage = document.getElementById('badgeWidgetLanguage');
+    this.isWidgetMenuOpen = false;
+
+    this.sheetBackdrop = document.getElementById('puenteSheetBackdrop');
+    this.sheet = document.getElementById('puenteSheet');
+    this.inactivityBubble = document.getElementById('inactivityOfferBubble');
+    this.dynamicFocusOverlay = document.getElementById('dynamicFocusOverlay');
+    this.spotlightCard = document.getElementById('spotlightGuideCard');
+    this.practiceBanner = document.getElementById('practiceBanner');
+    this.onboardingOverlay = document.getElementById('puenteOnboardingOverlay');
+    this.termModalOverlay = document.getElementById('termModalOverlay');
+  }
+
+  async loadGlossary() {
+    if (window.PUENTE_GLOSSARY_DATA && window.PUENTE_GLOSSARY_DATA.terminos) {
+      this.glossary = window.PUENTE_GLOSSARY_DATA.terminos;
+      return;
+    }
+    try {
+      const res = await fetch('./data/glossary.json');
+      const data = await res.json();
+      this.glossary = data.terminos || [];
+    } catch (e) {
+      console.warn('Cargando glosario fallback integrado:', e);
+      // Fallback integrado para garantizar funcionamiento 100% offline
+      this.glossary = [
+        { id: "transferencia_terceros", termino_bancario: "Transferencia a terceros", traduccion_simple: "Enviar dinero a otra persona", explicacion: "Significa pasarle dinero desde tu cuenta a la de otra persona." },
+        { id: "destinatario", termino_bancario: "Destinatario", traduccion_simple: "¿A quién le quieres enviar el dinero?", explicacion: "Es la persona que recibirá tu dinero." },
+        { id: "inscribir_destinatario", termino_bancario: "Inscribir destinatario", traduccion_simple: "Guardar los datos de una persona nueva", explicacion: "Es guardar el RUT y cuenta de alguien para no tener que escribirlos de nuevo." },
+        { id: "cuenta_cargo", termino_bancario: "Cuenta de cargo", traduccion_simple: "¿De qué cuenta sale tu dinero?", explicacion: "Es tu propia CuentaRUT desde donde se descuenta el monto." },
+        { id: "cuenta_destino", termino_bancario: "Cuenta de destino", traduccion_simple: "Cuenta donde llegará el dinero", explicacion: "Es la cuenta bancaria de la persona a quien le transfieres." },
+        { id: "tipo_cuenta", termino_bancario: "Tipo de cuenta (CuentaRUT, Cuenta Vista, Cuenta Corriente)", traduccion_simple: "¿Qué clase de cuenta tiene esa persona?", explicacion: "Las cuentas pueden ser CuentaRUT, Cuenta Vista o Cuenta Corriente." },
+        { id: "banco_destino", termino_bancario: "Banco de destino", traduccion_simple: "¿En qué banco está la cuenta de la otra persona?", explicacion: "Es la institución donde la otra persona tiene su dinero." },
+        { id: "monto", termino_bancario: "Monto", traduccion_simple: "¿Cuánto dinero quieres enviar?", explicacion: "Es la cantidad en pesos que vas a transferir." },
+        { id: "glosa", termino_bancario: "Glosa", traduccion_simple: "Mensaje para la otra persona (opcional)", explicacion: "Es un texto voluntario para explicar el motivo del pago." },
+        { id: "saldo_disponible", termino_bancario: "Saldo disponible", traduccion_simple: "Dinero que tienes listo para usar", explicacion: "Es el dinero real que puedes gastar o transferir hoy." },
+        { id: "autorizar_clave_dinamica", termino_bancario: "Autorizar con clave dinámica", traduccion_simple: "Confirmar con código de seguridad", explicacion: "Es un código de 6 números para confirmar que eres tú." },
+        { id: "comprobante", termino_bancario: "Comprobante", traduccion_simple: "Recibo que demuestra que el dinero fue enviado", explicacion: "Es el documento que respalda la transferencia." }
+      ];
+    }
+  }
+
+  /* ================= ARRASTRAR EL BOTÓN (DRAGGABLE) ================= */
+  setupDraggable() {
+    if (!this.fabContainer || !this.fabBtn) return;
+
+    let isDragging = false;
+    let startX = 0, startY = 0;
+    let initialLeft = 0, initialTop = 0;
+    let hasMoved = false;
+
+    const onPointerDown = (e) => {
+      // Ignora clic secundario o clics dentro del menú emergente
+      if (e.button !== undefined && e.button !== 0) return;
+      if (e.target.closest('.puente-widget-menu') || e.target.closest('.inactivity-offer-bubble')) return;
+
+      isDragging = true;
+      hasMoved = false;
+
+      const rect = this.fabContainer.getBoundingClientRect();
+      const parentRect = this.fabContainer.parentElement.getBoundingClientRect();
+
+      startX = e.clientX || (e.touches && e.touches[0].clientX);
+      startY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      initialLeft = rect.left - parentRect.left;
+      initialTop = rect.top - parentRect.top;
+    };
+
+    const onPointerMove = (e) => {
+      if (!isDragging) return;
+
+      const currentX = e.clientX || (e.touches && e.touches[0].clientX);
+      const currentY = e.clientY || (e.touches && e.touches[0].clientY);
+
+      const dx = currentX - startX;
+      const dy = currentY - startY;
+
+      // Solo iniciar cambio de coordenadas si realmente hubo arrastre (más de 6px)
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        if (!hasMoved) {
+          hasMoved = true;
+          this.fabContainer.style.transition = 'none';
+          this.fabContainer.style.bottom = 'auto';
+          this.fabContainer.style.right = 'auto';
         }
+
+        const parentRect = this.fabContainer.parentElement.getBoundingClientRect();
+        const btnRect = this.fabBtn.getBoundingClientRect();
+
+        let newLeft = initialLeft + dx;
+        let newTop = initialTop + dy;
+
+        // Límites para que nunca salga del marco
+        const maxLeft = parentRect.width - btnRect.width - 10;
+        const maxTop = parentRect.height - btnRect.height - 70;
+
+        newLeft = Math.max(10, Math.min(newLeft, maxLeft));
+        newTop = Math.max(50, Math.min(newTop, maxTop));
+
+        this.fabContainer.style.left = `${newLeft}px`;
+        this.fabContainer.style.top = `${newTop}px`;
+      }
+    };
+
+    const onPointerUp = () => {
+      if (!isDragging) return;
+      isDragging = false;
+      if (hasMoved) {
+        this.fabContainer.style.transition = 'transform 0.15s ease, opacity 0.25s ease';
+      }
+    };
+
+    this.fabBtn.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    this.fabBtn.addEventListener('touchstart', onPointerDown, { passive: true });
+    window.addEventListener('touchmove', onPointerMove, { passive: true });
+    window.addEventListener('touchend', onPointerUp);
+
+    // Si no hubo arrastre significativo, se cuenta como clic
+    this.fabBtn.addEventListener('click', (e) => {
+      if (hasMoved) {
+        e.stopPropagation();
+        return;
+      }
+      this.toggleWidgetMenu();
+    });
+  }
+
+  /* ================= WATCHDOG DE INACTIVIDAD (15 SEGUNDOS) ================= */
+  setupInactivityWatchdog() {
+    const resetTimer = () => {
+      this.inactivitySeconds = 0;
+      if (this.inactivityBubble) {
+        this.inactivityBubble.classList.remove('show');
+      }
+    };
+
+    ['click', 'touchstart', 'keydown', 'input', 'scroll'].forEach(evt => {
+      window.addEventListener(evt, resetTimer, { passive: true });
+    });
+
+    this.inactivityTimer = setInterval(() => {
+      if (!this.enabled) return;
+      // No activar en comprobante o si la ayuda ya está abierta
+      if (window.appRouter && window.appRouter.currentView === 'receipt') return;
+      if (this.sheet && this.sheet.classList.contains('open')) return;
+      if (this.dynamicFocusOverlay && this.dynamicFocusOverlay.classList.contains('active')) return;
+
+      this.inactivitySeconds++;
+      if (this.inactivitySeconds === this.INACTIVITY_THRESHOLD) {
+        this.triggerInactivityOffer();
+      }
+    }, 1000);
+  }
+
+  triggerInactivityOffer() {
+    if (!this.inactivityBubble) return;
+    this.inactivityBubble.classList.add('show');
+  }
+
+  dismissInactivityOffer() {
+    if (this.inactivityBubble) {
+      this.inactivityBubble.classList.remove('show');
+    }
+    this.inactivitySeconds = 0;
+  }
+
+  /* ================= SEGURIDAD DE ENCUADRE Y SCROLL ================= */
+  setupScrollGuards() {
+    const frame = document.getElementById('appMainContainer');
+    if (frame) {
+      frame.addEventListener('scroll', () => {
+        if (frame.scrollTop !== 0 || frame.scrollLeft !== 0) {
+          frame.scrollTop = 0;
+          frame.scrollLeft = 0;
+        }
+      }, { passive: true });
+    }
+    const screenContainer = document.querySelector('.screen-container');
+    if (screenContainer) {
+      screenContainer.addEventListener('scroll', () => {
+        if (screenContainer.scrollTop !== 0 || screenContainer.scrollLeft !== 0) {
+          screenContainer.scrollTop = 0;
+          screenContainer.scrollLeft = 0;
+        }
+      }, { passive: true });
+    }
+  }
+
+  resetFrameScroll() {
+    const frame = document.getElementById('appMainContainer');
+    if (frame) {
+      if (frame.scrollTop !== 0) frame.scrollTop = 0;
+      if (frame.scrollLeft !== 0) frame.scrollLeft = 0;
+    }
+    const screenContainer = document.querySelector('.screen-container');
+    if (screenContainer) {
+      if (screenContainer.scrollTop !== 0) screenContainer.scrollTop = 0;
+      if (screenContainer.scrollLeft !== 0) screenContainer.scrollLeft = 0;
+    }
+    const appWrapper = document.querySelector('.app-wrapper');
+    if (appWrapper) {
+      if (appWrapper.scrollTop !== 0) appWrapper.scrollTop = 0;
+      if (appWrapper.scrollLeft !== 0) appWrapper.scrollLeft = 0;
+    }
+  }
+
+  clearPreviousHighlight() {
+    if (this.activeSpotlightElement) {
+      this.activeSpotlightElement.classList.remove('spotlight-active');
+      this.activeSpotlightElement = null;
+    }
+  }
+
+  /* ================= POSICIONAMIENTO AUTOMÁTICO DE LA TARJETA TUTORIAL ================= */
+  positionSpotlightCard(targetEl) {
+    if (!this.spotlightCard) return;
+
+    if (!targetEl) {
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+      return;
+    }
+
+    const frame = document.getElementById('appMainContainer') || document.querySelector('.device-frame') || document.body;
+    const frameRect = frame.getBoundingClientRect();
+    const cardHeight = this.spotlightCard.offsetHeight || 165;
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // La tarjeta al pie descansa a 20px del fondo del teléfono (device-frame).
+    // Su borde superior normal abajo está en: frameRect.bottom - 20 - cardHeight.
+    // Damos un margen de resguardo de 35px:
+    const bottomCardZoneTop = frameRect.bottom - cardHeight - 35;
+
+    // ¿El botón o elemento objetivo queda tapado o roza la tarjeta cuando esta está al pie?
+    const overlapsBottom = targetRect.bottom > bottomCardZoneTop;
+
+    // Zona superior que ocuparía la tarjeta si se desliza al top (a 20px del borde superior):
+    const topCardZoneBottom = frameRect.top + cardHeight + 35;
+    const isNearTop = targetRect.top < topCardZoneBottom;
+
+    if (overlapsBottom && !isNearTop) {
+      // Si el card tapa el botón que se debe ver, se desliza automáticamente al top de la pantalla
+      const distanceToTop = Math.max(80, frameRect.height - cardHeight - 40);
+      this.spotlightCard.style.transform = `translateY(-${distanceToTop}px)`;
+      this.spotlightCard.classList.add('is-docked-top');
+    } else {
+      // Si el elemento objetivo está arriba o al centro, el card se mantiene o regresa abajo
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+    }
+  }
+
+  scrollToElement(targetEl) {
+    if (!targetEl) return;
+    const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
+    if (scrollContainer) {
+      const containerRect = scrollContainer.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 165) : 165;
+      const isDockedTop = this.spotlightCard && this.spotlightCard.classList.contains('is-docked-top');
+
+      // Área visible libre según si la tarjeta está acoplada arriba o abajo
+      const visibleTop = isDockedTop ? (containerRect.top + cardHeight + 20) : (containerRect.top + 10);
+      const visibleBottom = isDockedTop ? (containerRect.bottom - 10) : (containerRect.bottom - cardHeight - 20);
+
+      // Si el elemento ya está visible en pantalla sin ser tapado, no desplazar innecesariamente
+      const isAlreadyVisible = (targetRect.top >= visibleTop && targetRect.bottom <= visibleBottom);
+
+      if (!isAlreadyVisible) {
+        const currentScroll = scrollContainer.scrollTop;
+        const relativeTop = targetRect.top - containerRect.top + currentScroll;
+        const availableHeight = Math.max(100, visibleBottom - visibleTop);
+        const targetScroll = isDockedTop
+          ? Math.max(0, relativeTop - (visibleTop - containerRect.top))
+          : Math.max(0, relativeTop - (availableHeight / 2) + (targetRect.height / 2));
+
+        scrollContainer.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      }
+    }
+    this.resetFrameScroll();
+  }
+
+  /* ================= FOCO DINÁMICO (SPOTLIGHT AL 85% PASO A PASO) ================= */
+  activateSpotlight(targetSelector, title, message) {
+    if (!this.enabled) return;
+    this.dismissInactivityOffer();
+    this.closeSheet();
+    this.closeWidgetMenu();
+
+    const targetEl = document.querySelector(targetSelector);
+    if (!targetEl) return;
+
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('spotlight');
+    }
+
+    this.clearPreviousHighlight();
+    this.activeSpotlightElement = targetEl;
+    targetEl.classList.add('spotlight-active');
+    document.body.classList.add('dynamic-focus-active');
+
+    this.isTutorialActive = true;
+
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    if (this.spotlightCard) {
+      const titleEl = document.getElementById('spotlightGuideTitle');
+      const textEl = document.getElementById('spotlightGuideText');
+      if (titleEl) titleEl.textContent = title || 'Paso actual';
+      if (textEl) textEl.textContent = message || 'Completa este campo para continuar con tranquilidad.';
+      this.spotlightCard.classList.add('show');
+      this.positionSpotlightCard(targetEl);
+    }
+
+    this.scrollToElement(targetEl);
+
+    setTimeout(() => {
+      this.positionSpotlightCard(targetEl);
+    }, 320);
+  }
+
+  clearSpotlight() {
+    this.isTutorialActive = false;
+    document.body.classList.remove('dynamic-focus-active');
+    this.clearPreviousHighlight();
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.remove('active');
+    }
+    if (this.spotlightCard) {
+      this.spotlightCard.classList.remove('show');
+      this.spotlightCard.classList.remove('is-docked-top');
+      this.spotlightCard.style.transform = 'translateY(0)';
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
+
+    // Regresar el área de scroll al inicio suavemente al cerrar el tutorial si estaba desplazada
+    const activeView = document.querySelector('.screen-view.is-active');
+    if (activeView) {
+      const scrollArea = activeView.querySelector('.scroll-area');
+      if (scrollArea && scrollArea.scrollTop !== 0) {
+        scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Asegurar que el marco y el viewport no queden desplazados
+    this.resetFrameScroll();
+  }
+
+  /* Flujo interactivo paso a paso para completar la transferencia */
+  startStepByStepGuide() {
+    this.isTutorialActive = true;
+    this.currentStepIndex = 0;
+    this.executeCurrentStep();
+  }
+
+  /* Si el usuario cambia de pantalla en el flujo de transferencia, el tutorial continúa sin cerrarse */
+  handleViewChange(viewName) {
+    if (!this.isTutorialActive) return;
+    this.currentStepIndex = 0;
+    setTimeout(() => {
+      if (this.isTutorialActive) {
+        this.executeCurrentStep();
+      }
+    }, 120);
+  }
+
+  getGuideSteps() {
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home');
+    const isNewRecipientTab = document.getElementById('tabRecipientNew') && document.getElementById('tabRecipientNew').classList.contains('active');
+
+    if (currentView === 'home') {
+      return [
+        {
+          target: '#cardCuentaRut',
+          title: 'Revisar tu dinero disponible',
+          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
+          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
+        },
+        {
+          target: '#btnQuickTransfer',
+          title: 'Comenzar a transferir',
+          message: 'Toca este botón verde para iniciar el envío de dinero a otra persona.',
+          speech: 'Paso 2: Toca el botón verde Transferir dinero para comenzar.'
+        }
+      ];
+    } else if (currentView === 'recipient') {
+      // Paso a paso en pantalla de contactos guardados / favoritos
+      return [
+        {
+          target: '#btnGoToNewRecipientScreen',
+          title: '¿Quieres agregar a alguien nuevo?',
+          message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
+          speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.'
+        },
+        {
+          target: '#frequentContactRosa',
+          title: 'O elige un contacto guardado',
+          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
+          speech: 'O toca a Rosa Pérez para seleccionarla como destinataria.'
+        },
+        {
+          target: '#btnContinueRecipientSaved',
+          title: 'Continuar',
+          message: 'Toca el botón Continuar ubicado abajo para avanzar a la pantalla de monto.',
+          speech: 'Toca el botón verde Continuar para ingresar el monto a enviar.'
+        }
+      ];
+    } else if (currentView === 'new-recipient') {
+      const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+      if (isStepRutVisible) {
+        // Etapa A: Ingreso de RUT en la nueva pantalla
+        return [
+          {
+            target: '#groupRecipientRut',
+            title: 'Paso 1: RUT de la persona',
+            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
+            speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.'
+          },
+          {
+            target: '#btnConfirmRutNext',
+            title: 'Paso 2: Continuar a los datos',
+            message: 'Una vez anotado el RUT, toca este botón para completar el nombre y banco de la persona.',
+            speech: 'Paso 2: Toca el botón verde Continuar a datos del destinatario.'
+          }
+        ];
       } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
+        // Etapa B: Formulario con nombre, banco, píldoras y cuenta
+        return [
+          {
+            target: '#groupRecipientName',
+            title: 'Paso 1: Nombre y Apellido',
+            message: 'Anota el nombre y apellido de la persona a quien le enviarás dinero.',
+            speech: 'Paso 1: Escribe el nombre y apellido de la persona.'
+          },
+          {
+            target: '#groupRecipientBank',
+            title: 'Paso 2: Banco',
+            message: 'Elige el banco donde la persona tiene su cuenta.',
+            speech: 'Paso 2: Elige el banco de quien recibe.'
+          },
+          {
+            target: '#groupRecipientType',
+            title: 'Paso 3: Tipo de cuenta',
+            message: 'Toca una de las opciones: CuentaRut, Corriente, Vista o Ahorro.',
+            speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.'
+          },
+          {
+            target: '#groupRecipientNum',
+            title: 'Paso 4: Número de cuenta',
+            message: 'Anota los números de la cuenta bancaria.',
+            speech: 'Paso 4: Anota el número de cuenta de la persona.'
+          },
+          {
+            target: '#btnContinueRecipient',
+            title: 'Paso 5: Continuar al monto',
+            message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
+            speech: 'Paso 5: Toca Continuar al monto para avanzar.'
+          }
+        ];
+      }
+    } else if (currentView === 'amount') {
+      return [
+        {
+          target: '#amountBox',
+          title: 'Paso 1: Ingresar el monto',
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
+          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.'
+        },
+        {
+          target: '#groupGlosa',
+          title: 'Paso 2: Mensaje opcional',
+          message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
+          speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona.'
+        },
+        {
+          target: '#btnContinueAmount',
+          title: 'Paso 3: Revisar datos',
+          message: 'Toca este botón para ver el resumen detallado antes de confirmar la transferencia.',
+          speech: 'Paso 3: Toca Revisar datos para verificar todo antes de autorizar.'
+        }
+      ];
+    } else if (currentView === 'summary') {
+      return [
+        {
+          target: '#safeSummaryCard',
+          title: 'Revisión final de seguridad',
+          message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
+          speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.'
+        },
+        {
+          target: '#btnConfirmSummary',
+          title: 'Autorizar transferencia',
+          message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
+          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.'
+        }
+      ];
+    } else if (currentView === 'receipt') {
+      return [
+        {
+          target: '.receipt-card',
+          title: '¡Transferencia Exitosa!',
+          message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
+          speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.'
+        },
+        {
+          target: '#btnShareReceipt',
+          title: 'Compartir comprobante',
+          message: 'Toca este botón para compartir el comprobante con la otra persona por WhatsApp o correo.',
+          speech: 'Toca Compartir comprobante para enviar una copia a la otra persona.'
+        },
+        {
+          target: '#btnExitToHome',
+          title: 'Volver al inicio',
+          message: 'Toca este botón verde cuando hayas terminado para regresar a la pantalla principal de tu CuentaRUT.',
+          speech: 'Toca Volver al inicio para regresar a tu CuentaRUT.'
+        }
+      ];
+    }
+    return [];
+  }
+
+  executeCurrentStep() {
+    const steps = this.getGuideSteps();
+    if (!steps.length) return;
+
+    if (this.currentStepIndex >= steps.length) {
+      this.clearSpotlight();
+      return;
+    }
+    if (this.currentStepIndex < 0) {
+      this.currentStepIndex = 0;
+    }
+
+    const step = steps[this.currentStepIndex];
+    const targetEl = document.querySelector(step.target);
+    if (!targetEl) {
+      this.currentStepIndex++;
+      this.executeCurrentStep();
+      return;
+    }
+
+    this.clearPreviousHighlight();
+    this.activeSpotlightElement = targetEl;
+    targetEl.classList.add('spotlight-active');
+    document.body.classList.add('dynamic-focus-active');
+
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    if (this.spotlightCard) {
+      const badgeEl = document.getElementById('spotlightStepBadge');
+      const titleEl = document.getElementById('spotlightGuideTitle');
+      const textEl = document.getElementById('spotlightGuideText');
+      const prevBtn = document.getElementById('btnSpotlightPrev');
+      const nextBtn = document.getElementById('btnSpotlightNext');
+      const voiceBtn = document.getElementById('btnSpotlightVoice');
+
+      if (badgeEl) badgeEl.textContent = `PASO ${this.currentStepIndex + 1} DE ${steps.length}`;
+      if (titleEl) titleEl.textContent = step.title;
+      if (textEl) textEl.textContent = step.message;
+      if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
+
+      if (prevBtn) {
+        prevBtn.style.display = this.currentStepIndex > 0 ? 'inline-flex' : 'none';
+      }
+      if (nextBtn) {
+        nextBtn.textContent = (this.currentStepIndex === steps.length - 1) ? 'Listo' : 'Siguiente';
+      }
+
+      this.spotlightCard.classList.add('show');
+      this.positionSpotlightCard(targetEl);
+    }
+
+    this.scrollToElement(targetEl);
+
+    setTimeout(() => {
+      this.positionSpotlightCard(targetEl);
+    }, 320);
+
+    // Nota: La voz NO se activa automáticamente, solo si el usuario toca el botón de escuchar
+  }
+
+  nextGuideStep() {
+    const steps = this.getGuideSteps();
+    if (this.currentStepIndex < steps.length - 1) {
+      this.currentStepIndex++;
+      this.executeCurrentStep();
+    } else {
+      this.clearSpotlight();
+    }
+  }
+
+  prevGuideStep() {
+    if (this.currentStepIndex > 0) {
+      this.currentStepIndex--;
+      this.executeCurrentStep();
+    }
+  }
+
+  /* Activa la guía paso a paso al tocar el botón */
+  spotlightCurrentStep() {
+    this.startStepByStepGuide();
+  }
+
+  /* ================= TRADUCCIÓN SEMÁNTICA (GLOSARIO) ================= */
+  toggleSemanticMode(enabled, announce = true) {
+    this.semanticMode = enabled !== undefined ? enabled : !this.semanticMode;
+    const appEl = document.getElementById('appMainContainer');
+    if (appEl) {
+      appEl.classList.toggle('app-semantic-active', this.semanticMode);
+    }
+    const switchEl = document.getElementById('switchSemanticMode');
+    if (switchEl) {
+      switchEl.checked = this.semanticMode;
+    }
+    this.updateLanguageWidgetBadge();
+    if (announce && window.puenteSpeech) {
+      window.puenteSpeech.speak(this.semanticMode ? 'Modo lenguaje simple activado.' : 'Modo lenguaje simple desactivado.');
+    }
+  }
+
+  showTermExplanation(termId) {
+    const item = this.glossary.find(g => g.id === termId);
+    if (!item || !this.termModalOverlay) return;
+
+    // Registrar uso de ayuda en facilitador
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('help');
+    }
+
+    const titleEl = document.getElementById('termModalTitle');
+    const subtitleEl = document.getElementById('termModalSubtitle');
+    const meaningEl = document.getElementById('termModalMeaning');
+    const exampleEl = document.getElementById('termModalExample');
+
+    if (titleEl) titleEl.textContent = item.termino_bancario;
+    if (subtitleEl) subtitleEl.textContent = item.traduccion_simple;
+    if (meaningEl) meaningEl.textContent = item.explicacion;
+    if (exampleEl) exampleEl.textContent = item.ejemplo || '';
+
+    this.termModalOverlay.classList.add('active');
+
+    // Reproducir audio explicativo
+    if (window.puenteSpeech) {
+      window.puenteSpeech.speak(`${item.termino_bancario}. En palabras simples: ${item.traduccion_simple}. ${item.explicacion}`);
+    }
+  }
+
+  closeTermExplanation() {
+    if (this.termModalOverlay) {
+      this.termModalOverlay.classList.remove('active');
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
+  }
+
+  /* ================= WIDGET SPEED DIAL (3 BOTONES DESLIZANTES) ================= */
+  toggleWidgetMenu() {
+    if (this.isWidgetMenuOpen) {
+      this.closeWidgetMenu();
+    } else {
+      this.openWidgetMenu();
+    }
+  }
+
+  openWidgetMenu() {
+    if (!this.enabled) return;
+    this.dismissInactivityOffer();
+    this.closeSheet();
+    this.isWidgetMenuOpen = true;
+    if (this.widgetMenu) {
+      this.widgetMenu.classList.add('open');
+    }
+    if (this.fabBtn) {
+      this.fabBtn.classList.add('is-active');
+    }
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.classList.add('active');
+    }
+    this.updateLanguageWidgetBadge();
+  }
+
+  closeWidgetMenu() {
+    this.isWidgetMenuOpen = false;
+    if (this.widgetMenu) {
+      this.widgetMenu.classList.remove('open');
+    }
+    if (this.fabBtn) {
+      this.fabBtn.classList.remove('is-active');
+    }
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.classList.remove('active');
+    }
+  }
+
+  updateLanguageWidgetBadge() {
+    const badge = document.getElementById('badgeWidgetLanguage');
+    const btnLang = document.getElementById('btnWidgetLanguage');
+    if (badge && btnLang) {
+      if (this.semanticMode) {
+        badge.textContent = 'Activo';
+        badge.style.background = 'var(--teal-light)';
+        badge.style.color = 'var(--teal)';
+        btnLang.classList.remove('inactive');
+        btnLang.classList.add('active');
+      } else {
+        badge.textContent = 'Inactivo';
+        badge.style.background = '#F1F5F9';
+        badge.style.color = 'var(--muted)';
+        btnLang.classList.remove('active');
+        btnLang.classList.add('inactive');
+      }
+    }
+  }
+
+  /* ================= PANEL / BOTTOM SHEET (DESACTIVADO) ================= */
+  openSheet() {
+    // Desactivado: el display inferior ha sido eliminado a favor del menú Widget
+    return;
+  }
+
+  closeSheet() {
+    return;
+  }
+
+  /* ================= BIENVENIDA (5 SEGUNDOS) ================= */
+  checkOnboarding() {
+    const hasSeen = localStorage.getItem('puente_onboarding_shown');
+    if (!hasSeen && this.enabled && this.onboardingOverlay) {
+      setTimeout(() => {
+        this.onboardingOverlay.classList.add('active');
+      }, 600);
+    }
+  }
+
+  dismissOnboarding() {
+    if (this.onboardingOverlay) {
+      this.onboardingOverlay.classList.remove('active');
+      localStorage.setItem('puente_onboarding_shown', 'true');
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
+  }
+
+  /* ================= AUTOOCULTAMIENTO ================= */
+  recordSuccessfulTransfer(askedForHelp) {
+    if (askedForHelp) {
+      this.successiveIndependentRuns = 0;
+      this.fabContainer.classList.remove('is-minimized');
+    } else {
+      this.successiveIndependentRuns++;
+      // Si completa 3 trámites sin auxilio, se contrae amablemente
+      if (this.successiveIndependentRuns >= 3) {
+        this.fabContainer.classList.add('is-minimized');
+      }
+    }
+  }
+
+  /* ================= CONEXIONES DE EVENTOS ================= */
+  setupEventListeners() {
+    // Backdrop del widget para cerrar al tocar afuera
+    if (this.widgetBackdrop) {
+      this.widgetBackdrop.addEventListener('click', () => this.closeWidgetMenu());
+    }
+
+    // Botón 1: Escuchar Pantalla
+    if (this.btnWidgetSpeech) {
+      this.btnWidgetSpeech.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeWidgetMenu();
+        if (window.appRouter) {
+          window.appRouter.readCurrentScreenAloud();
+        }
+      });
+    }
+
+    // Botón 2: Modo tutorial
+    if (this.btnWidgetTutorial) {
+      this.btnWidgetTutorial.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeWidgetMenu();
+        this.startStepByStepGuide();
+      });
+    }
+
+    // Botón 3: Lenguaje Simple
+    if (this.btnWidgetLanguage) {
+      this.btnWidgetLanguage.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleSemanticMode();
+      });
+    }
+
+    // Cerrar panel de ayuda
+    const btnClose = document.getElementById('btnClosePuente');
+    if (btnClose) btnClose.addEventListener('click', () => this.closeSheet());
+    if (this.sheetBackdrop) this.sheetBackdrop.addEventListener('click', () => this.closeSheet());
+
+    // Botones de oferta de inactividad
+    const btnYes = document.getElementById('btnOfferYes');
+    const btnNo = document.getElementById('btnOfferNo');
+    const btnCloseX = document.getElementById('btnOfferCloseX');
+    if (btnYes) {
+      btnYes.addEventListener('click', () => {
+        this.dismissInactivityOffer();
+        this.spotlightCurrentStep();
+      });
+    }
+    if (btnNo) {
+      btnNo.addEventListener('click', () => this.dismissInactivityOffer());
+    }
+    if (btnCloseX) {
+      btnCloseX.addEventListener('click', () => this.dismissInactivityOffer());
+    }
+
+    // Botón de Foco en el Sheet
+    const btnTriggerFocus = document.getElementById('btnTriggerDynamicFocus');
+    if (btnTriggerFocus) {
+      btnTriggerFocus.addEventListener('click', () => this.spotlightCurrentStep());
+    }
+
+    // Botón de Escuchar pantalla en el Sheet
+    const btnSpeechSheet = document.getElementById('btnTriggerSpeech');
+    if (btnSpeechSheet) {
+      btnSpeechSheet.addEventListener('click', () => {
+        if (window.appRouter) {
+          window.appRouter.readCurrentScreenAloud();
+        }
+      });
+    }
+
+    // Switch de Traducción Semántica en Sheet
+    const switchSemantic = document.getElementById('switchSemanticMode');
+    if (switchSemantic) {
+      switchSemantic.addEventListener('change', (e) => this.toggleSemanticMode(e.target.checked));
+    }
+
+    // Tarjeta del Spotlight paso a paso: botones siguiente, anterior, cerrar y escuchar
+    if (this.spotlightCard) {
+      this.spotlightCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    const btnSpotlightNext = document.getElementById('btnSpotlightNext');
+    if (btnSpotlightNext) {
+      btnSpotlightNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.nextGuideStep();
+      });
+    }
+
+    const btnSpotlightPrev = document.getElementById('btnSpotlightPrev');
+    if (btnSpotlightPrev) {
+      btnSpotlightPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.prevGuideStep();
+      });
+    }
+
+    const btnSpotlightDone = document.getElementById('btnSpotlightDone');
+    if (btnSpotlightDone) {
+      btnSpotlightDone.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.clearSpotlight();
+      });
+    }
+
+    const btnSpotlightCloseX = document.getElementById('btnSpotlightCloseX');
+    if (btnSpotlightCloseX) {
+      btnSpotlightCloseX.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.clearSpotlight();
+      });
+    }
+
+    const btnSpotlightVoice = document.getElementById('btnSpotlightVoice');
+    if (btnSpotlightVoice) {
+      btnSpotlightVoice.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
+        if (speechText && window.puenteSpeech) {
+          window.puenteSpeech.speak(speechText);
+        }
+      });
+    }
+
+    // Cerrar modal de término
+    const btnCloseTerm = document.getElementById('btnCloseTermModal');
+    if (btnCloseTerm) btnCloseTerm.addEventListener('click', () => this.closeTermExplanation());
+    if (this.termModalOverlay) this.termModalOverlay.addEventListener('click', (e) => {
+      if (e.target === this.termModalOverlay) this.closeTermExplanation();
+    });
+
+    // Cerrar onboarding
+    const btnDismissOnboarding = document.getElementById('btnDismissOnboarding');
+    if (btnDismissOnboarding) {
+      btnDismissOnboarding.addEventListener('click', () => this.dismissOnboarding());
+    }
+
+    // Botones individuales de lectura por voz para cada sección/campo
+    document.addEventListener('click', (e) => {
+      const speakBtn = e.target.closest('.btn-speak-section');
+      if (speakBtn) {
+        e.stopPropagation();
+        const textToRead = speakBtn.getAttribute('data-speak') || '';
+        if (textToRead && window.puenteSpeech) {
+          window.puenteSpeech.speak(textToRead);
         }
       }
     });
+
+    // Oscurecimiento y destaque automático (Foco Dinámico) al interactuar con campos del formulario
+    const focusableSelectors = 'input, select, textarea, .contact-item';
+    document.addEventListener('focusin', (e) => {
+      if (!this.enabled || this.isTutorialActive) return;
+      const target = e.target;
+      if (!target.matches(focusableSelectors)) return;
+      // No activar foco en la clave o controles del facilitador/puente
+      if (target.closest('.security-modal-overlay') || target.closest('.facilitator-overlay') || target.closest('.puente-sheet')) return;
+
+      const group = target.closest('.form-group') || target.closest('.amount-display-box') || target.closest('.contact-item') || target;
+      const label = group.querySelector('.form-label') || group.querySelector('label');
+      const labelText = label ? label.textContent.trim() : 'Campo a completar';
+      
+      this.activateSectionFocus(group, labelText);
+    });
+
+    // El overlay oscuro o clics afuera NO deben cerrar el card del tutorial
+    // La única manera de cerrar el card es tocando la 'x' o el 'Listo' al final del tutorial
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      });
+    }
+
+    // Escucha de estado de voz para animar botones de audio
+    if (window.puenteSpeech) {
+      window.puenteSpeech.onStatusChange = (speaking) => {
+        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section');
+        triggers.forEach(t => t.classList.toggle('speaking', speaking));
+      };
+    }
+
+    // Reubicar dinámicamente la tarjeta del tutorial al cambiar tamaño de pantalla o al hacer scroll
+    window.addEventListener('resize', () => {
+      if (this.activeSpotlightElement && document.body.classList.contains('dynamic-focus-active')) {
+        this.positionSpotlightCard(this.activeSpotlightElement);
+      }
+    });
+
+    let scrollRelocateTimer = null;
+    document.addEventListener('scroll', (e) => {
+      if (!this.activeSpotlightElement || !document.body.classList.contains('dynamic-focus-active')) return;
+      if (e.target && e.target.classList && (e.target.classList.contains('scroll-area') || e.target.classList.contains('screen-view'))) {
+        if (scrollRelocateTimer) clearTimeout(scrollRelocateTimer);
+        scrollRelocateTimer = setTimeout(() => {
+          this.positionSpotlightCard(this.activeSpotlightElement);
+        }, 80);
+      }
+    }, { passive: true, capture: true });
+  }
+
+  /* Foco dinámico en sección específica con oscurecimiento del fondo al 85% */
+  activateSectionFocus(targetElement, labelText) {
+    if (!this.enabled || !targetElement || this.isTutorialActive) return;
+    this.clearSpotlight();
+
+    this.activeSpotlightElement = targetElement;
+    targetElement.classList.add('spotlight-active');
+
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    // Registrar en métricas
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('spotlight');
+    }
+  }
+
+  /* Activar o Desactivar completamente Interfaz Puente (para Grupo Control vs Experimental) */
+  setBridgeEnabled(enabled) {
+    this.enabled = enabled;
+    if (this.fabContainer) {
+      this.fabContainer.style.display = enabled ? 'flex' : 'none';
+    }
+    if (!enabled) {
+      this.clearSpotlight();
+      this.closeSheet();
+      this.dismissInactivityOffer();
+      this.toggleSemanticMode(false);
+    } else {
+      this.toggleSemanticMode(true);
+    }
+  }
+
+  setPracticeMode(enabled) {
+    this.practiceMode = enabled;
+    if (this.practiceBanner) {
+      this.practiceBanner.classList.toggle('active', enabled);
+    }
+  }
+}
+
+// Instancia global
+window.interfazPuente = new InterfazPuente();
+
+
+/* ==========================================
+   3. FACILITATOR.JS - Panel del Facilitador
+   ========================================== */
+/**
+ * INTERFAZ PUENTE — PANEL DEL FACILITADOR
+ * Pruebas de Usabilidad con Personas Mayores (P01 a P08)
+ * Autores: Carlos Valdés & Sebastián Mardones (INACAP)
+ */
+
+class FacilitatorPanel {
+  constructor() {
+    this.tapCount = 0;
+    this.tapTimer = null;
+    this.sessionTimer = null;
+    this.sessionSeconds = 0;
+    this.isSessionActive = false;
+
+    // Estado de la prueba
+    this.participant = 'P01';
+    this.bridgeEnabled = true;
+    this.summaryTitleVariant = 'resumen_seguro'; // 'resumen_seguro' o 'revisa_antes'
+    this.errorInjectionActive = false; // Monto de $500.000 con cero extra
+    this.practiceMode = false;
+
+    // Métricas de la sesión en curso
+    this.currentMetrics = {
+      helpRequests: 0,
+      spotlightActivations: 0,
+      errorsCount: 0,
+      correctedInSummary: false,
+      completed: false
+    };
+
+    // Historial acumulado en LocalStorage
+    this.sessionLogs = this.loadLogs();
+
+    this.init();
+  }
+
+  init() {
+    this.cacheElements();
+    this.setupSecretTrigger();
+    this.setupTabs();
+    this.setupControls();
+    this.renderLogsTable();
+    this.startSessionTimer();
+  }
+
+  cacheElements() {
+    this.overlay = document.getElementById('facilitatorOverlay');
+    this.banner = document.getElementById('inacapBanner');
+    this.participantSelect = document.getElementById('facParticipantSelect');
+    this.switchBridge = document.getElementById('facSwitchBridge');
+    this.switchError = document.getElementById('facSwitchError');
+    this.switchPractice = document.getElementById('facSwitchPractice');
+    this.tableBody = document.getElementById('facTableBody');
+    this.metricTimer = document.getElementById('facMetricTimer');
+    this.metricHelp = document.getElementById('facMetricHelp');
+    this.metricErrors = document.getElementById('facMetricErrors');
+    this.metricCorrected = document.getElementById('facMetricCorrected');
+  }
+
+  /* ================= DISPARADORES PARA EL FACILITADOR ================= */
+  setupSecretTrigger() {
+    // 1. Atajo de teclado: Alt+F o Ctrl+Shift+F
+    document.addEventListener('keydown', (e) => {
+      if ((e.altKey && e.key.toLowerCase() === 'f') || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'f')) {
+        e.preventDefault();
+        this.open();
+      }
+    });
+
+    // 2. 5 toques en el logo de BancoEstado en la cabecera
+    const brandEl = document.querySelector('.be-brand');
+    if (brandEl) {
+      brandEl.addEventListener('click', () => {
+        this.tapCount++;
+        clearTimeout(this.tapTimer);
+        if (this.tapCount >= 5) {
+          this.open();
+          this.tapCount = 0;
+        } else {
+          this.tapTimer = setTimeout(() => {
+            this.tapCount = 0;
+          }, 3000);
+        }
+      });
+    }
+
+    if (!this.banner) return;
+
+    this.banner.addEventListener('click', () => {
+      this.tapCount++;
+      clearTimeout(this.tapTimer);
+
+      if (this.tapCount >= 5) {
+        this.open();
+        this.tapCount = 0;
+      } else {
+        this.tapTimer = setTimeout(() => {
+          this.tapCount = 0;
+        }, 3000);
+      }
+    });
+  }
+
+  open() {
+    if (this.overlay) {
+      this.overlay.classList.add('active');
+      this.updateMetricsUI();
+    }
+  }
+
+  close() {
+    if (this.overlay) {
+      this.overlay.classList.remove('active');
+    }
+  }
+
+  /* ================= CONTROL DE PESTAÑAS ================= */
+  setupTabs() {
+    const tabs = document.querySelectorAll('.fac-tab-btn');
+    const panes = document.querySelectorAll('.fac-tab-pane');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        panes.forEach(p => p.classList.remove('active'));
+
+        tab.classList.add('active');
+        const target = document.getElementById(tab.getAttribute('data-target'));
+        if (target) target.classList.add('active');
+      });
+    });
+
+    const btnClose = document.getElementById('btnCloseFacilitator');
+    if (btnClose) btnClose.addEventListener('click', () => this.close());
+  }
+
+  /* ================= CONTROLES Y CONFIGURACIÓN ================= */
+  setupControls() {
+    // Selector de participante P01 - P08
+    if (this.participantSelect) {
+      this.participantSelect.addEventListener('change', (e) => {
+        this.participant = e.target.value;
+      });
+    }
+
+    // Toggle de Interfaz Puente (ON/OFF para medir Grupo Experimental vs Control)
+    if (this.switchBridge) {
+      this.switchBridge.addEventListener('change', (e) => {
+        this.bridgeEnabled = e.target.checked;
+        if (window.interfazPuente) {
+          window.interfazPuente.setBridgeEnabled(this.bridgeEnabled);
+        }
+      });
+    }
+
+    // Conmutador A/B del título de confirmación
+    const segmentBtns = document.querySelectorAll('.fac-summary-variant');
+    segmentBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        segmentBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.summaryTitleVariant = btn.getAttribute('data-variant');
+        if (window.appRouter) {
+          window.appRouter.updateSummaryTitle(this.summaryTitleVariant);
+        }
+      });
+    });
+
+    // Inyección de error ($500.000 con cero de más)
+    if (this.switchError) {
+      this.switchError.addEventListener('change', (e) => {
+        this.errorInjectionActive = e.target.checked;
+        if (window.appRouter) {
+          window.appRouter.setErrorInjection(this.errorInjectionActive);
+        }
+      });
+    }
+
+    // Modo Práctica
+    if (this.switchPractice) {
+      this.switchPractice.addEventListener('change', (e) => {
+        this.practiceMode = e.target.checked;
+        if (window.interfazPuente) {
+          window.interfazPuente.setPracticeMode(this.practiceMode);
+        }
+      });
+    }
+
+    // Botón reiniciar sesión
+    const btnReset = document.getElementById('btnFacResetSession');
+    if (btnReset) {
+      btnReset.addEventListener('click', () => this.resetSession());
+    }
+
+    // Botón exportar CSV
+    const btnExport = document.getElementById('btnFacExportCsv');
+    if (btnExport) {
+      btnExport.addEventListener('click', () => this.exportToCSV());
+    }
+
+    // Botón limpiar historial
+    const btnClearLogs = document.getElementById('btnFacClearLogs');
+    if (btnClearLogs) {
+      btnClearLogs.addEventListener('click', () => {
+        if (confirm('¿Deseas borrar todo el registro acumulado de pruebas?')) {
+          localStorage.removeItem('puente_facilitator_logs');
+          this.sessionLogs = [];
+          this.renderLogsTable();
+        }
+      });
+    }
+  }
+
+  /* ================= REGISTRO DE MÉTRICAS ================= */
+  startSessionTimer() {
+    this.sessionSeconds = 0;
+    this.isSessionActive = true;
+    clearInterval(this.sessionTimer);
+
+    this.sessionTimer = setInterval(() => {
+      if (this.isSessionActive) {
+        this.sessionSeconds++;
+        if (this.metricTimer) {
+          this.metricTimer.textContent = `${this.sessionSeconds}s`;
+        }
+      }
+    }, 1000);
+  }
+
+  recordMetric(type) {
+    if (type === 'help') {
+      this.currentMetrics.helpRequests++;
+    } else if (type === 'spotlight') {
+      this.currentMetrics.spotlightActivations++;
+    } else if (type === 'error') {
+      this.currentMetrics.errorsCount++;
+    } else if (type === 'correction') {
+      this.currentMetrics.correctedInSummary = true;
+    }
+    this.updateMetricsUI();
+  }
+
+  finishSession(isCompleted) {
+    this.isSessionActive = false;
+    this.currentMetrics.completed = isCompleted;
+
+    const record = {
+      id: Date.now(),
+      fecha: new Date().toLocaleString('es-CL'),
+      participante: this.participant,
+      interfazPuente: this.bridgeEnabled ? 'CON AYUDA' : 'SIN AYUDA (Control)',
+      varianteTitulo: this.summaryTitleVariant === 'resumen_seguro' ? 'Resumen Seguro' : 'Revisa antes de enviar',
+      errorInyectado: this.errorInjectionActive ? 'SÍ ($500.000)' : 'NO ($0)',
+      tiempoSegundos: this.sessionSeconds,
+      ayudasPedidas: this.currentMetrics.helpRequests,
+      focosUsados: this.currentMetrics.spotlightActivations,
+      erroresCometidos: this.currentMetrics.errorsCount,
+      corrigioEnResumen: this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO',
+      completada: isCompleted ? 'EXITOSA' : 'INCOMPLETA'
+    };
+
+    this.sessionLogs.push(record);
+    this.saveLogs();
+    this.renderLogsTable();
+  }
+
+  updateMetricsUI() {
+    if (this.metricHelp) this.metricHelp.textContent = this.currentMetrics.helpRequests;
+    if (this.metricErrors) this.metricErrors.textContent = this.currentMetrics.errorsCount;
+    if (this.metricCorrected) this.metricCorrected.textContent = this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO';
+  }
+
+  resetSession() {
+    this.sessionSeconds = 0;
+    this.currentMetrics = {
+      helpRequests: 0,
+      spotlightActivations: 0,
+      errorsCount: 0,
+      correctedInSummary: false,
+      completed: false
+    };
+    localStorage.removeItem('puente_onboarding_shown');
+
+    if (window.appRouter) {
+      window.appRouter.resetToHome();
+    }
+
+    this.updateMetricsUI();
+    this.startSessionTimer();
+    this.close();
+    alert(`Sesión reiniciada para ${this.participant}.`);
+  }
+
+  /* ================= PERSISTENCIA Y CSV ================= */
+  loadLogs() {
+    try {
+      const data = localStorage.getItem('puente_facilitator_logs');
+      return data ? JSON.parse(data) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  saveLogs() {
+    try {
+      localStorage.setItem('puente_facilitator_logs', JSON.stringify(this.sessionLogs));
+    } catch (e) {}
+  }
+
+  renderLogsTable() {
+    if (!this.tableBody) return;
+    this.tableBody.innerHTML = '';
+
+    if (this.sessionLogs.length === 0) {
+      this.tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#64748B;padding:12px">Aún no hay pruebas registradas.</td></tr>';
+      return;
+    }
+
+    // Mostrar de más reciente a más antiguo
+    [...this.sessionLogs].reverse().forEach(log => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><b>${log.participante}</b></td>
+        <td>${log.interfazPuente}</td>
+        <td>${log.tiempoSegundos}s</td>
+        <td>${log.ayudasPedidas}</td>
+        <td>${log.corrigioEnResumen}</td>
+        <td>${log.errorInyectado}</td>
+        <td><b style="color:${log.completada === 'EXITOSA' ? 'var(--teal)' : 'var(--red)'}">${log.completada}</b></td>
+      `;
+      this.tableBody.appendChild(tr);
+    });
+  }
+
+  exportToCSV() {
+    if (this.sessionLogs.length === 0) {
+      alert('No hay datos registrados aún para exportar.');
+      return;
+    }
+
+    const headers = [
+      'ID_Prueba',
+      'Fecha_Hora',
+      'Participante',
+      'Condicion_Interfaz_Puente',
+      'Variante_Titulo_Resumen',
+      'Error_Inyectado_Monto',
+      'Tiempo_Total_Segundos',
+      'Veces_Ayuda_Solicitada',
+      'Veces_Foco_Dinamico',
+      'Errores_Cometidos',
+      'Corrigio_En_Resumen_Seguro',
+      'Tarea_Completada'
+    ];
+
+    const rows = this.sessionLogs.map(log => [
+      log.id,
+      `"${log.fecha}"`,
+      log.participante,
+      `"${log.interfazPuente}"`,
+      `"${log.varianteTitulo}"`,
+      `"${log.errorInyectado}"`,
+      log.tiempoSegundos,
+      log.ayudasPedidas,
+      log.focosUsados,
+      log.erroresCometidos,
+      log.corrigioEnResumen,
+      log.completada
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `registro_pruebas_interfaz_puente_P01_P08_${Date.now()}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+}
+
+// Instancia global
+window.facilitatorPanel = new FacilitatorPanel();
+
+
+/* ==========================================
+   4. APP.JS - Controlador Principal
+   ========================================== */
+/**
+ * INTERFAZ PUENTE — CONTROLADOR CENTRAL DE LA APLICACIÓN BANCARIA
+ * BancoEstado Simulación Académica INACAP
+ * Autores: Carlos Valdés & Sebastián Mardones
+ */
+
+class AppRouter {
+  constructor() {
+    this.currentView = 'home';
+    this.summaryTitleVariant = 'resumen_seguro';
+    this.errorInjection = false;
+
+    // Estado del usuario (Elena Retamales)
+    this.user = {
+      name: 'Elena Retamales Morales',
+      accountType: 'CuentaRUT',
+      accountNum: '0007845129',
+      rut: '7.845.129-3',
+      balance: 350000
+    };
+
+    // Estado del formulario de transferencia
+    this.transferState = {
+      recipient: {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-2',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      },
+      amount: 0,
+      glosa: '',
+      isNewRecipient: false
+    };
+
+    this.init();
+  }
+
+  init() {
+    this.setupNavigation();
+    this.setupRecipientStep();
+    this.setupAmountStep();
+    this.setupSummaryStep();
+    this.setupAuthStep();
+    this.setupReceiptStep();
+    this.updateBalanceUI();
+  }
+
+  /* ================= NAVEGACIÓN ENTRE VISTAS ================= */
+  goTo(viewName) {
+    const views = document.querySelectorAll('.screen-view');
+    views.forEach(v => {
+      v.classList.remove('is-active', 'is-before');
+    });
+
+    const target = document.getElementById(`view-${viewName}`);
+    if (target) {
+      target.classList.add('is-active');
+      this.currentView = viewName;
+      const scroll = target.querySelector('.scroll-area');
+      if (scroll) scroll.scrollTop = 0;
+    }
+
+    // Si el modo tutorial está activo, continuar en la nueva pantalla; de lo contrario limpiar spotlight
+    if (window.interfazPuente) {
+      if (window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.handleViewChange(viewName);
+      } else {
+        window.interfazPuente.clearSpotlight();
+      }
+    }
+
+    // Configurar contenidos específicos según la vista
+    if (viewName === 'summary') {
+      this.renderSummary();
+    } else if (viewName === 'receipt') {
+      this.renderReceipt();
+    }
+  }
+
+  resetToHome() {
+    this.transferState.amount = this.errorInjection ? 500000 : 0;
+    this.transferState.glosa = '';
+    const amountInput = document.getElementById('inputAmount');
+    if (amountInput) {
+      amountInput.value = this.formatCLP(this.transferState.amount);
+    }
+    this.goTo('home');
+  }
+
+  /* ================= FORMATEADORES ================= */
+  formatCLP(num) {
+    return '$' + Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  }
+
+  formatCLPForSpeech(num) {
+    const val = Math.round(Number(num) || 0);
+    const formatted = val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return val === 1 ? '1 peso' : `${formatted} pesos`;
+  }
+
+  parseCLP(str) {
+    const clean = str.replace(/[^\d]/g, '');
+    return parseInt(clean, 10) || 0;
+  }
+
+  updateBalanceUI() {
+    const balanceEls = document.querySelectorAll('[data-bind="user-balance"]');
+    balanceEls.forEach(el => {
+      el.textContent = this.formatCLP(this.user.balance);
+    });
+  }
+
+  /* ================= CONFIGURACIÓN DE CADA PASO ================= */
+  setupNavigation() {
+    // Botón iniciar transferencia en Home
+    const btnStart = document.getElementById('btnStartTransfer');
+    const btnQuick = document.getElementById('btnQuickTransfer');
+    const navTransfer = document.getElementById('navBtnTransfer');
+
+    const startTransferFlow = () => {
+      // Inyección de error si está activada
+      this.transferState.amount = this.errorInjection ? 500000 : 0;
+      const amountInput = document.getElementById('inputAmount');
+      if (amountInput) amountInput.value = this.formatCLP(this.transferState.amount);
+      this.goTo('recipient');
+    };
+
+    if (btnStart) btnStart.addEventListener('click', startTransferFlow);
+    if (btnQuick) btnQuick.addEventListener('click', startTransferFlow);
+    if (navTransfer) navTransfer.addEventListener('click', startTransferFlow);
+
+    // Botones Volver
+    const backToHome = document.getElementById('btnBackFromRecipient');
+    if (backToHome) backToHome.addEventListener('click', () => this.goTo('home'));
+
+    const backToRecipient = document.getElementById('btnBackFromAmount');
+    if (backToRecipient) backToRecipient.addEventListener('click', () => this.goTo('recipient'));
+
+    const navHome = document.getElementById('navBtnHome');
+    if (navHome) navHome.addEventListener('click', () => this.goTo('home'));
+  }
+
+  /* Paso 1: Destinatario */
+  setupRecipientStep() {
+    const tabSaved = document.getElementById('tabRecipientSaved');
+    const tabFavorites = document.getElementById('tabRecipientFavorites');
+    const btnGoToNewRecipientScreen = document.getElementById('btnGoToNewRecipientScreen');
+    const btnBackFromNewRecipient = document.getElementById('btnBackFromNewRecipient');
+
+    const paneSaved = document.getElementById('paneRecipientSaved');
+    const paneFavorites = document.getElementById('paneRecipientFavorites');
+    const savedActions = document.getElementById('recipientSavedBottomActions');
+
+    const stepRut = document.getElementById('newRecipientStepRut');
+    const stepDetails = document.getElementById('newRecipientStepDetails');
+
+    const showSavedTab = () => {
+      [tabSaved, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      if (tabSaved) tabSaved.classList.add('active');
+      if (paneSaved) paneSaved.classList.remove('hidden');
+      if (paneFavorites) paneFavorites.classList.add('hidden');
+      if (savedActions) savedActions.classList.remove('hidden');
+      this.transferState.isNewRecipient = false;
+    };
+
+    const showFavoritesTab = () => {
+      [tabSaved, tabFavorites].forEach(t => t && t.classList.remove('active'));
+      if (tabFavorites) tabFavorites.classList.add('active');
+      if (paneSaved) paneSaved.classList.add('hidden');
+      if (paneFavorites) paneFavorites.classList.remove('hidden');
+      if (savedActions) savedActions.classList.remove('hidden');
+      this.transferState.isNewRecipient = false;
+    };
+
+    if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
+    if (tabFavorites) tabFavorites.addEventListener('click', showFavoritesTab);
+
+    // Botón Agregar Nuevo: Abre una nueva pantalla independiente (view-new-recipient)
+    const openNewRecipientScreen = () => {
+      this.transferState.isNewRecipient = true;
+      if (stepRut) stepRut.classList.remove('hidden');
+      if (stepDetails) stepDetails.classList.add('hidden');
+      this.goTo('new-recipient');
+    };
+
+    if (btnGoToNewRecipientScreen) {
+      btnGoToNewRecipientScreen.addEventListener('click', openNewRecipientScreen);
+    }
+
+    if (btnBackFromNewRecipient) {
+      btnBackFromNewRecipient.addEventListener('click', () => {
+        this.transferState.isNewRecipient = false;
+        this.goTo('recipient');
+      });
+    }
+
+    // Buscador superior "¿A quién quieres transferir?"
+    const searchInput = document.getElementById('recipientSearchInput');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        const contactCards = document.querySelectorAll('#paneRecipientSaved .contact-item, #paneRecipientFavorites .contact-item');
+        contactCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(query) ? '' : 'none';
+        });
+      });
+    }
+
+    // Formateo automático de RUT mientras la persona escribe o presiona teclas
+    const newRecipientRutInput = document.getElementById('newRecipientRut');
+    const formatRutValue = (raw) => {
+      let val = raw.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (val.length > 9) val = val.slice(0, 9);
+      if (val.length === 0) return '';
+      if (val.length === 1) return val;
+      const dv = val.slice(-1);
+      const cuerpo = val.slice(0, -1);
+      let formatted = '';
+      let count = 0;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        formatted = cuerpo[i] + formatted;
+        count++;
+        if (count === 3 && i > 0) {
+          formatted = '.' + formatted;
+          count = 0;
+        }
+      }
+      return formatted + '-' + dv;
+    };
+
+    if (newRecipientRutInput) {
+      newRecipientRutInput.addEventListener('input', (e) => {
+        e.target.value = formatRutValue(e.target.value);
+      });
+    }
+
+    // Teclado Numérico en Pantalla
+    const keypadButtons = document.querySelectorAll('#rutVirtualKeypad .btn-keypad-digit');
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (!newRecipientRutInput) return;
+        const key = btn.getAttribute('data-key');
+        let currentClean = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
+
+        if (key === 'BACK') {
+          currentClean = currentClean.slice(0, -1);
+        } else if (currentClean.length < 9) {
+          currentClean += key;
+        }
+
+        newRecipientRutInput.value = formatRutValue(currentClean);
+        newRecipientRutInput.dispatchEvent(new Event('input'));
+      });
+    });
+
+    // Dictado por voz de RUT
+    const btnVoiceDictate = document.getElementById('btnVoiceDictateRut');
+    const rutVoiceFeedback = document.getElementById('rutVoiceFeedback');
+    if (btnVoiceDictate && newRecipientRutInput) {
+      btnVoiceDictate.addEventListener('click', () => {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'es-CL';
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+
+          if (rutVoiceFeedback) {
+            rutVoiceFeedback.style.display = 'block';
+            rutVoiceFeedback.textContent = '🎙️ Escuchando... Di los números de tu RUT (ej: doce ocho siete seis...)';
+          }
+          btnVoiceDictate.style.background = '#FEE2E2';
+          btnVoiceDictate.style.borderColor = '#EF4444';
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            // Convertir palabras habladas a dígitos comunes
+            let digits = transcript
+              .replace(/\buno\b/gi, '1')
+              .replace(/\bdos\b/gi, '2')
+              .replace(/\btres\b/gi, '3')
+              .replace(/\bcuatro\b/gi, '4')
+              .replace(/\bcinco\b/gi, '5')
+              .replace(/\bseis\b/gi, '6')
+              .replace(/\bsiete\b/gi, '7')
+              .replace(/\bocho\b/gi, '8')
+              .replace(/\bnueve\b/gi, '9')
+              .replace(/\bcero\b/gi, '0')
+              .replace(/\bka\b/gi, 'K')
+              .replace(/[^0-9kK]/g, '');
+
+            if (digits) {
+              newRecipientRutInput.value = formatRutValue(digits);
+              if (rutVoiceFeedback) {
+                rutVoiceFeedback.textContent = `✓ Entendido: ${newRecipientRutInput.value}`;
+              }
+            } else {
+              if (rutVoiceFeedback) {
+                rutVoiceFeedback.textContent = `No se detectaron números. Intenta dictar de nuevo o usa el teclado.`;
+              }
+            }
+          };
+
+          recognition.onerror = () => {
+            if (rutVoiceFeedback) {
+              rutVoiceFeedback.textContent = 'No pudimos escuchar con claridad. Puedes tocar los números del teclado abajo.';
+            }
+          };
+
+          recognition.onend = () => {
+            btnVoiceDictate.style.background = '';
+            btnVoiceDictate.style.borderColor = '';
+            setTimeout(() => {
+              if (rutVoiceFeedback) rutVoiceFeedback.style.display = 'none';
+            }, 3500);
+          };
+
+          recognition.start();
+        } else {
+          // Fallback amigable si el navegador no soporta Web Speech API
+          const demoRut = '15.678.910-K';
+          newRecipientRutInput.value = demoRut;
+          if (rutVoiceFeedback) {
+            rutVoiceFeedback.style.display = 'block';
+            rutVoiceFeedback.textContent = `✓ RUT dictado (simulado): ${demoRut}`;
+            setTimeout(() => { rutVoiceFeedback.style.display = 'none'; }, 3000);
+          }
+        }
+      });
+    }
+
+    // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
+    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
+    if (btnConfirmRutNext) {
+      btnConfirmRutNext.addEventListener('click', () => {
+        const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
+        if (rutVal.length < 3) {
+          alert('Por favor ingresa un RUT válido con los números o el micrófono.');
+          return;
+        }
+        // Ocultar etapa RUT y mostrar formulario de datos
+        if (stepRut) stepRut.classList.add('hidden');
+        if (stepDetails) {
+          stepDetails.classList.remove('hidden');
+          const nameInput = document.getElementById('newRecipientName');
+          if (nameInput) nameInput.focus();
+        }
+        if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
+          window.interfazPuente.handleViewChange('new-recipient');
+        }
+      });
+    }
+
+    // Selección de Tipo de Cuenta con 4 Botones (Pills)
+    const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
+    const hiddenAccountTypeInput = document.getElementById('newRecipientType');
+    const bankSelect = document.getElementById('newRecipientBank');
+    const numInput = document.getElementById('newRecipientNum');
+
+    accountTypePills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        accountTypePills.forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        const selectedType = pill.getAttribute('data-type');
+        if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = selectedType;
+
+        // Si elige CuentaRUT: rellenar automáticamente el número de cuenta con el RUT menos el dígito verificador
+        if (selectedType === 'CuentaRUT') {
+          if (bankSelect) bankSelect.value = 'BancoEstado';
+          if (newRecipientRutInput && numInput) {
+            const rawRut = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
+            if (rawRut.length > 1) {
+              const rutSinDv = rawRut.slice(0, -1);
+              numInput.value = rutSinDv;
+            }
+          }
+        }
+      });
+    });
+
+    // Selección de Rosa Pérez en Guardados y Favoritos
+    const contactRosa = document.getElementById('frequentContactRosa');
+    const favRosa = document.getElementById('favContactRosa');
+    const selectRosa = () => {
+      document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
+      if (contactRosa) contactRosa.classList.add('selected');
+      if (favRosa) favRosa.classList.add('selected');
+      this.transferState.recipient = {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-2',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      };
+    };
+
+    if (contactRosa) contactRosa.addEventListener('click', selectRosa);
+    if (favRosa) favRosa.addEventListener('click', selectRosa);
+
+    // Botones de Continuar (Tanto en Guardados como en Formulario Nuevo)
+    const btnContinueSaved = document.getElementById('btnContinueRecipientSaved');
+    const btnContinueNew = document.getElementById('btnContinueRecipient');
+
+    const handleContinueAction = () => {
+      if (this.transferState.isNewRecipient) {
+        const nameInput = document.getElementById('newRecipientName');
+        const rutInput = document.getElementById('newRecipientRut');
+        const bankSelect = document.getElementById('newRecipientBank');
+        const typeSelect = document.getElementById('newRecipientType');
+        const numInput = document.getElementById('newRecipientNum');
+        const emailInput = document.getElementById('newRecipientEmail');
+
+        if (!nameInput || !nameInput.value.trim() || !rutInput.value.trim() || !numInput.value.trim()) {
+          alert('Por favor completa el nombre, RUT y número de cuenta para continuar.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        this.transferState.recipient = {
+          id: 'nuevo_' + Date.now(),
+          name: nameInput.value.trim(),
+          rut: rutInput.value.trim(),
+          bank: bankSelect ? bankSelect.value : 'BancoEstado',
+          accountType: typeSelect ? typeSelect.value : 'Cuenta Corriente',
+          accountNum: numInput.value.trim(),
+          email: emailInput ? emailInput.value.trim() : ''
+        };
+      }
+
+      this.goTo('amount');
+    };
+
+    if (btnContinueSaved) btnContinueSaved.addEventListener('click', handleContinueAction);
+    if (btnContinueNew) btnContinueNew.addEventListener('click', handleContinueAction);
+
+    // Botones Cancelar (vuelven a la lista de guardados o al home)
+    const btnCancelSaved = document.getElementById('btnCancelRecipientSaved');
+    const btnCancelRut = document.getElementById('btnCancelAddRecipientRut');
+    const btnCancelForm = document.getElementById('btnCancelAddRecipientForm');
+
+    if (btnCancelSaved) btnCancelSaved.addEventListener('click', () => this.goTo('home'));
+    if (btnCancelRut) btnCancelRut.addEventListener('click', () => {
+      this.transferState.isNewRecipient = false;
+      this.goTo('recipient');
+    });
+    if (btnCancelForm) btnCancelForm.addEventListener('click', () => {
+      this.transferState.isNewRecipient = false;
+      this.goTo('recipient');
+    });
+  }
+
+  /* Paso 2: Monto y Glosa */
+  setupAmountStep() {
+    const inputAmount = document.getElementById('inputAmount');
+    const inputGlosa = document.getElementById('inputGlosa');
+    const btnContinue = document.getElementById('btnContinueAmount');
+    const amountErrorBox = document.getElementById('amountErrorBox');
+
+    const MAX_AMOUNT = 200000;
+
+    if (inputAmount) {
+      inputAmount.addEventListener('focus', () => {
+        if (inputAmount.value === '$0' || inputAmount.value === '$ 0' || !this.transferState.amount) {
+          inputAmount.select();
+        }
+      });
+
+      inputAmount.addEventListener('input', (e) => {
+        let val = this.parseCLP(e.target.value);
+
+        // Límite máximo para transferir y digitar: $200.000
+        if (val > MAX_AMOUNT) {
+          val = MAX_AMOUNT;
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
+        } else if (val > this.user.balance) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
+        } else {
+          inputAmount.classList.remove('has-error');
+          amountErrorBox.classList.add('hidden');
+        }
+
+        this.transferState.amount = val;
+        e.target.value = val > 0 ? this.formatCLP(val) : '$0';
+      });
+    }
+
+    // Botones de monto rápido ($10.000, $30.000, $50.000, $100.000)
+    const quickBtns = document.querySelectorAll('.btn-quick-amount');
+    quickBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const amt = parseInt(btn.getAttribute('data-amount'), 10);
+        this.transferState.amount = amt;
+        if (inputAmount) {
+          inputAmount.value = this.formatCLP(amt);
+          inputAmount.classList.remove('has-error');
+        }
+        amountErrorBox.classList.add('hidden');
+      });
+    });
+
+    // Botón Cancelar en monto (vuelve a la pantalla de destinatarios)
+    const btnCancelAmount = document.getElementById('btnCancelAmount');
+    if (btnCancelAmount) {
+      btnCancelAmount.addEventListener('click', () => {
+        this.goTo('recipient');
+      });
+    }
+
+    if (btnContinue) {
+      btnContinue.addEventListener('click', () => {
+        const val = this.transferState.amount;
+        if (!val || val <= 0) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = 'Por favor ingresa una cantidad de dinero a transferir.';
+          alert('Por favor ingresa una cantidad de dinero a transferir.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (val > MAX_AMOUNT) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          alert(`El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`);
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (val > this.user.balance) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
+          alert(`El monto supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`);
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        inputAmount.classList.remove('has-error');
+        amountErrorBox.classList.add('hidden');
+
+        if (inputGlosa) {
+          this.transferState.glosa = inputGlosa.value.trim();
+        }
+
+        this.goTo('summary');
+      });
+    }
+  }
+
+  /* Paso 3: Resumen Seguro */
+  setupSummaryStep() {
+    const btnConfirm = document.getElementById('btnConfirmSummary');
+    const btnReview = document.getElementById('btnReviewSummary');
+    const btnSpeakCard = document.getElementById('btnSpeakSummaryCard');
+
+    const speakSummaryContent = () => {
+      const amtStr = this.formatCLPForSpeech(this.transferState.amount);
+      const destName = this.transferState.recipient.name;
+      const destBank = this.transferState.recipient.bank;
+      
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
+      
+      if (window.puenteSpeech) {
+        window.puenteSpeech.speak(speechText);
+      }
+    };
+
+    if (btnConfirm) {
+      btnConfirm.addEventListener('click', () => {
+        this.openSecurityAuth();
+      });
+    }
+
+    if (btnReview) {
+      btnReview.addEventListener('click', () => {
+        // El usuario detectó un posible error o desea cambiar el monto
+        if (window.facilitatorPanel) {
+          window.facilitatorPanel.recordMetric('correction');
+        }
+        this.goTo('amount');
+      });
+    }
+
+    if (btnSpeakCard) btnSpeakCard.addEventListener('click', speakSummaryContent);
+  }
+
+  renderSummary() {
+    const titleEl = document.getElementById('safeSummaryTitle');
+    const textEl = document.getElementById('safeSummaryText');
+    const warnBox = document.getElementById('summaryBalanceWarning');
+
+    // Microcopy determinista requerido por el enunciado:
+    // "Vas a enviar $50.000 a Rosa Pérez, a su cuenta en Banco de Chile. Una vez enviado, no se puede deshacer."
+    const amtStr = this.formatCLP(this.transferState.amount);
+    const destName = this.transferState.recipient.name;
+    const destBank = this.transferState.recipient.bank;
+
+    if (textEl) {
+      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
+    }
+
+    // Si el monto excede el saldo o el límite máximo de $200.000
+    if (warnBox) {
+      if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
+        warnBox.classList.remove('hidden');
+        if (this.transferState.amount > this.user.balance) {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+        } else {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
+        }
+      } else {
+        warnBox.classList.add('hidden');
+      }
+    }
+  }
+
+  updateSummaryTitle(variant) {
+    this.summaryTitleVariant = variant;
+    if (this.currentView === 'summary') {
+      this.renderSummary();
+    }
+  }
+
+  setErrorInjection(active) {
+    this.errorInjection = active;
+    this.transferState.amount = active ? 500000 : 0;
+    const amountInput = document.getElementById('inputAmount');
+    if (amountInput) {
+      amountInput.value = this.formatCLP(this.transferState.amount);
+    }
+  }
+
+  /* Paso 4: Clave Dinámica Simulada con Teclado Numérico Funcional */
+  setupAuthStep() {
+    const modal = document.getElementById('securityModalOverlay');
+    const btnAuthorize = document.getElementById('btnAuthorizeTransfer');
+    const btnCancel = document.getElementById('btnCancelAuth');
+    const digits = document.querySelectorAll('.security-digit');
+    const keypadButtons = document.querySelectorAll('#authVirtualKeypad .btn-keypad-digit');
+
+    this.enteredPin = '';
+
+    this.updatePinDisplay = () => {
+      digits.forEach((d, i) => {
+        if (i < this.enteredPin.length) {
+          d.value = this.enteredPin[i];
+          d.classList.add('filled');
+          d.classList.remove('active-cell');
+        } else if (i === this.enteredPin.length) {
+          d.value = '';
+          d.classList.remove('filled');
+          d.classList.add('active-cell');
+        } else {
+          d.value = '';
+          d.classList.remove('filled');
+          d.classList.remove('active-cell');
+        }
+      });
+    };
+
+    // Tablero numérico en pantalla (solo dígitos 0-9 y borrar)
+    keypadButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const key = btn.getAttribute('data-key');
+        if (key === 'BACK') {
+          if (this.enteredPin.length > 0) {
+            this.enteredPin = this.enteredPin.slice(0, -1);
+          }
+        } else if (/^[0-9]$/.test(key)) {
+          if (this.enteredPin.length < 6) {
+            this.enteredPin += key;
+          }
+        }
+        this.updatePinDisplay();
+      });
+    });
+
+    if (btnAuthorize) {
+      btnAuthorize.addEventListener('click', () => {
+        if (this.enteredPin.length < 6) {
+          alert('Por favor completa los 6 números de tu clave tocando el teclado.');
+          return;
+        }
+        this.executeTransfer();
+      });
+    }
+
+    if (btnCancel) {
+      btnCancel.addEventListener('click', () => {
+        if (modal) modal.classList.remove('active');
+      });
+    }
+  }
+
+  openSecurityAuth() {
+    if (window.interfazPuente && !window.interfazPuente.isTutorialActive) {
+      window.interfazPuente.clearSpotlight();
+    }
+    const modal = document.getElementById('securityModalOverlay');
+    if (modal) {
+      modal.classList.add('active');
+      // Iniciar con las casillas listas para escribir tocando el teclado
+      this.enteredPin = '';
+      if (this.updatePinDisplay) {
+        this.updatePinDisplay();
+      }
+    }
+  }
+
+  executeTransfer() {
+    const modal = document.getElementById('securityModalOverlay');
+    if (modal) modal.classList.remove('active');
+
+    // Descontar saldo si está dentro del límite
+    if (this.transferState.amount <= this.user.balance) {
+      this.user.balance -= this.transferState.amount;
+    }
+    this.updateBalanceUI();
+
+    // Registrar éxito en facilitador
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.finishSession(true);
+    }
+
+    // Registrar en Interfaz Puente para autoocultamiento
+    if (window.interfazPuente) {
+      window.interfazPuente.recordSuccessfulTransfer(window.facilitatorPanel.currentMetrics.helpRequests > 0);
+    }
+
+    this.goTo('receipt');
+  }
+
+  /* Paso 5: Comprobante */
+  setupReceiptStep() {
+    const btnExit = document.getElementById('btnExitToHome');
+    const btnShare = document.getElementById('btnShareReceipt');
+
+    if (btnExit) {
+      btnExit.addEventListener('click', () => {
+        this.resetToHome();
+      });
+    }
+
+    if (btnShare) {
+      btnShare.addEventListener('click', () => {
+        if (navigator.share) {
+          navigator.share({
+            title: 'Comprobante de Transferencia BancoEstado',
+            text: `Transferencia realizada por ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name}.`
+          }).catch(() => {});
+        } else {
+          alert('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
+        }
+      });
+    }
+  }
+
+  renderReceipt() {
+    const amtEl = document.getElementById('receiptAmount');
+    const nameEl = document.getElementById('receiptRecipientName');
+    const detailsEl = document.getElementById('receiptRecipientDetails');
+    const dateEl = document.getElementById('receiptDate');
+    const opEl = document.getElementById('receiptOpNumber');
+
+    if (amtEl) amtEl.textContent = this.formatCLP(this.transferState.amount);
+    if (nameEl) nameEl.textContent = this.transferState.recipient.name;
+    if (detailsEl) {
+      detailsEl.textContent = `${this.transferState.recipient.bank} · ${this.transferState.recipient.accountType} ${this.transferState.recipient.accountNum}`;
+    }
+
+    const now = new Date();
+    const pad = n => n.toString().padStart(2, '0');
+    if (dateEl) {
+      dateEl.textContent = `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${now.getFullYear()} a las ${pad(now.getHours())}:${pad(now.getMinutes())} hrs`;
+    }
+    if (opEl) {
+      opEl.textContent = Math.floor(10000000 + Math.random() * 90000000).toString();
+    }
+  }
+
+  readCurrentScreenAloud() {
+    if (!window.puenteSpeech) return;
+    if (this.currentView === 'home') {
+      window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
+    } else if (this.currentView === 'recipient') {
+      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
+    } else if (this.currentView === 'new-recipient') {
+      const isStepRut = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+      if (isStepRut) {
+        window.puenteSpeech.speak('Nuevo destinatario. Ingresa el RUT de quien recibe usando el teclado numérico en pantalla o tocando el micrófono para dictarlo.');
+      } else {
+        window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
+      }
+    } else if (this.currentView === 'amount') {
+      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
+    } else if (this.currentView === 'summary') {
+      const amtStr = this.formatCLPForSpeech(this.transferState.amount);
+      const destName = this.transferState.recipient.name;
+      const destBank = this.transferState.recipient.bank;
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
+    } else if (this.currentView === 'receipt') {
+      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
+    }
+  }
+}
+
+// Inicializar router al cargar DOM
+document.addEventListener('DOMContentLoaded', () => {
+  window.appRouter = new AppRouter();
+});
+
+
+/* ==========================================
+   5. UTILIDADES (Pantalla Completa)
+   ========================================== */
+document.getElementById('btnToggleFullScreen').addEventListener('click', function() {
+  const frame = document.getElementById('appMainContainer');
+  if (!document.fullscreenElement) {
+    if (frame.requestFullscreen) {
+      frame.requestFullscreen();
+    } else if (frame.webkitRequestFullscreen) {
+      frame.webkitRequestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+});
   </script>
 
 </body>

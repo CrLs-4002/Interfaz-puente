@@ -13,9 +13,13 @@
 
 ## 1. Cómo Ejecutar el Prototipo
 
-El prototipo no requiere backend ni configuraciones complejas en la nube (100% local, cumpliendo con la **Ley 21.719** de protección de datos personales).
+El prototipo es **100% autónomo y offline**, empaquetado completamente en el archivo `index.html` (cumpliendo con la **Ley 21.719** de protección de datos personales).
 
-### Opción A (La más rápida y recomendada):
+### Opción A (La más sencilla y directa):
+* **Solo haz doble clic en `index.html`:** Se abrirá inmediatamente en cualquier navegador web (Chrome, Edge, Safari, Firefox) sin necesidad de internet, sin terminal y sin instalar nada.
+* Puedes compartir únicamente el archivo `index.html` por correo, Teams o pendrive y funcionará exactamente igual.
+
+### Opción B (Para probar en un celular real vía Wi-Fi local):
 Abre una terminal en esta carpeta y ejecuta:
 ```bash
 ./iniciar.sh
@@ -27,6 +31,8 @@ python3 -m http.server 5173
 Luego abre tu navegador en:
 * **En el computador:** `http://localhost:5173`
 * **En un celular real:** Abre el navegador del celular e ingresa la dirección IP que muestra la terminal (ejemplo: `http://192.168.1.15:5173`), asegurándote de que ambos dispositivos estén en la misma red Wi-Fi.
+
+*(Nota para desarrollo: Si modificas los archivos modulares en `css/` o `js/`, ejecuta `python3 build.py` para re-empaquetar automáticamente `index.html`).*
 
 ---
 

@@ -67,6 +67,10 @@ class InterfazPuente {
   }
 
   async loadGlossary() {
+    if (window.PUENTE_GLOSSARY_DATA && window.PUENTE_GLOSSARY_DATA.terminos) {
+      this.glossary = window.PUENTE_GLOSSARY_DATA.terminos;
+      return;
+    }
     try {
       const res = await fetch('./data/glossary.json');
       const data = await res.json();
