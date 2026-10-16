@@ -867,7 +867,7 @@ input, select, textarea {
   font-weight: 900;
   color: var(--navy);
   background: #F8FAFC;
-  border: 2.5px solid #94A3B8;
+  border: 2.5px solid #64748B;
   border-radius: 16px;
   padding: 8px 16px;
   box-shadow: inset 0 2px 4px rgba(13, 27, 62, 0.06), 0 2px 8px rgba(13, 27, 62, 0.04);
@@ -3013,14 +3013,18 @@ button.spotlight-active *,
                   <span class="term-technical">Monto</span>
                   <span class="term-simplified">Escribe el monto o elige un botón</span>
                 </span>
-                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
+                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo. El monto máximo permitido para transferir es de 200.000 pesos." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                 </button>
               </label>
               
               <!-- Input editable directamente donde se puede escribir cualquier monto -->
               <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;margin:6px 0 10px">
-                <input type="text" class="amount-input-big" id="inputAmount" value="$0" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos">
+                <input type="text" class="amount-input-big" id="inputAmount" value="$0" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos (máximo $200.000)">
+                <span style="font-size:15px;font-weight:800;color:var(--indigo);margin-top:6px;display:flex;align-items:center;gap:4px">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                  Máximo permitido: $200.000
+                </span>
               </div>
               <div class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted);margin-bottom:12px">
                 ✏️ Toca la casilla con borde para escribir el monto, o elige una sugerencia:
@@ -4394,8 +4398,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada, o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, o elige una de las opciones sugeridas.'
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
+          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.'
         },
         {
           target: '#groupGlosa',
@@ -5997,6 +6001,7 @@ class AppRouter {
     const btnContinue = document.getElementById('btnContinueAmount');
     const amountErrorBox = document.getElementById('amountErrorBox');
 
+    const MAX_AMOUNT = 200000;
 
     if (inputAmount) {
       inputAmount.addEventListener('focus', () => {
@@ -6008,8 +6013,13 @@ class AppRouter {
       inputAmount.addEventListener('input', (e) => {
         let val = this.parseCLP(e.target.value);
 
-        if (val > 99999999) val = 99999999;
-        if (val > this.user.balance) {
+        // Límite máximo para transferir y digitar: $200.000
+        if (val > MAX_AMOUNT) {
+          val = MAX_AMOUNT;
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
+        } else if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
@@ -6054,6 +6064,14 @@ class AppRouter {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = 'Escribe cuánto dinero quieres enviar o toca uno de los montos.';
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (val > MAX_AMOUNT) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -6180,11 +6198,15 @@ class AppRouter {
       if (accountEl) accountEl.style.display = 'none';
     }
 
-    // El monto ya se validó contra el saldo en la pantalla anterior
+    // Si el monto excede el saldo o el límite máximo de $200.000
     if (warnBox) {
-      if (this.transferState.amount > this.user.balance) {
+      if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
         warnBox.classList.remove('hidden');
-        warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+        if (this.transferState.amount > this.user.balance) {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+        } else {
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera el límite máximo permitido de $200.000.`;
+        }
       } else {
         warnBox.classList.add('hidden');
       }
