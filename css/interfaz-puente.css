@@ -224,6 +224,19 @@ body.dynamic-focus-active .puente-fab-container {
   height: 30px;
 }
 
+.puente-fab-icon .fab-question-mark {
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
+  color: #0D1B3E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  margin-top: -2px;
+}
+
 .puente-fab-label {
   display: none;
 }

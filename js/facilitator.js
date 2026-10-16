@@ -250,7 +250,7 @@ class FacilitatorPanel {
       participante: this.participant,
       interfazPuente: this.bridgeEnabled ? 'CON AYUDA' : 'SIN AYUDA (Control)',
       varianteTitulo: this.summaryTitleVariant === 'resumen_seguro' ? 'Resumen Seguro' : 'Revisa antes de enviar',
-      errorInyectado: this.errorInjectionActive ? 'SÍ ($500.000)' : 'NO ($50.000)',
+      errorInyectado: this.errorInjectionActive ? 'SÍ ($500.000)' : 'NO ($0)',
       tiempoSegundos: this.sessionSeconds,
       ayudasPedidas: this.currentMetrics.helpRequests,
       focosUsados: this.currentMetrics.spotlightActivations,

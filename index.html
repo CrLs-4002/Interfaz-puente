@@ -485,10 +485,10 @@
               
               <!-- Input editable directamente donde se puede escribir cualquier monto -->
               <div style="display:flex;align-items:center;justify-content:center;position:relative;margin:6px 0 12px">
-                <input type="text" class="amount-input-big" id="inputAmount" value="$50.000" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos chilenos">
+                <input type="text" class="amount-input-big" id="inputAmount" value="$0" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos">
               </div>
               <div class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px">
-                ✏️ Toca los números arriba para escribir otro monto, o elige una sugerencia:
+                ✏️ Toca los números arriba para escribir el monto, o elige una sugerencia:
               </div>
               
               <!-- Píldoras de Monto Rápido -->
@@ -821,7 +821,7 @@
         <!-- Botón Flotante Principal (Widget) -->
         <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Widget de ayuda" title="Widget de ayuda">
           <span class="puente-fab-icon" id="puenteFabIcon">
-            <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span class="icon-open fab-question-mark" aria-hidden="true">?</span>
             <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </span>
         </button>

@@ -29,7 +29,7 @@ class AppRouter {
         accountType: 'Cuenta Corriente',
         accountNum: '00-128-45920-01'
       },
-      amount: 50000,
+      amount: 0,
       glosa: '',
       isNewRecipient: false
     };
@@ -80,7 +80,7 @@ class AppRouter {
   }
 
   resetToHome() {
-    this.transferState.amount = this.errorInjection ? 500000 : 50000;
+    this.transferState.amount = this.errorInjection ? 500000 : 0;
     this.transferState.glosa = '';
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
@@ -121,7 +121,7 @@ class AppRouter {
 
     const startTransferFlow = () => {
       // Inyección de error si está activada
-      this.transferState.amount = this.errorInjection ? 500000 : 50000;
+      this.transferState.amount = this.errorInjection ? 500000 : 0;
       const amountInput = document.getElementById('inputAmount');
       if (amountInput) amountInput.value = this.formatCLP(this.transferState.amount);
       this.goTo('recipient');
@@ -461,10 +461,16 @@ class AppRouter {
     const amountErrorBox = document.getElementById('amountErrorBox');
 
     if (inputAmount) {
+      inputAmount.addEventListener('focus', () => {
+        if (inputAmount.value === '$0' || inputAmount.value === '$ 0' || !this.transferState.amount) {
+          inputAmount.select();
+        }
+      });
+
       inputAmount.addEventListener('input', (e) => {
         const val = this.parseCLP(e.target.value);
         this.transferState.amount = val;
-        e.target.value = val > 0 ? this.formatCLP(val) : '';
+        e.target.value = val > 0 ? this.formatCLP(val) : '$0';
 
         // Validación inmediata de saldo
         if (val > this.user.balance) {
@@ -587,7 +593,7 @@ class AppRouter {
 
   setErrorInjection(active) {
     this.errorInjection = active;
-    this.transferState.amount = active ? 500000 : 50000;
+    this.transferState.amount = active ? 500000 : 0;
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
