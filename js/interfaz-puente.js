@@ -16,6 +16,7 @@ class InterfazPuente {
     this.successiveIndependentRuns = 0; // Para autoocultamiento
     this.glossary = [];
     this.activeSpotlightElement = null;
+    this.isTutorialActive = false; // Solo se cierra con la 'x' o con 'Listo' al final
 
     // Elementos DOM
     this.fabContainer = null;
@@ -356,6 +357,8 @@ class InterfazPuente {
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
 
+    this.isTutorialActive = true;
+
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
     }
@@ -377,6 +380,7 @@ class InterfazPuente {
   }
 
   clearSpotlight() {
+    this.isTutorialActive = false;
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.dynamicFocusOverlay) {
@@ -406,8 +410,20 @@ class InterfazPuente {
 
   /* Flujo interactivo paso a paso para completar la transferencia */
   startStepByStepGuide() {
+    this.isTutorialActive = true;
     this.currentStepIndex = 0;
     this.executeCurrentStep();
+  }
+
+  /* Si el usuario cambia de pantalla en el flujo de transferencia, el tutorial continúa sin cerrarse */
+  handleViewChange(viewName) {
+    if (!this.isTutorialActive) return;
+    this.currentStepIndex = 0;
+    setTimeout(() => {
+      if (this.isTutorialActive) {
+        this.executeCurrentStep();
+      }
+    }, 120);
   }
 
   getGuideSteps() {
@@ -886,29 +902,48 @@ class InterfazPuente {
     }
 
     // Tarjeta del Spotlight paso a paso: botones siguiente, anterior, cerrar y escuchar
+    if (this.spotlightCard) {
+      this.spotlightCard.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+
     const btnSpotlightNext = document.getElementById('btnSpotlightNext');
     if (btnSpotlightNext) {
-      btnSpotlightNext.addEventListener('click', () => this.nextGuideStep());
+      btnSpotlightNext.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.nextGuideStep();
+      });
     }
 
     const btnSpotlightPrev = document.getElementById('btnSpotlightPrev');
     if (btnSpotlightPrev) {
-      btnSpotlightPrev.addEventListener('click', () => this.prevGuideStep());
+      btnSpotlightPrev.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.prevGuideStep();
+      });
     }
 
     const btnSpotlightDone = document.getElementById('btnSpotlightDone');
     if (btnSpotlightDone) {
-      btnSpotlightDone.addEventListener('click', () => this.clearSpotlight());
+      btnSpotlightDone.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.clearSpotlight();
+      });
     }
 
     const btnSpotlightCloseX = document.getElementById('btnSpotlightCloseX');
     if (btnSpotlightCloseX) {
-      btnSpotlightCloseX.addEventListener('click', () => this.clearSpotlight());
+      btnSpotlightCloseX.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.clearSpotlight();
+      });
     }
 
     const btnSpotlightVoice = document.getElementById('btnSpotlightVoice');
     if (btnSpotlightVoice) {
-      btnSpotlightVoice.addEventListener('click', () => {
+      btnSpotlightVoice.addEventListener('click', (e) => {
+        e.stopPropagation();
         const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
         if (speechText && window.puenteSpeech) {
           window.puenteSpeech.speak(speechText);
@@ -944,7 +979,7 @@ class InterfazPuente {
     // Oscurecimiento y destaque automático (Foco Dinámico) al interactuar con campos del formulario
     const focusableSelectors = 'input, select, textarea, .contact-item';
     document.addEventListener('focusin', (e) => {
-      if (!this.enabled) return;
+      if (!this.enabled || this.isTutorialActive) return;
       const target = e.target;
       if (!target.matches(focusableSelectors)) return;
       // No activar foco en la clave o controles del facilitador/puente
@@ -957,10 +992,12 @@ class InterfazPuente {
       this.activateSectionFocus(group, labelText);
     });
 
-    // Cerrar foco al hacer click en el overlay oscuro
+    // El overlay oscuro o clics afuera NO deben cerrar el card del tutorial
+    // La única manera de cerrar el card es tocando la 'x' o el 'Listo' al final del tutorial
     if (this.dynamicFocusOverlay) {
-      this.dynamicFocusOverlay.addEventListener('click', () => {
-        this.clearSpotlight();
+      this.dynamicFocusOverlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
       });
     }
 
@@ -993,7 +1030,7 @@ class InterfazPuente {
 
   /* Foco dinámico en sección específica con oscurecimiento del fondo al 85% */
   activateSectionFocus(targetElement, labelText) {
-    if (!this.enabled || !targetElement) return;
+    if (!this.enabled || !targetElement || this.isTutorialActive) return;
     this.clearSpotlight();
 
     this.activeSpotlightElement = targetElement;

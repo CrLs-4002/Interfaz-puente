@@ -62,9 +62,13 @@ class AppRouter {
       if (scroll) scroll.scrollTop = 0;
     }
 
-    // Limpiar foco spotlight al cambiar de vista
+    // Si el modo tutorial está activo, continuar en la nueva pantalla; de lo contrario limpiar spotlight
     if (window.interfazPuente) {
-      window.interfazPuente.clearSpotlight();
+      if (window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.handleViewChange(viewName);
+      } else {
+        window.interfazPuente.clearSpotlight();
+      }
     }
 
     // Configurar contenidos específicos según la vista
@@ -343,6 +347,9 @@ class AppRouter {
           stepDetails.classList.remove('hidden');
           const nameInput = document.getElementById('newRecipientName');
           if (nameInput) nameInput.focus();
+        }
+        if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
+          window.interfazPuente.handleViewChange('new-recipient');
         }
       });
     }
@@ -651,7 +658,7 @@ class AppRouter {
   }
 
   openSecurityAuth() {
-    if (window.interfazPuente) {
+    if (window.interfazPuente && !window.interfazPuente.isTutorialActive) {
       window.interfazPuente.clearSpotlight();
     }
     const modal = document.getElementById('securityModalOverlay');

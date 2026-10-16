@@ -630,6 +630,29 @@ button.spotlight-active *,
   box-shadow: 0 4px 12px rgba(13, 143, 114, 0.3);
 }
 
+.btn-close-spotlight-x {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: 1.5px solid #CBD5E1;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: none;
+}
+
+.btn-close-spotlight-x:hover,
+.btn-close-spotlight-x:focus {
+  background: var(--red-soft);
+  color: var(--red);
+  border-color: var(--red);
+  transform: scale(1.08);
+}
+
 /* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
 .semantic-translation-badge {
   display: none !important;
