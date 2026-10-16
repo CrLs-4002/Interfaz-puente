@@ -1054,11 +1054,20 @@ button.spotlight-active *,
   flex-direction: column;
   gap: 10px;
   margin-top: 26px;
-  width: 100%;
+  width: 100% !important;
+  align-items: stretch !important;
+  box-sizing: border-box !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .btn-cta-full-width {
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
   min-height: 56px;
   border-radius: 16px;
   font-size: 18px;
@@ -1072,6 +1081,11 @@ button.spotlight-active *,
 
 .btn-cancel-full-width {
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
   min-height: 48px;
   background: transparent;
   color: var(--muted);
@@ -1079,6 +1093,10 @@ button.spotlight-active *,
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-cancel-full-width:hover {

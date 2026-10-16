@@ -846,9 +846,16 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100% !important;
+  align-items: stretch !important;
 }
 
 .btn-confirm-send {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  align-self: stretch !important;
   min-height: 58px;
   background: var(--teal);
   color: #FFFFFF;
@@ -868,6 +875,11 @@ input, select, textarea {
 }
 
 .btn-cancel-review {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  align-self: stretch !important;
   min-height: 52px;
   background: #FFFFFF;
   color: var(--muted);

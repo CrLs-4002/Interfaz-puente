@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#F77F00">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>Interfaz Puente — BancoEstado (Simulación Académica INACAP)</title>
 
   <!-- Tipografías para la app (Nunito / Nunito Sans) -->
@@ -229,6 +232,21 @@ input, select, textarea {
 }
 .inline-error.show {
   display: block;
+}
+
+/* Centrado simétrico de botones de acción inferiores */
+.form-bottom-actions,
+.receipt-actions,
+.safe-summary-actions,
+.app-bridge-on .form-bottom-actions,
+.app-bridge-on .receipt-actions,
+.app-bridge-on .safe-summary-actions {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  width: 100% !important;
+  align-items: stretch !important;
 }
 
 /* Grupo control (sin Interfaz Puente): sin ayudas de voz ni dictado */
@@ -563,6 +581,9 @@ input, select, textarea {
 }
 
 .btn-cta-big {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
   min-height: var(--touch-btn);
   background: var(--orange);
   color: #FFFFFF;
@@ -976,9 +997,16 @@ input, select, textarea {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100% !important;
+  align-items: stretch !important;
 }
 
 .btn-confirm-send {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  align-self: stretch !important;
   min-height: 58px;
   background: var(--teal);
   color: #FFFFFF;
@@ -998,6 +1026,11 @@ input, select, textarea {
 }
 
 .btn-cancel-review {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  align-self: stretch !important;
   min-height: 52px;
   background: #FFFFFF;
   color: var(--muted);
@@ -2231,11 +2264,20 @@ button.spotlight-active *,
   flex-direction: column;
   gap: 10px;
   margin-top: 26px;
-  width: 100%;
+  width: 100% !important;
+  align-items: stretch !important;
+  box-sizing: border-box !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 .btn-cta-full-width {
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
   min-height: 56px;
   border-radius: 16px;
   font-size: 18px;
@@ -2249,6 +2291,11 @@ button.spotlight-active *,
 
 .btn-cancel-full-width {
   width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-self: stretch !important;
   min-height: 48px;
   background: transparent;
   color: var(--muted);
@@ -2256,6 +2303,10 @@ button.spotlight-active *,
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-cancel-full-width:hover {
