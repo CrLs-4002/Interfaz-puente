@@ -92,7 +92,7 @@ class InterfazPuente {
 
   /* ================= ARRASTRAR EL BOTÓN (DRAGGABLE) ================= */
   setupDraggable() {
-    if (!this.fabContainer) return;
+    if (!this.fabContainer || !this.fabBtn) return;
 
     let isDragging = false;
     let startX = 0, startY = 0;
@@ -100,8 +100,10 @@ class InterfazPuente {
     let hasMoved = false;
 
     const onPointerDown = (e) => {
-      // Ignora clic secundario
+      // Ignora clic secundario o clics dentro del menú emergente
       if (e.button !== undefined && e.button !== 0) return;
+      if (e.target.closest('.puente-widget-menu') || e.target.closest('.inactivity-offer-bubble')) return;
+
       isDragging = true;
       hasMoved = false;
 
@@ -113,13 +115,6 @@ class InterfazPuente {
 
       initialLeft = rect.left - parentRect.left;
       initialTop = rect.top - parentRect.top;
-
-      // Desactivar animaciones mientras se arrastra
-      this.fabContainer.style.transition = 'none';
-      this.fabContainer.style.bottom = 'auto';
-      this.fabContainer.style.right = 'auto';
-      this.fabContainer.style.left = `${initialLeft}px`;
-      this.fabContainer.style.top = `${initialTop}px`;
     };
 
     const onPointerMove = (e) => {
@@ -131,38 +126,46 @@ class InterfazPuente {
       const dx = currentX - startX;
       const dy = currentY - startY;
 
-      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-        hasMoved = true;
+      // Solo iniciar cambio de coordenadas si realmente hubo arrastre (más de 6px)
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        if (!hasMoved) {
+          hasMoved = true;
+          this.fabContainer.style.transition = 'none';
+          this.fabContainer.style.bottom = 'auto';
+          this.fabContainer.style.right = 'auto';
+        }
+
+        const parentRect = this.fabContainer.parentElement.getBoundingClientRect();
+        const btnRect = this.fabBtn.getBoundingClientRect();
+
+        let newLeft = initialLeft + dx;
+        let newTop = initialTop + dy;
+
+        // Límites para que nunca salga del marco
+        const maxLeft = parentRect.width - btnRect.width - 10;
+        const maxTop = parentRect.height - btnRect.height - 70;
+
+        newLeft = Math.max(10, Math.min(newLeft, maxLeft));
+        newTop = Math.max(50, Math.min(newTop, maxTop));
+
+        this.fabContainer.style.left = `${newLeft}px`;
+        this.fabContainer.style.top = `${newTop}px`;
       }
-
-      const parentRect = this.fabContainer.parentElement.getBoundingClientRect();
-      const btnRect = this.fabContainer.getBoundingClientRect();
-
-      let newLeft = initialLeft + dx;
-      let newTop = initialTop + dy;
-
-      // Límites para que nunca salga del marco
-      const maxLeft = parentRect.width - btnRect.width - 10;
-      const maxTop = parentRect.height - btnRect.height - 70;
-
-      newLeft = Math.max(10, Math.min(newLeft, maxLeft));
-      newTop = Math.max(50, Math.min(newTop, maxTop));
-
-      this.fabContainer.style.left = `${newLeft}px`;
-      this.fabContainer.style.top = `${newTop}px`;
     };
 
     const onPointerUp = () => {
       if (!isDragging) return;
       isDragging = false;
-      this.fabContainer.style.transition = 'transform 0.15s ease, opacity 0.25s ease';
+      if (hasMoved) {
+        this.fabContainer.style.transition = 'transform 0.15s ease, opacity 0.25s ease';
+      }
     };
 
-    this.fabContainer.addEventListener('mousedown', onPointerDown);
+    this.fabBtn.addEventListener('mousedown', onPointerDown);
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', onPointerUp);
 
-    this.fabContainer.addEventListener('touchstart', onPointerDown, { passive: true });
+    this.fabBtn.addEventListener('touchstart', onPointerDown, { passive: true });
     window.addEventListener('touchmove', onPointerMove, { passive: true });
     window.addEventListener('touchend', onPointerUp);
 
@@ -240,20 +243,26 @@ class InterfazPuente {
   resetFrameScroll() {
     const frame = document.getElementById('appMainContainer');
     if (frame) {
-      frame.scrollTop = 0;
-      frame.scrollLeft = 0;
+      if (frame.scrollTop !== 0) frame.scrollTop = 0;
+      if (frame.scrollLeft !== 0) frame.scrollLeft = 0;
     }
     const screenContainer = document.querySelector('.screen-container');
     if (screenContainer) {
-      screenContainer.scrollTop = 0;
-      screenContainer.scrollLeft = 0;
+      if (screenContainer.scrollTop !== 0) screenContainer.scrollTop = 0;
+      if (screenContainer.scrollLeft !== 0) screenContainer.scrollLeft = 0;
     }
     const appWrapper = document.querySelector('.app-wrapper');
     if (appWrapper) {
-      appWrapper.scrollTop = 0;
-      appWrapper.scrollLeft = 0;
+      if (appWrapper.scrollTop !== 0) appWrapper.scrollTop = 0;
+      if (appWrapper.scrollLeft !== 0) appWrapper.scrollLeft = 0;
     }
-    window.scrollTo(0, 0);
+  }
+
+  clearPreviousHighlight() {
+    if (this.activeSpotlightElement) {
+      this.activeSpotlightElement.classList.remove('spotlight-active');
+      this.activeSpotlightElement = null;
+    }
   }
 
   scrollToElement(targetEl) {
@@ -262,16 +271,26 @@ class InterfazPuente {
     if (scrollContainer) {
       const containerRect = scrollContainer.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
-      const currentScroll = scrollContainer.scrollTop;
-      const relativeTop = targetRect.top - containerRect.top + currentScroll;
-      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 140) : 140;
-      const visibleHeight = Math.max(100, containerRect.height - cardHeight);
-      const targetScroll = Math.max(0, relativeTop - (visibleHeight / 2) + (targetRect.height / 2));
+      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 150) : 150;
 
-      scrollContainer.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth'
-      });
+      // Área visible encima de la tarjeta flotante del tutorial
+      const visibleTop = containerRect.top + 10;
+      const visibleBottom = containerRect.bottom - cardHeight - 10;
+
+      // Si el elemento ya está visible en pantalla, no desplazar innecesariamente para evitar cualquier descuadre
+      const isAlreadyVisible = (targetRect.top >= visibleTop && targetRect.bottom <= visibleBottom);
+
+      if (!isAlreadyVisible) {
+        const currentScroll = scrollContainer.scrollTop;
+        const relativeTop = targetRect.top - containerRect.top + currentScroll;
+        const visibleHeight = Math.max(100, containerRect.height - cardHeight);
+        const targetScroll = Math.max(0, relativeTop - (visibleHeight / 2) + (targetRect.height / 2));
+
+        scrollContainer.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
+      }
     }
     this.resetFrameScroll();
   }
@@ -290,7 +309,7 @@ class InterfazPuente {
       window.facilitatorPanel.recordMetric('spotlight');
     }
 
-    this.clearSpotlight();
+    this.clearPreviousHighlight();
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
@@ -312,10 +331,7 @@ class InterfazPuente {
 
   clearSpotlight() {
     document.body.classList.remove('dynamic-focus-active');
-    if (this.activeSpotlightElement) {
-      this.activeSpotlightElement.classList.remove('spotlight-active');
-      this.activeSpotlightElement = null;
-    }
+    this.clearPreviousHighlight();
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.remove('active');
     }
@@ -326,11 +342,11 @@ class InterfazPuente {
       window.puenteSpeech.stop();
     }
 
-    // Regresar el área de scroll al inicio suavemente
+    // Regresar el área de scroll al inicio suavemente al cerrar el tutorial si estaba desplazada
     const activeView = document.querySelector('.screen-view.is-active');
     if (activeView) {
       const scrollArea = activeView.querySelector('.scroll-area');
-      if (scrollArea) {
+      if (scrollArea && scrollArea.scrollTop !== 0) {
         scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }
@@ -346,7 +362,8 @@ class InterfazPuente {
   }
 
   getGuideSteps() {
-    const currentView = window.appRouter ? window.appRouter.currentView : 'home';
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home');
     const isNewRecipientTab = document.getElementById('tabRecipientNew') && document.getElementById('tabRecipientNew').classList.contains('active');
 
     if (currentView === 'home') {
@@ -354,7 +371,7 @@ class InterfazPuente {
         {
           target: '#cardCuentaRut',
           title: 'Revisar tu dinero disponible',
-          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes $350.000 listos para usar.',
+          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
           speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
         },
         {
@@ -444,7 +461,7 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla, o elige uno de los montos sugeridos abajo ($10.000, $30.000, $50.000 o $100.000).',
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla, o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
           speech: 'Paso 1: Ingresa el monto. Toca para escribir cuánto dinero quieres transferir, o elige una de las opciones sugeridas.'
         },
         {
@@ -493,7 +510,7 @@ class InterfazPuente {
       return;
     }
 
-    this.clearSpotlight();
+    this.clearPreviousHighlight();
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
