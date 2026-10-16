@@ -170,9 +170,130 @@ input, select, textarea {
   }
 }
 
-/* ================= AVISO ACADÉMICO (ELIMINADO) ================= */
+/* ================= AVISO ACADÉMICO (visible siempre) ================= */
+.contact-item .contact-check { visibility: hidden; }
+.contact-item.selected .contact-check { visibility: visible; }
+
 .inacap-banner {
+  display: block;
+  flex: none;
+  background: #1E2538;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+  padding: 6px 12px;
+  line-height: 1.3;
+  z-index: 46;
+  cursor: default;
+  user-select: none;
+}
+
+/* ================= AVISO EN PANTALLA (reemplaza las alertas del navegador) ================= */
+.puente-toast {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 96px;
+  z-index: 80;
+  background: #1E2538;
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(13, 27, 62, 0.35);
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.puente-toast.show {
+  opacity: 1;
+  transform: none;
+}
+
+/* Mensaje de error dentro de la pantalla */
+.inline-error {
+  display: none;
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1.5px solid #FCA5A5;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  margin-top: 10px;
+}
+.inline-error.show {
+  display: block;
+}
+
+/* Espacio para que el botón flotante no tape los botones principales */
+.app-bridge-on .form-bottom-actions,
+.app-bridge-on .receipt-actions {
+  padding-right: 72px;
+}
+.app-bridge-on .safe-summary-actions {
+  padding-right: 56px;
+}
+
+/* Grupo control (sin Interfaz Puente): sin ayudas de voz ni dictado */
+.app-bridge-off .btn-speak-section,
+.app-bridge-off #btnVoiceDictateRut,
+.app-bridge-off #rutVoiceFeedback,
+.app-bridge-off .safe-summary-warning,
+.app-bridge-off .safe-summary-icon {
   display: none !important;
+}
+
+/* Confirmación estándar para el grupo control */
+.standard-confirm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
+  margin: 4px 0 8px;
+}
+.standard-confirm-table td {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+.standard-confirm-table td:first-child {
+  color: var(--muted);
+  font-weight: 700;
+  width: 45%;
+}
+.standard-confirm-table td:last-child {
+  font-weight: 800;
+  text-align: right;
+}
+
+/* Datos de la cuenta en el Resumen Seguro */
+.safe-summary-account {
+  font-size: 16px;
+  color: var(--ink);
+  background: var(--indigo-soft);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  line-height: 1.45;
+}
+
+/* Modo práctica en el comprobante */
+.receipt-practice-note {
+  display: none;
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1.5px solid #FCD34D;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 16px;
 }
 
 /* Banner de Modo Práctica */
@@ -1527,9 +1648,20 @@ input:checked + .switch-slider:before {
   50% { opacity: 0.75; }
 }
 
-/* ================= FOCO DINÁMICO (RESALTADO DE CASILLA SIN OSCURECER) ================= */
+/* ================= FOCO DINÁMICO ================= */
+/* La capa separada no se usa: el oscurecimiento se dibuja con la sombra del elemento destacado
+   para que funcione dentro de cada pantalla. */
 .dynamic-focus-overlay {
-  display: none !important; /* Desactivado el oscurecimiento de la pantalla */
+  display: none !important;
+}
+
+/* Oscurece el resto de la pantalla al 85% SOLO cuando la persona activó la guía (no al tocar un campo) */
+body.dynamic-focus-active .spotlight-active {
+  box-shadow: 0 0 0 4px var(--teal), 0 0 0 9999px rgba(13, 27, 62, 0.85) !important;
+  border-radius: 14px;
+}
+body.dynamic-focus-active .view-header {
+  filter: brightness(0.25);
 }
 
 /* Casilla de formulario o elemento que se remarca sin alterar su tamaño ni espaciado */
@@ -2426,6 +2558,11 @@ button.spotlight-active *,
     <main class="device-frame app-semantic-active" id="appMainContainer">
 
 
+      <!-- Aviso académico: siempre visible (5 toques abren el panel del facilitador) -->
+      <div class="inacap-banner" id="inacapBanner" role="note">
+        Simulación académica INACAP · No es la app oficial de BancoEstado
+      </div>
+
       <!-- Banner de Modo Práctica -->
       <div class="practice-banner" id="practiceBanner" role="status">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -2458,7 +2595,7 @@ button.spotlight-active *,
                   <div class="account-card-type">
                     <b>CuentaRUT</b> N° 0007845129
                   </div>
-                  <span style="font-size:14px;color:var(--muted)">Titular: Elena Retamales</span>
+                  <span style="font-size:16px;color:var(--muted)">Titular: Elena Retamales</span>
                 </div>
                 
                 <div class="account-balance-row">
@@ -2471,8 +2608,8 @@ button.spotlight-active *,
                 </div>
 
                 <div class="account-actions-row">
-                  <button type="button" class="btn-pill secondary" onclick="alert('Consulta de movimientos demostrativa.')">Movimientos</button>
-                  <button type="button" class="btn-pill secondary" onclick="alert('Cartolas de cuenta demostrativas.')">Cartolas</button>
+                  <button type="button" class="btn-pill secondary" onclick="window.puenteToast('Esta sección no está disponible en la simulación.')">Movimientos</button>
+                  <button type="button" class="btn-pill secondary" onclick="window.puenteToast('Esta sección no está disponible en la simulación.')">Cartolas</button>
                 </div>
               </article>
 
@@ -2522,11 +2659,11 @@ button.spotlight-active *,
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h13l-3.5-3.5M19 16H6l3.5 3.5"/></svg>
               <span>Transferir</span>
             </button>
-            <button type="button" class="nav-tab" onclick="alert('Sección demostrativa.')">
+            <button type="button" class="nav-tab" onclick="window.puenteToast('Esta sección no está disponible en la simulación.')">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               <span>Seguridad</span>
             </button>
-            <button type="button" class="nav-tab" onclick="alert('Sección demostrativa.')">
+            <button type="button" class="nav-tab" onclick="window.puenteToast('Esta sección no está disponible en la simulación.')">
               <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
               <span>Más</span>
             </button>
@@ -2587,26 +2724,26 @@ button.spotlight-active *,
               </div>
 
               <!-- Contacto Rosa Pérez (Destinatario clave para la prueba) -->
-              <div class="contact-item selected" id="frequentContactRosa" tabindex="0" role="button">
+              <div class="contact-item" id="frequentContactRosa" tabindex="0" role="button" data-contact="rosa">
                 <div class="contact-avatar">R</div>
                 <div class="contact-details">
                   <div class="contact-name">Rosa Pérez Sepúlveda</div>
                   <div class="contact-bank-info">Banco de Chile · Cta. Corriente</div>
-                  <div style="font-size:13px;color:#64748B">RUT 12.876.543-2</div>
+                  <div style="font-size:16px;color:#64748B">RUT 12.876.543-3</div>
                 </div>
                 <button type="button" class="btn-speak-section" data-speak="Destinatario frecuente: Rosa Pérez Sepúlveda, cuenta corriente en Banco de Chile. Toca para seleccionarla." aria-label="Escuchar datos de Rosa Pérez" title="Escuchar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                 </button>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="3" style="margin-left:4px"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg class="contact-check" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="3" style="margin-left:4px"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
 
               <!-- Contacto Pedro Retamales (Hijo) -->
-              <div class="contact-item" id="frequentContactPedro" tabindex="0" role="button" onclick="alert('Para esta prueba usaremos a Rosa Pérez Sepúlveda.')">
+              <div class="contact-item" id="frequentContactPedro" tabindex="0" role="button" data-contact="pedro">
                 <div class="contact-avatar">P</div>
                 <div class="contact-details">
                   <div class="contact-name">Pedro Retamales (Hijo)</div>
                   <div class="contact-bank-info">BancoEstado · CuentaRUT</div>
-                  <div style="font-size:13px;color:#64748B">RUT 18.345.678-4</div>
+                  <div style="font-size:16px;color:#64748B">RUT 18.345.678-4</div>
                 </div>
               </div>
             </div>
@@ -2615,17 +2752,19 @@ button.spotlight-active *,
             <div id="paneRecipientFavorites" class="hidden">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
                 <span class="semantic-helper-text" style="font-weight:800;color:var(--muted)">Tus contactos favoritos:</span>
-                <span class="semantic-helper-text" style="font-size:13px;color:var(--teal);font-weight:800">⭐ Destacados</span>
+                <span class="semantic-helper-text" style="font-size:16px;color:var(--teal);font-weight:800">⭐ Destacados</span>
               </div>
-              <div class="contact-item" id="favContactRosa" tabindex="0" role="button">
+              <div class="contact-item" id="favContactRosa" tabindex="0" role="button" data-contact="rosa">
                 <div class="contact-avatar" style="background:#FEF3C7;color:#D97706">⭐</div>
                 <div class="contact-details">
                   <div class="contact-name">Rosa Pérez Sepúlveda</div>
                   <div class="contact-bank-info">Banco de Chile · Cta. Corriente</div>
-                  <div style="font-size:13px;color:#64748B">RUT 12.876.543-2</div>
+                  <div style="font-size:16px;color:#64748B">RUT 12.876.543-3</div>
                 </div>
               </div>
             </div>
+
+            <div class="inline-error" id="recipientErrorBox" role="alert"></div>
 
             <!-- Botones Inferiores para Guardados / Favoritos -->
             <div class="form-bottom-actions" id="recipientSavedBottomActions">
@@ -2682,7 +2821,7 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">RUT de la persona que recibirá el dinero</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">RUT de la persona que recibirá el dinero</span>
                 </label>
                 
                 <div style="position:relative;display:flex;align-items:center">
@@ -2691,12 +2830,12 @@ button.spotlight-active *,
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                   </button>
                 </div>
-                <div id="rutVoiceFeedback" style="font-size:13px;color:var(--teal);font-weight:800;margin-top:6px;display:none">🎙️ Escuchando... di tu RUT (ej: quince millones seiscientos...)</div>
+                <div id="rutVoiceFeedback" style="font-size:16px;color:var(--teal);font-weight:800;margin-top:6px;display:none">🎙️ Escuchando... di tu RUT (ej: quince millones seiscientos...)</div>
               </div>
 
               <!-- Teclado Numérico en Pantalla Explayado -->
               <div style="margin-top:16px;text-align:center">
-                <span class="semantic-helper-text" style="font-size:13px;font-weight:800;color:var(--muted)">Toca los números para escribir el RUT:</span>
+                <span class="semantic-helper-text" style="font-size:16px;font-weight:800;color:var(--muted)">Toca los números para escribir el RUT:</span>
                 <div class="virtual-num-keypad" id="rutVirtualKeypad">
                   <button type="button" class="btn-keypad-digit" data-key="1">1</button>
                   <button type="button" class="btn-keypad-digit" data-key="2">2</button>
@@ -2712,6 +2851,8 @@ button.spotlight-active *,
                   <button type="button" class="btn-keypad-digit btn-keypad-action" data-key="BACK" aria-label="Borrar número">⌫</button>
                 </div>
               </div>
+
+              <div class="inline-error" id="rutErrorBox" role="alert"></div>
 
               <div class="form-bottom-actions" style="margin-top:20px">
                 <button type="button" class="btn-cta-big btn-cta-full-width" id="btnConfirmRutNext">
@@ -2736,7 +2877,7 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">Nombre completo de quien recibe</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">Nombre completo de quien recibe</span>
                 </label>
                 <input type="text" class="form-input" id="newRecipientName" placeholder="Ej: Carmen Gloria Morales">
               </div>
@@ -2750,7 +2891,7 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">Banco donde tiene su cuenta</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">Banco donde tiene su cuenta</span>
                 </label>
                 <select class="form-select" id="newRecipientBank">
                   <option value="BancoEstado">BancoEstado</option>
@@ -2772,7 +2913,7 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">Elige una de las opciones:</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">Elige una de las opciones:</span>
                 </label>
                 
                 <div class="account-type-grid" id="accountTypePillGrid">
@@ -2793,7 +2934,7 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">Número de la cuenta bancaria</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">Número de la cuenta bancaria</span>
                 </label>
                 <input type="text" class="form-input" id="newRecipientNum" placeholder="Ej: 00-128-45920-01" inputmode="numeric">
               </div>
@@ -2810,10 +2951,12 @@ button.spotlight-active *,
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
-                  <span class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted)">Solo si quieres enviarle comprobante</span>
+                  <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">Solo si quieres enviarle comprobante</span>
                 </label>
                 <input type="email" class="form-input" id="newRecipientEmail" placeholder="Ej: persona@correo.cl">
               </div>
+
+              <div class="inline-error" id="newRecipientErrorBox" role="alert"></div>
 
               <div class="form-bottom-actions">
                 <button type="button" class="btn-cta-big btn-cta-full-width" id="btnContinueRecipient">
@@ -2858,7 +3001,7 @@ button.spotlight-active *,
                   <span class="term-simplified">¿De qué cuenta sale tu dinero?</span>
                 </span>
                 <b>CuentaRUT de Elena</b>
-                <div style="font-size:15px;color:var(--ink);margin-top:2px">Saldo disponible: <strong data-bind="user-balance">$350.000</strong></div>
+                <div style="font-size:16px;color:var(--ink);margin-top:2px">Saldo disponible: <strong data-bind="user-balance">$350.000</strong></div>
               </div>
               <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('cuenta_cargo')" title="¿Qué significa Cuenta de cargo?" aria-label="Significado de Cuenta de cargo">?</button>
             </div>
@@ -2870,7 +3013,7 @@ button.spotlight-active *,
                   <span class="term-technical">Monto</span>
                   <span class="term-simplified">Escribe el monto o elige un botón</span>
                 </span>
-                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo. El monto máximo permitido para transferir es de 200.000 pesos." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
+                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                 </button>
               </label>
@@ -2878,9 +3021,8 @@ button.spotlight-active *,
               <!-- Input editable directamente donde se puede escribir cualquier monto -->
               <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;margin:6px 0 10px">
                 <input type="text" class="amount-input-big" id="inputAmount" value="$0" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos">
-                <span style="font-size:13px;font-weight:800;color:var(--indigo);margin-top:6px">Máximo permitido: $200.000</span>
               </div>
-              <div class="semantic-helper-text" style="font-size:13px;font-weight:700;color:var(--muted);margin-bottom:12px">
+              <div class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted);margin-bottom:12px">
                 ✏️ Toca la casilla con borde para escribir el monto, o elige una sugerencia:
               </div>
               
@@ -2959,7 +3101,7 @@ button.spotlight-active *,
                     <span class="term-technical">Resumen de la transferencia</span>
                     <span class="term-simplified">Lee esto antes de confirmar</span>
                   </h2>
-                  <span class="semantic-helper-text" style="font-size:14px;color:var(--muted)">Verificación protegida</span>
+                  <span class="semantic-helper-text" style="font-size:16px;color:var(--muted)">Verificación protegida</span>
                 </div>
                 <!-- Único botón para escuchar lo que dice la pantalla -->
                 <button type="button" class="btn-speak-section" id="btnSpeakSummaryCard" aria-label="Escuchar resumen de la pantalla" title="Escuchar">
@@ -2973,6 +3115,8 @@ button.spotlight-active *,
                 Una vez enviado, <strong>no se puede deshacer</strong>.
               </div>
 
+              <div class="safe-summary-account" id="safeSummaryAccount"></div>
+
               <!-- Aviso de advertencia de irreversibilidad -->
               <div class="safe-summary-warning semantic-helper-text">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="flex:none"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -2984,16 +3128,12 @@ button.spotlight-active *,
 
               <!-- Autorización traducida a lenguaje claro (Hallazgo E6) -->
               <div style="margin-top:16px">
-                <span style="display:block;font-size:14px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Autorizar transferencia con:</span>
+                <span style="display:block;font-size:16px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px">Autorizar transferencia con:</span>
                 <div class="safe-summary-actions">
                   <button type="button" class="btn-confirm-send" id="btnConfirmSummary" style="font-size:17px">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5zM9 7a3 3 0 0 1 6 0v3H9V7z"/></svg>
                     <span class="term-technical">Autorizar con Clave</span>
                     <span class="term-simplified">Ingresar clave de 6 números</span>
-                  </button>
-                  <button type="button" class="btn-pill secondary" id="btnAuthBiometric" style="min-height:54px;font-size:16px;border-width:2px" onclick="alert('Reconociendo rostro con la cámara...')">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="3"/><path d="M9 9h.01M15 9h.01"/></svg>
-                    Reconocer mi rostro (cámara)
                   </button>
                   <button type="button" class="btn-cancel-review" id="btnReviewSummary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M11 17l-5-5 5-5M18 12H6"/></svg>
@@ -3011,15 +3151,17 @@ button.spotlight-active *,
         <section class="screen-view" id="view-receipt" aria-label="Comprobante de transferencia">
           <div class="scroll-area form-step-container" style="padding-top:24px">
             
+            <div class="receipt-practice-note" id="receiptPracticeNote">Práctica completada: no se envió dinero</div>
+
             <article class="receipt-card">
               <div class="receipt-icon-circle">
                 <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
 
-              <h2 style="font-size:23px;font-weight:900;text-align:center;color:var(--navy);margin-bottom:4px">
+              <h2 id="receiptTitle" style="font-size:23px;font-weight:900;text-align:center;color:var(--navy);margin-bottom:4px">
                 ¡Transferencia Exitosa!
               </h2>
-              <p style="text-align:center;color:var(--muted);font-size:15px;margin-bottom:20px">
+              <p id="receiptSubtitle" style="text-align:center;color:var(--muted);font-size:16px;margin-bottom:20px">
                 Tu dinero fue enviado correctamente
               </p>
 
@@ -3035,7 +3177,7 @@ button.spotlight-active *,
 
               <div class="receipt-row">
                 <span class="label">Cuenta de destino</span>
-                <span class="value" id="receiptRecipientDetails" style="font-size:14px">Banco de Chile · Cta. Corriente</span>
+                <span class="value" id="receiptRecipientDetails" style="font-size:16px">Banco de Chile · Cta. Corriente</span>
               </div>
 
               <div class="receipt-row">
@@ -3054,7 +3196,7 @@ button.spotlight-active *,
               </div>
             </article>
 
-            <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="receipt-actions" style="display:flex;flex-direction:column;gap:12px">
               <button type="button" class="btn-pill secondary" id="btnShareReceipt" style="min-height:52px;font-size:17px">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 Compartir comprobante
@@ -3081,12 +3223,12 @@ button.spotlight-active *,
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             </button>
           </div>
-          <p style="font-size:14px;color:var(--muted);margin-bottom:10px">
+          <p style="font-size:16px;color:var(--muted);margin-bottom:10px">
             Toca los números abajo para ingresar los 6 dígitos.
           </p>
 
           <!-- Aviso pedagógico requerido -->
-          <div class="security-pedagogic-warning" style="margin-bottom:12px;padding:10px 12px;font-size:14px">
+          <div class="security-pedagogic-warning" style="margin-bottom:12px;padding:10px 12px;font-size:16px">
             🛡️ <strong>Simulación pedagógica:</strong> Escribe el código de prueba <strong>123456</strong>.
           </div>
 
@@ -3115,6 +3257,8 @@ button.spotlight-active *,
             <button type="button" class="btn-keypad-digit" data-key="0">0</button>
             <button type="button" class="btn-keypad-digit btn-keypad-action" data-key="BACK" aria-label="Borrar número">⌫</button>
           </div>
+
+          <div class="inline-error" id="pinErrorBox" role="alert" style="margin:0 0 10px"></div>
 
           <div style="display:flex;flex-direction:column;gap:8px">
             <button type="button" class="btn-cta-big btn-cta-full-width" id="btnAuthorizeTransfer">
@@ -3174,7 +3318,7 @@ button.spotlight-active *,
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
-          <p style="font-size:15px;line-height:1.35;margin-bottom:12px;color:var(--ink)">
+          <p style="font-size:16px;line-height:1.35;margin-bottom:12px;color:var(--ink)">
             Te guiaré paso a paso para transferir sin errores.
           </p>
           <div class="inactivity-offer-btns">
@@ -3227,11 +3371,11 @@ button.spotlight-active *,
       <!-- Tarjeta flotante explicativa del paso a paso -->
       <div class="spotlight-guide-card" id="spotlightGuideCard">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-          <span style="font-size:13px;font-weight:900;color:var(--mint);background:var(--navy);padding:3px 10px;border-radius:8px" id="spotlightStepBadge">PASO 1</span>
+          <span style="font-size:16px;font-weight:900;color:var(--mint);background:var(--navy);padding:3px 10px;border-radius:8px" id="spotlightStepBadge">PASO 1</span>
           <div style="display:flex;align-items:center;gap:8px">
             <button type="button" class="btn-spotlight-voice" id="btnSpotlightVoice" aria-label="Escuchar explicación de este paso" title="Toca para que la IA lea este paso">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
-              <span style="font-size:13px;font-weight:800;margin-left:4px">Escuchar</span>
+              <span style="font-size:16px;font-weight:800;margin-left:4px">Escuchar</span>
             </button>
             <button type="button" class="btn-close-spotlight-x" id="btnSpotlightCloseX" aria-label="Cerrar mensaje de ayuda" title="Cerrar ayuda" style="width:34px;height:34px;border-radius:50%;background:#F1F5F9;border:1.5px solid #CBD5E1;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -3317,8 +3461,8 @@ button.spotlight-active *,
               <div class="fac-control-group" style="border-color:#F59E0B;background:#FFFBEB">
                 <div class="fac-row">
                   <div>
-                    <div class="fac-control-title" style="color:#B45309">Inyectar error: $500.000</div>
-                    <div class="fac-control-desc" style="color:#92400E">Precarga un cero extra para evaluar si detectan el error en el resumen.</div>
+                    <div class="fac-control-title" style="color:#B45309">Inyectar error: $150.000</div>
+                    <div class="fac-control-desc" style="color:#92400E">Tarea: "envía $15.000 a Rosa Pérez". El monto viene escrito con un cero de más ($150.000) para medir si la persona lo detecta.</div>
                   </div>
                   <label class="switch-control" for="facSwitchError">
                     <input type="checkbox" id="facSwitchError">
@@ -3347,7 +3491,7 @@ button.spotlight-active *,
                 <div class="fac-metrics-grid">
                   <div class="fac-metric-box">
                     <div class="fac-metric-value" id="facMetricTimer">0s</div>
-                    <div class="fac-metric-label">Tiempo total</div>
+                    <div class="fac-metric-label">Tiempo de la tarea</div>
                   </div>
                   <div class="fac-metric-box">
                     <div class="fac-metric-value" id="facMetricHelp">0</div>
@@ -3359,10 +3503,14 @@ button.spotlight-active *,
                   </div>
                   <div class="fac-metric-box">
                     <div class="fac-metric-value" id="facMetricCorrected">NO</div>
-                    <div class="fac-metric-label">Corrigió resumen</div>
+                    <div class="fac-metric-label">Detectó error</div>
                   </div>
                 </div>
               </div>
+
+              <button type="button" class="btn-fac-action btn-fac-danger" id="btnFacAbandon">
+                Registrar tarea NO completada
+              </button>
 
               <button type="button" class="btn-fac-action btn-fac-primary" id="btnFacResetSession">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
@@ -3385,7 +3533,7 @@ button.spotlight-active *,
                       <th>Modo</th>
                       <th>Tiempo</th>
                       <th>Ayudas</th>
-                      <th>Corrigió</th>
+                      <th>Detectó error</th>
                       <th>Error $</th>
                       <th>Resultado</th>
                     </tr>
@@ -3409,6 +3557,9 @@ button.spotlight-active *,
           </div>
         </div>
       </div>
+
+      <!-- Aviso en pantalla -->
+      <div class="puente-toast" id="puenteToast" role="status" aria-live="polite"></div>
 
     </main>
   </div>
@@ -3519,6 +3670,41 @@ window.PUENTE_GLOSSARY_DATA = {
       "ejemplo": "Puedes guardarlo o mostrárselo a Rosa si te lo pide."
     }
   ]
+};
+
+/* ==========================================
+   0. CONFIGURACIÓN DE LA PRUEBA Y AVISOS EN PANTALLA
+   ========================================== */
+window.PUENTE_TEST = {
+  SALDO_INICIAL: 350000,
+  MONTO_TAREA: 15000,      // Tarea que entrega el facilitador: "envía $15.000 a Rosa Pérez"
+  MONTO_CON_ERROR: 150000, // Mismo monto con un cero de más (dentro del saldo, para que llegue al resumen)
+  CLAVE_PRUEBA: '123456'
+};
+
+window.puenteToast = function (msg, ms) {
+  const el = document.getElementById('puenteToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__puenteToastTimer);
+  window.__puenteToastTimer = setTimeout(() => el.classList.remove('show'), ms || 3500);
+};
+
+window.puenteShowError = function (id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (msg) {
+    el.textContent = msg;
+    el.classList.add('show');
+  } else {
+    el.textContent = '';
+    el.classList.remove('show');
+  }
+};
+
+window.puenteHelp = function (detail) {
+  if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('help', detail);
 };
 
 /* ==========================================
@@ -3703,6 +3889,8 @@ class InterfazPuente {
 
   async init() {
     this.cacheElements();
+    const main = document.getElementById('appMainContainer');
+    if (main && !main.classList.contains('app-bridge-off')) main.classList.add('app-bridge-on');
     await this.loadGlossary();
     this.setupDraggable();
     this.setupEventListeners();
@@ -3871,6 +4059,12 @@ class InterfazPuente {
       if (window.appRouter && window.appRouter.currentView === 'receipt') return;
       if (this.sheet && this.sheet.classList.contains('open')) return;
       if (this.dynamicFocusOverlay && this.dynamicFocusOverlay.classList.contains('active')) return;
+      if (this.isTutorialActive) return;
+      const blocking = ['puenteOnboardingOverlay', 'securityModalOverlay', 'termModalOverlay', 'facilitatorOverlay'];
+      if (blocking.some(id => { const el = document.getElementById(id); return el && el.classList.contains('active'); })) {
+        this.inactivitySeconds = 0;
+        return;
+      }
 
       this.inactivitySeconds++;
       if (this.inactivitySeconds === this.INACTIVITY_THRESHOLD) {
@@ -4081,7 +4275,9 @@ class InterfazPuente {
   }
 
   /* Flujo interactivo paso a paso para completar la transferencia */
-  startStepByStepGuide() {
+  startStepByStepGuide(source) {
+    if (!this.enabled) return;
+    window.puenteHelp(source || 'tutorial');
     this.isTutorialActive = true;
     this.currentStepIndex = 0;
     this.executeCurrentStep();
@@ -4108,8 +4304,8 @@ class InterfazPuente {
         {
           target: '#cardCuentaRut',
           title: 'Revisar tu dinero disponible',
-          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
-          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
+          message: `Aquí puedes ver el saldo de tu CuentaRUT. Tienes ${window.appRouter ? window.appRouter.formatCLP(window.appRouter.user.balance) : ''} listos para usar.`,
+          speech: `Paso 1: Revisa tu dinero disponible. Tienes ${window.appRouter ? window.appRouter.formatCLPForSpeech(window.appRouter.user.balance) : ''} en tu CuentaRUT.`
         },
         {
           target: '#btnQuickTransfer',
@@ -4198,8 +4394,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.'
+          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada, o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
+          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, o elige una de las opciones sugeridas.'
         },
         {
           target: '#groupGlosa',
@@ -4360,9 +4556,7 @@ class InterfazPuente {
     if (!item || !this.termModalOverlay) return;
 
     // Registrar uso de ayuda en facilitador
-    if (window.facilitatorPanel) {
-      window.facilitatorPanel.recordMetric('help');
-    }
+    window.puenteHelp('glosario');
 
     const titleEl = document.getElementById('termModalTitle');
     const subtitleEl = document.getElementById('termModalSubtitle');
@@ -4481,6 +4675,11 @@ class InterfazPuente {
   }
 
   /* ================= AUTOOCULTAMIENTO ================= */
+  resetAutoHide() {
+    this.successiveIndependentRuns = 0;
+    if (this.fabContainer) this.fabContainer.classList.remove('is-minimized');
+  }
+
   recordSuccessfulTransfer(askedForHelp) {
     if (askedForHelp) {
       this.successiveIndependentRuns = 0;
@@ -4506,6 +4705,7 @@ class InterfazPuente {
       this.btnWidgetSpeech.addEventListener('click', (e) => {
         e.stopPropagation();
         this.closeWidgetMenu();
+        window.puenteHelp('voz');
         if (window.appRouter) {
           window.appRouter.readCurrentScreenAloud();
         }
@@ -4526,6 +4726,7 @@ class InterfazPuente {
       this.btnWidgetLanguage.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggleSemanticMode();
+        window.puenteHelp('lenguaje');
       });
     }
 
@@ -4541,7 +4742,7 @@ class InterfazPuente {
     if (btnYes) {
       btnYes.addEventListener('click', () => {
         this.dismissInactivityOffer();
-        this.spotlightCurrentStep();
+        this.startStepByStepGuide('oferta15s');
       });
     }
     if (btnNo) {
@@ -4617,6 +4818,7 @@ class InterfazPuente {
       btnSpotlightVoice.addEventListener('click', (e) => {
         e.stopPropagation();
         const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
+        window.puenteHelp('voz');
         if (speechText && window.puenteSpeech) {
           window.puenteSpeech.speak(speechText);
         }
@@ -4642,6 +4844,7 @@ class InterfazPuente {
       if (speakBtn) {
         e.stopPropagation();
         const textToRead = speakBtn.getAttribute('data-speak') || '';
+        if (speakBtn.id !== 'btnSpeakSummaryCard') window.puenteHelp('voz');
         if (textToRead && window.puenteSpeech) {
           window.puenteSpeech.speak(textToRead);
         }
@@ -4708,29 +4911,32 @@ class InterfazPuente {
     this.activeSpotlightElement = targetElement;
     targetElement.classList.add('spotlight-active');
 
-    if (this.dynamicFocusOverlay) {
-      this.dynamicFocusOverlay.classList.add('active');
-    }
-
-    // Registrar en métricas
-    if (window.facilitatorPanel) {
-      window.facilitatorPanel.recordMetric('spotlight');
-    }
   }
 
   /* Activar o Desactivar completamente Interfaz Puente (para Grupo Control vs Experimental) */
   setBridgeEnabled(enabled) {
     this.enabled = enabled;
+    const main = document.getElementById('appMainContainer');
+    if (main) {
+      main.classList.toggle('app-bridge-on', enabled);
+      main.classList.toggle('app-bridge-off', !enabled);
+    }
     if (this.fabContainer) {
       this.fabContainer.style.display = enabled ? 'flex' : 'none';
+    }
+    if (!enabled && this.onboardingOverlay) {
+      this.onboardingOverlay.classList.remove('active');
+    }
+    if (window.appRouter && window.appRouter.currentView === 'summary') {
+      window.appRouter.renderSummary();
     }
     if (!enabled) {
       this.clearSpotlight();
       this.closeSheet();
       this.dismissInactivityOffer();
-      this.toggleSemanticMode(false);
+      this.toggleSemanticMode(false, false);
     } else {
-      this.toggleSemanticMode(true);
+      this.toggleSemanticMode(true, false);
     }
   }
 
@@ -4771,18 +4977,27 @@ class FacilitatorPanel {
     this.practiceMode = false;
 
     // Métricas de la sesión en curso
-    this.currentMetrics = {
-      helpRequests: 0,
-      spotlightActivations: 0,
-      errorsCount: 0,
-      correctedInSummary: false,
-      completed: false
-    };
+    this.currentMetrics = this.emptyMetrics();
+    this.taskStarted = false;
+    this.taskLogged = false;
 
     // Historial acumulado en LocalStorage
     this.sessionLogs = this.loadLogs();
+    this.loadSettings();
 
     this.init();
+  }
+
+  emptyMetrics() {
+    return {
+      helpRequests: 0,
+      helpDetail: { glosario: 0, tutorial: 0, oferta15s: 0, voz: 0, lenguaje: 0 },
+      errorsCount: 0,
+      errorDetection: 'no aplica',   // 'pantalla de monto' | 'resumen' | 'no detectado' | 'no aplica'
+      correctedInSummary: false,
+      amountSent: 0,
+      completed: false
+    };
   }
 
   init() {
@@ -4790,8 +5005,46 @@ class FacilitatorPanel {
     this.setupSecretTrigger();
     this.setupTabs();
     this.setupControls();
+    this.applySettingsToUI();
     this.renderLogsTable();
-    this.startSessionTimer();
+    this.setupSessionTimer();
+  }
+
+  /* ================= CONFIGURACIÓN GUARDADA (sobrevive a recargar la página) ================= */
+  loadSettings() {
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem('puente_facilitator_settings') || '{}') || {}; } catch (e) {}
+    if (saved.participant) this.participant = saved.participant;
+    if (typeof saved.bridgeEnabled === 'boolean') this.bridgeEnabled = saved.bridgeEnabled;
+    if (saved.summaryTitleVariant) this.summaryTitleVariant = saved.summaryTitleVariant;
+    if (typeof saved.errorInjectionActive === 'boolean') this.errorInjectionActive = saved.errorInjectionActive;
+    if (typeof saved.practiceMode === 'boolean') this.practiceMode = saved.practiceMode;
+  }
+
+  saveSettings() {
+    try {
+      localStorage.setItem('puente_facilitator_settings', JSON.stringify({
+        participant: this.participant,
+        bridgeEnabled: this.bridgeEnabled,
+        summaryTitleVariant: this.summaryTitleVariant,
+        errorInjectionActive: this.errorInjectionActive,
+        practiceMode: this.practiceMode
+      }));
+    } catch (e) {}
+  }
+
+  applySettingsToUI() {
+    if (this.participantSelect) this.participantSelect.value = this.participant;
+    if (this.switchBridge) this.switchBridge.checked = this.bridgeEnabled;
+    if (this.switchError) this.switchError.checked = this.errorInjectionActive;
+    if (this.switchPractice) this.switchPractice.checked = this.practiceMode;
+    document.querySelectorAll('.fac-summary-variant').forEach(b => {
+      b.classList.toggle('active', b.getAttribute('data-variant') === this.summaryTitleVariant);
+    });
+    if (window.interfazPuente) {
+      window.interfazPuente.setBridgeEnabled(this.bridgeEnabled);
+      window.interfazPuente.setPracticeMode(this.practiceMode);
+    }
   }
 
   cacheElements() {
@@ -4891,6 +5144,7 @@ class FacilitatorPanel {
     if (this.participantSelect) {
       this.participantSelect.addEventListener('change', (e) => {
         this.participant = e.target.value;
+        this.saveSettings();
       });
     }
 
@@ -4901,6 +5155,7 @@ class FacilitatorPanel {
         if (window.interfazPuente) {
           window.interfazPuente.setBridgeEnabled(this.bridgeEnabled);
         }
+        this.saveSettings();
       });
     }
 
@@ -4914,6 +5169,7 @@ class FacilitatorPanel {
         if (window.appRouter) {
           window.appRouter.updateSummaryTitle(this.summaryTitleVariant);
         }
+        this.saveSettings();
       });
     });
 
@@ -4924,6 +5180,7 @@ class FacilitatorPanel {
         if (window.appRouter) {
           window.appRouter.setErrorInjection(this.errorInjectionActive);
         }
+        this.saveSettings();
       });
     }
 
@@ -4933,6 +5190,22 @@ class FacilitatorPanel {
         this.practiceMode = e.target.checked;
         if (window.interfazPuente) {
           window.interfazPuente.setPracticeMode(this.practiceMode);
+        }
+        this.saveSettings();
+      });
+    }
+
+    // Botón registrar tarea no completada (abandono o tiempo agotado)
+    const btnAbandon = document.getElementById('btnFacAbandon');
+    if (btnAbandon) {
+      btnAbandon.addEventListener('click', () => {
+        if (this.taskLogged) {
+          window.puenteToast('Esta tarea ya quedó registrada. Reinicia la sesión para la siguiente.');
+          return;
+        }
+        if (confirm(`¿Registrar la tarea de ${this.participant} como NO completada?`)) {
+          this.finishSession(false);
+          window.puenteToast(`Tarea de ${this.participant} registrada como no completada.`);
         }
       });
     }
@@ -4963,11 +5236,11 @@ class FacilitatorPanel {
   }
 
   /* ================= REGISTRO DE MÉTRICAS ================= */
-  startSessionTimer() {
+  /* El cronómetro corre solo desde que la persona toca "Transferir dinero" hasta el comprobante */
+  setupSessionTimer() {
     this.sessionSeconds = 0;
-    this.isSessionActive = true;
+    this.isSessionActive = false;
     clearInterval(this.sessionTimer);
-
     this.sessionTimer = setInterval(() => {
       if (this.isSessionActive) {
         this.sessionSeconds++;
@@ -4978,11 +5251,22 @@ class FacilitatorPanel {
     }, 1000);
   }
 
-  recordMetric(type) {
+  startTask() {
+    if (this.taskStarted) return;
+    this.taskStarted = true;
+    this.taskLogged = false;
+    this.isSessionActive = true;
+  }
+
+  recordMetric(type, detail) {
+    // Solo se mide mientras la tarea está en curso (no durante la bienvenida ni el ensayo del facilitador)
+    if (this.taskLogged) return;
     if (type === 'help') {
+      if (!this.taskStarted) return;
       this.currentMetrics.helpRequests++;
-    } else if (type === 'spotlight') {
-      this.currentMetrics.spotlightActivations++;
+      if (detail && this.currentMetrics.helpDetail[detail] !== undefined) {
+        this.currentMetrics.helpDetail[detail]++;
+      }
     } else if (type === 'error') {
       this.currentMetrics.errorsCount++;
     } else if (type === 'correction') {
@@ -4991,9 +5275,22 @@ class FacilitatorPanel {
     this.updateMetricsUI();
   }
 
-  finishSession(isCompleted) {
+  setErrorDetection(stage) {
+    this.currentMetrics.errorDetection = stage;
+    if (stage === 'resumen') this.currentMetrics.correctedInSummary = true;
+    this.updateMetricsUI();
+  }
+
+  finishSession(isCompleted, amountSent) {
+    if (this.taskLogged) return;
     this.isSessionActive = false;
+    this.taskLogged = true;
     this.currentMetrics.completed = isCompleted;
+    if (amountSent !== undefined) this.currentMetrics.amountSent = amountSent;
+    const T = window.PUENTE_TEST;
+    let deteccion = this.errorInjectionActive ? this.currentMetrics.errorDetection : 'no aplica';
+    if (this.errorInjectionActive && deteccion === 'no aplica') deteccion = isCompleted ? 'no detectado' : 'sin dato';
+    const d = this.currentMetrics.helpDetail;
 
     const record = {
       id: Date.now(),
@@ -5001,13 +5298,20 @@ class FacilitatorPanel {
       participante: this.participant,
       interfazPuente: this.bridgeEnabled ? 'CON AYUDA' : 'SIN AYUDA (Control)',
       varianteTitulo: this.summaryTitleVariant === 'resumen_seguro' ? 'Resumen Seguro' : 'Revisa antes de enviar',
-      errorInyectado: this.errorInjectionActive ? 'SÍ ($500.000)' : 'NO ($0)',
+      errorInyectado: this.errorInjectionActive ? `SÍ (${T.MONTO_CON_ERROR})` : 'NO',
+      montoEnviado: isCompleted ? this.currentMetrics.amountSent : '',
+      deteccionError: deteccion,
+      modoPractica: this.practiceMode ? 'SÍ' : 'NO',
       tiempoSegundos: this.sessionSeconds,
       ayudasPedidas: this.currentMetrics.helpRequests,
-      focosUsados: this.currentMetrics.spotlightActivations,
+      ayudaGlosario: d.glosario,
+      ayudaTutorial: d.tutorial,
+      ayudaOferta15s: d.oferta15s,
+      ayudaVoz: d.voz,
+      ayudaLenguaje: d.lenguaje,
       erroresCometidos: this.currentMetrics.errorsCount,
       corrigioEnResumen: this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO',
-      completada: isCompleted ? 'EXITOSA' : 'INCOMPLETA'
+      completada: isCompleted ? 'EXITOSA' : 'NO COMPLETADA'
     };
 
     this.sessionLogs.push(record);
@@ -5018,28 +5322,33 @@ class FacilitatorPanel {
   updateMetricsUI() {
     if (this.metricHelp) this.metricHelp.textContent = this.currentMetrics.helpRequests;
     if (this.metricErrors) this.metricErrors.textContent = this.currentMetrics.errorsCount;
-    if (this.metricCorrected) this.metricCorrected.textContent = this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO';
+    if (this.metricCorrected) {
+      const det = this.currentMetrics.errorDetection;
+      this.metricCorrected.textContent = !this.errorInjectionActive ? '—' : (det === 'no aplica' ? 'NO' : det.toUpperCase());
+    }
+    if (this.metricTimer) this.metricTimer.textContent = `${this.sessionSeconds}s`;
   }
 
   resetSession() {
     this.sessionSeconds = 0;
-    this.currentMetrics = {
-      helpRequests: 0,
-      spotlightActivations: 0,
-      errorsCount: 0,
-      correctedInSummary: false,
-      completed: false
-    };
+    this.isSessionActive = false;
+    this.taskStarted = false;
+    this.taskLogged = false;
+    this.currentMetrics = this.emptyMetrics();
     localStorage.removeItem('puente_onboarding_shown');
 
     if (window.appRouter) {
-      window.appRouter.resetToHome();
+      window.appRouter.resetAll();
+    }
+    if (window.interfazPuente) {
+      window.interfazPuente.resetAutoHide();
+      window.interfazPuente.clearSpotlight();
+      if (this.bridgeEnabled) window.interfazPuente.checkOnboarding();
     }
 
     this.updateMetricsUI();
-    this.startSessionTimer();
     this.close();
-    alert(`Sesión reiniciada para ${this.participant}.`);
+    window.puenteToast(`Sesión lista para ${this.participant}.`, 1800);
   }
 
   /* ================= PERSISTENCIA Y CSV ================= */
@@ -5075,7 +5384,7 @@ class FacilitatorPanel {
         <td>${log.interfazPuente}</td>
         <td>${log.tiempoSegundos}s</td>
         <td>${log.ayudasPedidas}</td>
-        <td>${log.corrigioEnResumen}</td>
+        <td>${log.deteccionError || log.corrigioEnResumen}</td>
         <td>${log.errorInyectado}</td>
         <td><b style="color:${log.completada === 'EXITOSA' ? 'var(--teal)' : 'var(--red)'}">${log.completada}</b></td>
       `;
@@ -5085,7 +5394,7 @@ class FacilitatorPanel {
 
   exportToCSV() {
     if (this.sessionLogs.length === 0) {
-      alert('No hay datos registrados aún para exportar.');
+      window.puenteToast('No hay datos registrados aún para exportar.');
       return;
     }
 
@@ -5095,31 +5404,47 @@ class FacilitatorPanel {
       'Participante',
       'Condicion_Interfaz_Puente',
       'Variante_Titulo_Resumen',
+      'Modo_Practica',
       'Error_Inyectado_Monto',
-      'Tiempo_Total_Segundos',
-      'Veces_Ayuda_Solicitada',
-      'Veces_Foco_Dinamico',
+      'Monto_Enviado',
+      'Deteccion_Error',
+      'Tiempo_Tarea_Segundos',
+      'Ayudas_Total',
+      'Ayuda_Glosario',
+      'Ayuda_Tutorial',
+      'Ayuda_Oferta_15s',
+      'Ayuda_Voz',
+      'Ayuda_Lenguaje_Simple',
       'Errores_Cometidos',
-      'Corrigio_En_Resumen_Seguro',
+      'Corrigio_En_Resumen',
       'Tarea_Completada'
     ];
 
+    const q = v => `"${String(v === undefined ? '' : v).replace(/"/g, '""')}"`;
     const rows = this.sessionLogs.map(log => [
       log.id,
-      `"${log.fecha}"`,
+      q(log.fecha),
       log.participante,
-      `"${log.interfazPuente}"`,
-      `"${log.varianteTitulo}"`,
-      `"${log.errorInyectado}"`,
+      q(log.interfazPuente),
+      q(log.varianteTitulo),
+      q(log.modoPractica),
+      q(log.errorInyectado),
+      log.montoEnviado === undefined ? '' : log.montoEnviado,
+      q(log.deteccionError),
       log.tiempoSegundos,
       log.ayudasPedidas,
-      log.focosUsados,
+      log.ayudaGlosario === undefined ? '' : log.ayudaGlosario,
+      log.ayudaTutorial === undefined ? '' : log.ayudaTutorial,
+      log.ayudaOferta15s === undefined ? '' : log.ayudaOferta15s,
+      log.ayudaVoz === undefined ? '' : log.ayudaVoz,
+      log.ayudaLenguaje === undefined ? '' : log.ayudaLenguaje,
       log.erroresCometidos,
       log.corrigioEnResumen,
-      log.completada
+      q(log.completada)
     ]);
 
-    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+    // Punto y coma: Excel en español de Chile abre el archivo en columnas sin pasos extra
+    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -5148,28 +5473,40 @@ window.facilitatorPanel = new FacilitatorPanel();
 class AppRouter {
   constructor() {
     this.currentView = 'home';
-    this.summaryTitleVariant = 'resumen_seguro';
-    this.errorInjection = false;
+    const fp = window.facilitatorPanel;
+    this.summaryTitleVariant = fp ? fp.summaryTitleVariant : 'resumen_seguro';
+    this.errorInjection = fp ? fp.errorInjectionActive : false;
+    this.contacts = {
+      rosa: {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-3',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      },
+      pedro: {
+        id: 'pedro_retamales',
+        name: 'Pedro Retamales (Hijo)',
+        rut: '18.345.678-4',
+        bank: 'BancoEstado',
+        accountType: 'CuentaRUT',
+        accountNum: '18345678'
+      }
+    };
 
     // Estado del usuario (Elena Retamales)
     this.user = {
       name: 'Elena Retamales Morales',
       accountType: 'CuentaRUT',
       accountNum: '0007845129',
-      rut: '7.845.129-3',
-      balance: 350000
+      rut: '7.845.129-7',
+      balance: window.PUENTE_TEST.SALDO_INICIAL
     };
 
-    // Estado del formulario de transferencia
+    // Estado del formulario de transferencia (nadie viene preseleccionado)
     this.transferState = {
-      recipient: {
-        id: 'rosa_perez',
-        name: 'Rosa Pérez Sepúlveda',
-        rut: '12.876.543-2',
-        bank: 'Banco de Chile',
-        accountType: 'Cuenta Corriente',
-        accountNum: '00-128-45920-01'
-      },
+      recipient: null,
       amount: 0,
       glosa: '',
       isNewRecipient: false
@@ -5220,14 +5557,61 @@ class AppRouter {
     }
   }
 
-  resetToHome() {
-    this.transferState.amount = this.errorInjection ? 500000 : 0;
+  /* Deja el formulario de transferencia como nuevo */
+  resetTransferForm() {
+    const T = window.PUENTE_TEST;
+    this.transferState.recipient = null;
+    this.transferState.isNewRecipient = false;
+    this.transferState.amount = this.errorInjection ? T.MONTO_CON_ERROR : 0;
     this.transferState.glosa = '';
+    this.amountChangedFromError = false;
+    document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
+      amountInput.classList.remove('has-error');
     }
+    const glosa = document.getElementById('inputGlosa');
+    if (glosa) glosa.value = '';
+    ['newRecipientRut', 'newRecipientName', 'newRecipientNum', 'newRecipientEmail', 'recipientSearchInput'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.querySelectorAll('#paneRecipientSaved .contact-item, #paneRecipientFavorites .contact-item').forEach(c => { c.style.display = ''; });
+    const amountErrorBox = document.getElementById('amountErrorBox');
+    if (amountErrorBox) { amountErrorBox.textContent = ''; amountErrorBox.classList.add('hidden'); }
+    ['recipientErrorBox', 'rutErrorBox', 'newRecipientErrorBox', 'pinErrorBox'].forEach(id => window.puenteShowError(id, ''));
+  }
+
+  resetToHome() {
+    this.resetTransferForm();
     this.goTo('home');
+  }
+
+  /* Reinicio completo entre participantes: saldo, formulario y pantalla de inicio */
+  resetAll() {
+    this.user.balance = window.PUENTE_TEST.SALDO_INICIAL;
+    this.updateBalanceUI();
+    const modal = document.getElementById('securityModalOverlay');
+    if (modal) modal.classList.remove('active');
+    this.resetToHome();
+  }
+
+  /* ================= VALIDACIÓN DE RUT (dígito verificador, módulo 11) ================= */
+  isValidRut(value) {
+    const clean = String(value || '').replace(/[^0-9kK]/g, '').toUpperCase();
+    if (clean.length < 2) return false;
+    const body = clean.slice(0, -1);
+    const dv = clean.slice(-1);
+    if (!/^\d+$/.test(body) || body.length < 6) return false;
+    let sum = 0, mul = 2;
+    for (let i = body.length - 1; i >= 0; i--) {
+      sum += parseInt(body[i], 10) * mul;
+      mul = mul === 7 ? 2 : mul + 1;
+    }
+    const res = 11 - (sum % 11);
+    const expected = res === 11 ? '0' : res === 10 ? 'K' : String(res);
+    return dv === expected;
   }
 
   /* ================= FORMATEADORES ================= */
@@ -5261,10 +5645,10 @@ class AppRouter {
     const navTransfer = document.getElementById('navBtnTransfer');
 
     const startTransferFlow = () => {
-      // Inyección de error si está activada
-      this.transferState.amount = this.errorInjection ? 500000 : 0;
-      const amountInput = document.getElementById('inputAmount');
-      if (amountInput) amountInput.value = this.formatCLP(this.transferState.amount);
+      // Comienza la tarea: parte el cronómetro y el formulario queda limpio
+      // (si el error está activado, el monto viene escrito con un cero de más)
+      if (window.facilitatorPanel) window.facilitatorPanel.startTask();
+      this.resetTransferForm();
       this.goTo('recipient');
     };
 
@@ -5478,10 +5862,14 @@ class AppRouter {
     if (btnConfirmRutNext) {
       btnConfirmRutNext.addEventListener('click', () => {
         const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
-        if (rutVal.length < 3) {
-          alert('Por favor ingresa un RUT válido con los números o el micrófono.');
+        if (!this.isValidRut(rutVal)) {
+          window.puenteShowError('rutErrorBox', rutVal.length < 3
+            ? 'Escribe el RUT de la persona para continuar.'
+            : 'Revisa el RUT: el número o el último dígito no coinciden.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
+        window.puenteShowError('rutErrorBox', '');
         // Ocultar etapa RUT y mostrar formulario de datos
         if (stepRut) stepRut.classList.add('hidden');
         if (stepDetails) {
@@ -5522,25 +5910,28 @@ class AppRouter {
       });
     });
 
-    // Selección de Rosa Pérez en Guardados y Favoritos
-    const contactRosa = document.getElementById('frequentContactRosa');
-    const favRosa = document.getElementById('favContactRosa');
-    const selectRosa = () => {
-      document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
-      if (contactRosa) contactRosa.classList.add('selected');
-      if (favRosa) favRosa.classList.add('selected');
-      this.transferState.recipient = {
-        id: 'rosa_perez',
-        name: 'Rosa Pérez Sepúlveda',
-        rut: '12.876.543-2',
-        bank: 'Banco de Chile',
-        accountType: 'Cuenta Corriente',
-        accountNum: '00-128-45920-01'
-      };
+    // Selección de contactos guardados y favoritos (ninguno viene marcado)
+    const selectContact = (key) => {
+      const data = this.contacts[key];
+      if (!data) return;
+      document.querySelectorAll('.contact-item').forEach(c => {
+        c.classList.toggle('selected', c.getAttribute('data-contact') === key);
+      });
+      this.transferState.recipient = Object.assign({}, data);
+      window.puenteShowError('recipientErrorBox', '');
     };
-
-    if (contactRosa) contactRosa.addEventListener('click', selectRosa);
-    if (favRosa) favRosa.addEventListener('click', selectRosa);
+    document.querySelectorAll('.contact-item[data-contact]').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.btn-speak-section')) return;
+        selectContact(card.getAttribute('data-contact'));
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectContact(card.getAttribute('data-contact'));
+        }
+      });
+    });
 
     // Botones de Continuar (Tanto en Guardados como en Formulario Nuevo)
     const btnContinueSaved = document.getElementById('btnContinueRecipientSaved');
@@ -5556,10 +5947,11 @@ class AppRouter {
         const emailInput = document.getElementById('newRecipientEmail');
 
         if (!nameInput || !nameInput.value.trim() || !rutInput.value.trim() || !numInput.value.trim()) {
-          alert('Por favor completa el nombre, RUT y número de cuenta para continuar.');
+          window.puenteShowError('newRecipientErrorBox', 'Falta completar el nombre o el número de cuenta.');
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
+        window.puenteShowError('newRecipientErrorBox', '');
 
         this.transferState.recipient = {
           id: 'nuevo_' + Date.now(),
@@ -5570,6 +5962,10 @@ class AppRouter {
           accountNum: numInput.value.trim(),
           email: emailInput ? emailInput.value.trim() : ''
         };
+      } else if (!this.transferState.recipient) {
+        window.puenteShowError('recipientErrorBox', 'Primero toca el nombre de la persona a quien quieres enviar el dinero.');
+        if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+        return;
       }
 
       this.goTo('amount');
@@ -5601,7 +5997,6 @@ class AppRouter {
     const btnContinue = document.getElementById('btnContinueAmount');
     const amountErrorBox = document.getElementById('amountErrorBox');
 
-    const MAX_AMOUNT = 200000;
 
     if (inputAmount) {
       inputAmount.addEventListener('focus', () => {
@@ -5613,13 +6008,8 @@ class AppRouter {
       inputAmount.addEventListener('input', (e) => {
         let val = this.parseCLP(e.target.value);
 
-        // Límite máximo para transferir y digitar: $200.000
-        if (val > MAX_AMOUNT) {
-          val = MAX_AMOUNT;
-          inputAmount.classList.add('has-error');
-          amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
-        } else if (val > this.user.balance) {
+        if (val > 99999999) val = 99999999;
+        if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
@@ -5629,6 +6019,7 @@ class AppRouter {
         }
 
         this.transferState.amount = val;
+        if (this.errorInjection && val !== window.PUENTE_TEST.MONTO_CON_ERROR) this.amountChangedFromError = true;
         e.target.value = val > 0 ? this.formatCLP(val) : '$0';
       });
     }
@@ -5639,6 +6030,7 @@ class AppRouter {
       btn.addEventListener('click', () => {
         const amt = parseInt(btn.getAttribute('data-amount'), 10);
         this.transferState.amount = amt;
+        if (this.errorInjection && amt !== window.PUENTE_TEST.MONTO_CON_ERROR) this.amountChangedFromError = true;
         if (inputAmount) {
           inputAmount.value = this.formatCLP(amt);
           inputAmount.classList.remove('has-error');
@@ -5661,17 +6053,7 @@ class AppRouter {
         if (!val || val <= 0) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = 'Por favor ingresa una cantidad de dinero a transferir.';
-          alert('Por favor ingresa una cantidad de dinero a transferir.');
-          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
-          return;
-        }
-
-        if (val > MAX_AMOUNT) {
-          inputAmount.classList.add('has-error');
-          amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
-          alert(`El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`);
+          amountErrorBox.textContent = 'Escribe cuánto dinero quieres enviar o toca uno de los montos.';
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -5680,7 +6062,6 @@ class AppRouter {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
-          alert(`El monto supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`);
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -5690,6 +6071,12 @@ class AppRouter {
 
         if (inputGlosa) {
           this.transferState.glosa = inputGlosa.value.trim();
+        }
+
+        // Si el error estaba activado y la persona cambió el monto antes del resumen, lo detectó en esta pantalla
+        if (this.errorInjection && window.facilitatorPanel && val !== window.PUENTE_TEST.MONTO_CON_ERROR &&
+            window.facilitatorPanel.currentMetrics.errorDetection === 'no aplica') {
+          window.facilitatorPanel.setErrorDetection('pantalla de monto');
         }
 
         this.goTo('summary');
@@ -5723,15 +6110,19 @@ class AppRouter {
 
     if (btnReview) {
       btnReview.addEventListener('click', () => {
-        // El usuario detectó un posible error o desea cambiar el monto
-        if (window.facilitatorPanel) {
-          window.facilitatorPanel.recordMetric('correction');
+        // Solo cuenta como "detectó el error" si el monto con el cero de más estaba en el resumen
+        if (this.errorInjection && window.facilitatorPanel &&
+            this.transferState.amount === window.PUENTE_TEST.MONTO_CON_ERROR) {
+          window.facilitatorPanel.setErrorDetection('resumen');
         }
         this.goTo('amount');
       });
     }
 
-    if (btnSpeakCard) btnSpeakCard.addEventListener('click', speakSummaryContent);
+    if (btnSpeakCard) btnSpeakCard.addEventListener('click', () => {
+      window.puenteHelp('voz');
+      speakSummaryContent();
+    });
   }
 
   renderSummary() {
@@ -5742,22 +6133,58 @@ class AppRouter {
     // Microcopy determinista requerido por el enunciado:
     // "Vas a enviar $50.000 a Rosa Pérez, a su cuenta en Banco de Chile. Una vez enviado, no se puede deshacer."
     const amtStr = this.formatCLP(this.transferState.amount);
-    const destName = this.transferState.recipient.name;
-    const destBank = this.transferState.recipient.bank;
+    const destName = this.transferState.recipient ? this.transferState.recipient.name : '';
+    const destBank = this.transferState.recipient ? this.transferState.recipient.bank : '';
 
-    if (textEl) {
-      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
+    const r = this.transferState.recipient || {};
+    const esc = (v) => String(v || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const bridgeOn = !window.interfazPuente || window.interfazPuente.enabled;
+    const accountEl = document.getElementById('safeSummaryAccount');
+    const cardTitle = document.querySelector('#safeSummaryCard .safe-summary-title');
+    const cardSub = document.querySelector('#safeSummaryCard .safe-summary-header .semantic-helper-text');
+
+    // Título de la pantalla según la variante A/B elegida en el panel
+    const variantLabel = this.summaryTitleVariant === 'revisa_antes' ? 'Revisa antes de enviar' : 'Resumen Seguro';
+    if (titleEl) {
+      const simple = titleEl.querySelector('.term-simplified');
+      if (simple) simple.textContent = variantLabel;
     }
 
-    // Si el monto excede el saldo o el límite máximo de $200.000
+    if (bridgeOn) {
+      // Con Interfaz Puente: Resumen Seguro en lenguaje simple (datos tomados del formulario, nunca de IA)
+      if (cardTitle) cardTitle.innerHTML = '<span class="term-technical">Resumen de la transferencia</span><span class="term-simplified">Lee esto antes de confirmar</span>';
+      if (cardSub) cardSub.style.display = '';
+      if (textEl) {
+        textEl.innerHTML = `Vas a enviar <strong>${esc(amtStr)}</strong> a <strong>${esc(destName)}</strong>, a su cuenta en <strong>${esc(destBank)}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
+      }
+      if (accountEl) {
+        accountEl.style.display = '';
+        accountEl.innerHTML = `Cuenta: <strong>${esc(r.accountType)} N° ${esc(r.accountNum)}</strong><br>RUT: <strong>${esc(r.rut)}</strong>`;
+      }
+    } else {
+      // Grupo control: confirmación bancaria estándar, sin lenguaje simple ni advertencias
+      if (cardTitle) cardTitle.innerHTML = 'Datos de la transferencia';
+      if (cardSub) cardSub.style.display = 'none';
+      if (textEl) {
+        textEl.innerHTML = `<table class="standard-confirm-table">
+          <tr><td>Monto</td><td>${esc(amtStr)}</td></tr>
+          <tr><td>Destinatario</td><td>${esc(destName)}</td></tr>
+          <tr><td>RUT</td><td>${esc(r.rut)}</td></tr>
+          <tr><td>Banco</td><td>${esc(destBank)}</td></tr>
+          <tr><td>Tipo de cuenta</td><td>${esc(r.accountType)}</td></tr>
+          <tr><td>N° de cuenta</td><td>${esc(r.accountNum)}</td></tr>
+          <tr><td>Cuenta de cargo</td><td>CuentaRUT ${esc(this.user.accountNum)}</td></tr>
+          ${this.transferState.glosa ? `<tr><td>Glosa</td><td>${esc(this.transferState.glosa)}</td></tr>` : ''}
+        </table>`;
+      }
+      if (accountEl) accountEl.style.display = 'none';
+    }
+
+    // El monto ya se validó contra el saldo en la pantalla anterior
     if (warnBox) {
-      if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
+      if (this.transferState.amount > this.user.balance) {
         warnBox.classList.remove('hidden');
-        if (this.transferState.amount > this.user.balance) {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
-        } else {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
-        }
+        warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
       } else {
         warnBox.classList.add('hidden');
       }
@@ -5773,7 +6200,7 @@ class AppRouter {
 
   setErrorInjection(active) {
     this.errorInjection = active;
-    this.transferState.amount = active ? 500000 : 0;
+    this.transferState.amount = active ? window.PUENTE_TEST.MONTO_CON_ERROR : 0;
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
@@ -5829,9 +6256,17 @@ class AppRouter {
     if (btnAuthorize) {
       btnAuthorize.addEventListener('click', () => {
         if (this.enteredPin.length < 6) {
-          alert('Por favor completa los 6 números de tu clave tocando el teclado.');
+          window.puenteShowError('pinErrorBox', 'Faltan números: la clave tiene 6 números.');
           return;
         }
+        if (this.enteredPin !== window.PUENTE_TEST.CLAVE_PRUEBA) {
+          window.puenteShowError('pinErrorBox', `Ese no es el código de prueba. Escribe ${window.PUENTE_TEST.CLAVE_PRUEBA}.`);
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          this.enteredPin = '';
+          this.updatePinDisplay();
+          return;
+        }
+        window.puenteShowError('pinErrorBox', '');
         this.executeTransfer();
       });
     }
@@ -5852,6 +6287,7 @@ class AppRouter {
       modal.classList.add('active');
       // Iniciar con las casillas listas para escribir tocando el teclado
       this.enteredPin = '';
+      window.puenteShowError('pinErrorBox', '');
       if (this.updatePinDisplay) {
         this.updatePinDisplay();
       }
@@ -5862,15 +6298,20 @@ class AppRouter {
     const modal = document.getElementById('securityModalOverlay');
     if (modal) modal.classList.remove('active');
 
-    // Descontar saldo si está dentro del límite
-    if (this.transferState.amount <= this.user.balance) {
+    // En Modo Práctica no se descuenta dinero
+    const practice = window.interfazPuente && window.interfazPuente.practiceMode;
+    if (!practice && this.transferState.amount <= this.user.balance) {
       this.user.balance -= this.transferState.amount;
     }
     this.updateBalanceUI();
 
-    // Registrar éxito en facilitador
+    // Registrar en facilitador: si el monto con error llegó hasta el final, no fue detectado
     if (window.facilitatorPanel) {
-      window.facilitatorPanel.finishSession(true);
+      const fp = window.facilitatorPanel;
+      if (this.errorInjection && this.transferState.amount === window.PUENTE_TEST.MONTO_CON_ERROR) {
+        fp.setErrorDetection('no detectado');
+      }
+      fp.finishSession(true, this.transferState.amount);
     }
 
     // Registrar en Interfaz Puente para autoocultamiento
@@ -5900,7 +6341,7 @@ class AppRouter {
             text: `Transferencia realizada por ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name}.`
           }).catch(() => {});
         } else {
-          alert('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
+          window.puenteToast('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
         }
       });
     }
@@ -5913,6 +6354,13 @@ class AppRouter {
     const dateEl = document.getElementById('receiptDate');
     const opEl = document.getElementById('receiptOpNumber');
 
+    const practice = window.interfazPuente && window.interfazPuente.practiceMode;
+    const note = document.getElementById('receiptPracticeNote');
+    const title = document.getElementById('receiptTitle');
+    const sub = document.getElementById('receiptSubtitle');
+    if (note) note.style.display = practice ? 'block' : 'none';
+    if (title) title.textContent = practice ? '¡Práctica completada!' : '¡Transferencia Exitosa!';
+    if (sub) sub.textContent = practice ? 'Así se ve el comprobante. No se envió dinero real.' : 'Tu dinero fue enviado correctamente';
     if (amtEl) amtEl.textContent = this.formatCLP(this.transferState.amount);
     if (nameEl) nameEl.textContent = this.transferState.recipient.name;
     if (detailsEl) {
@@ -5934,7 +6382,7 @@ class AppRouter {
     if (this.currentView === 'home') {
       window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
     } else if (this.currentView === 'recipient') {
-      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
+      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, tocar el nombre de una persona de tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
     } else if (this.currentView === 'new-recipient') {
       const isStepRut = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       if (isStepRut) {
@@ -5946,11 +6394,12 @@ class AppRouter {
       window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
     } else if (this.currentView === 'summary') {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
-      const destName = this.transferState.recipient.name;
-      const destBank = this.transferState.recipient.bank;
+      const destName = this.transferState.recipient ? this.transferState.recipient.name : '';
+      const destBank = this.transferState.recipient ? this.transferState.recipient.bank : '';
       window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
     } else if (this.currentView === 'receipt') {
-      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
+      const practice = window.interfazPuente && window.interfazPuente.practiceMode;
+      window.puenteSpeech.speak(practice ? 'Práctica completada. No se envió dinero real.' : `¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient ? this.transferState.recipient.name : ''}.`);
     }
   }
 }
