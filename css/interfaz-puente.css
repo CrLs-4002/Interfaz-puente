@@ -542,18 +542,31 @@ button.spotlight-active *,
   left: 14px;
   right: 14px;
   bottom: 20px;
-  z-index: 45;
+  z-index: 55;
   background: #FFFFFF;
   border: 2px solid var(--teal);
   border-radius: 22px;
   padding: 18px 16px;
   box-shadow: 0 16px 40px rgba(13, 27, 62, 0.28);
-  display: none;
-  animation: bubble-appear 0.3s var(--ease);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.25s ease,
+              visibility 0.25s ease,
+              box-shadow 0.25s ease;
+  will-change: transform;
 }
 
 .spotlight-guide-card.show {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.spotlight-guide-card.is-docked-top {
+  box-shadow: 0 20px 44px rgba(13, 27, 62, 0.35);
 }
 
 .spotlight-guide-card h4 {

@@ -265,26 +265,68 @@ class InterfazPuente {
     }
   }
 
+  /* ================= POSICIONAMIENTO AUTOMÁTICO DE LA TARJETA TUTORIAL ================= */
+  positionSpotlightCard(targetEl) {
+    if (!this.spotlightCard) return;
+
+    if (!targetEl) {
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+      return;
+    }
+
+    const frame = document.getElementById('appMainContainer') || document.querySelector('.device-frame') || document.body;
+    const frameRect = frame.getBoundingClientRect();
+    const cardHeight = this.spotlightCard.offsetHeight || 165;
+    const targetRect = targetEl.getBoundingClientRect();
+
+    // La tarjeta al pie descansa a 20px del fondo del teléfono (device-frame).
+    // Su borde superior normal abajo está en: frameRect.bottom - 20 - cardHeight.
+    // Damos un margen de resguardo de 35px:
+    const bottomCardZoneTop = frameRect.bottom - cardHeight - 35;
+
+    // ¿El botón o elemento objetivo queda tapado o roza la tarjeta cuando esta está al pie?
+    const overlapsBottom = targetRect.bottom > bottomCardZoneTop;
+
+    // Zona superior que ocuparía la tarjeta si se desliza al top (a 20px del borde superior):
+    const topCardZoneBottom = frameRect.top + cardHeight + 35;
+    const isNearTop = targetRect.top < topCardZoneBottom;
+
+    if (overlapsBottom && !isNearTop) {
+      // Si el card tapa el botón que se debe ver, se desliza automáticamente al top de la pantalla
+      const distanceToTop = Math.max(80, frameRect.height - cardHeight - 40);
+      this.spotlightCard.style.transform = `translateY(-${distanceToTop}px)`;
+      this.spotlightCard.classList.add('is-docked-top');
+    } else {
+      // Si el elemento objetivo está arriba o al centro, el card se mantiene o regresa abajo
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+    }
+  }
+
   scrollToElement(targetEl) {
     if (!targetEl) return;
     const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
     if (scrollContainer) {
       const containerRect = scrollContainer.getBoundingClientRect();
       const targetRect = targetEl.getBoundingClientRect();
-      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 150) : 150;
+      const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 165) : 165;
+      const isDockedTop = this.spotlightCard && this.spotlightCard.classList.contains('is-docked-top');
 
-      // Área visible encima de la tarjeta flotante del tutorial
-      const visibleTop = containerRect.top + 10;
-      const visibleBottom = containerRect.bottom - cardHeight - 10;
+      // Área visible libre según si la tarjeta está acoplada arriba o abajo
+      const visibleTop = isDockedTop ? (containerRect.top + cardHeight + 20) : (containerRect.top + 10);
+      const visibleBottom = isDockedTop ? (containerRect.bottom - 10) : (containerRect.bottom - cardHeight - 20);
 
-      // Si el elemento ya está visible en pantalla, no desplazar innecesariamente para evitar cualquier descuadre
+      // Si el elemento ya está visible en pantalla sin ser tapado, no desplazar innecesariamente
       const isAlreadyVisible = (targetRect.top >= visibleTop && targetRect.bottom <= visibleBottom);
 
       if (!isAlreadyVisible) {
         const currentScroll = scrollContainer.scrollTop;
         const relativeTop = targetRect.top - containerRect.top + currentScroll;
-        const visibleHeight = Math.max(100, containerRect.height - cardHeight);
-        const targetScroll = Math.max(0, relativeTop - (visibleHeight / 2) + (targetRect.height / 2));
+        const availableHeight = Math.max(100, visibleBottom - visibleTop);
+        const targetScroll = isDockedTop
+          ? Math.max(0, relativeTop - (visibleTop - containerRect.top))
+          : Math.max(0, relativeTop - (availableHeight / 2) + (targetRect.height / 2));
 
         scrollContainer.scrollTo({
           top: targetScroll,
@@ -314,8 +356,6 @@ class InterfazPuente {
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
 
-    this.scrollToElement(targetEl);
-
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
     }
@@ -326,7 +366,14 @@ class InterfazPuente {
       if (titleEl) titleEl.textContent = title || 'Paso actual';
       if (textEl) textEl.textContent = message || 'Completa este campo para continuar con tranquilidad.';
       this.spotlightCard.classList.add('show');
+      this.positionSpotlightCard(targetEl);
     }
+
+    this.scrollToElement(targetEl);
+
+    setTimeout(() => {
+      this.positionSpotlightCard(targetEl);
+    }, 320);
   }
 
   clearSpotlight() {
@@ -337,6 +384,8 @@ class InterfazPuente {
     }
     if (this.spotlightCard) {
       this.spotlightCard.classList.remove('show');
+      this.spotlightCard.classList.remove('is-docked-top');
+      this.spotlightCard.style.transform = 'translateY(0)';
     }
     if (window.puenteSpeech) {
       window.puenteSpeech.stop();
@@ -541,7 +590,6 @@ class InterfazPuente {
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
     document.body.classList.add('dynamic-focus-active');
-    this.scrollToElement(targetEl);
 
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.add('active');
@@ -568,7 +616,14 @@ class InterfazPuente {
       }
 
       this.spotlightCard.classList.add('show');
+      this.positionSpotlightCard(targetEl);
     }
+
+    this.scrollToElement(targetEl);
+
+    setTimeout(() => {
+      this.positionSpotlightCard(targetEl);
+    }, 320);
 
     // Nota: La voz NO se activa automáticamente, solo si el usuario toca el botón de escuchar
   }
@@ -916,6 +971,24 @@ class InterfazPuente {
         triggers.forEach(t => t.classList.toggle('speaking', speaking));
       };
     }
+
+    // Reubicar dinámicamente la tarjeta del tutorial al cambiar tamaño de pantalla o al hacer scroll
+    window.addEventListener('resize', () => {
+      if (this.activeSpotlightElement && document.body.classList.contains('dynamic-focus-active')) {
+        this.positionSpotlightCard(this.activeSpotlightElement);
+      }
+    });
+
+    let scrollRelocateTimer = null;
+    document.addEventListener('scroll', (e) => {
+      if (!this.activeSpotlightElement || !document.body.classList.contains('dynamic-focus-active')) return;
+      if (e.target && e.target.classList && (e.target.classList.contains('scroll-area') || e.target.classList.contains('screen-view'))) {
+        if (scrollRelocateTimer) clearTimeout(scrollRelocateTimer);
+        scrollRelocateTimer = setTimeout(() => {
+          this.positionSpotlightCard(this.activeSpotlightElement);
+        }, 80);
+      }
+    }, { passive: true, capture: true });
   }
 
   /* Foco dinámico en sección específica con oscurecimiento del fondo al 85% */
