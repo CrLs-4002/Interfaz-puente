@@ -68,7 +68,7 @@
     },
     {
       "id": "glosa",
-      "termino_bancario": "Glosa",
+      "termino_bancario": "Mensaje",
       "traduccion_simple": "Mensaje para la otra persona (opcional)",
       "pregunta_guia": "¿Quieres dejarle un mensaje o recordatorio sobre este pago?",
       "explicacion": "Es un texto breve y voluntario para explicar el motivo del pago.",

@@ -87,7 +87,7 @@ class InterfazPuente {
         { id: "tipo_cuenta", termino_bancario: "Tipo de cuenta (CuentaRUT, Cuenta Vista, Cuenta Corriente)", traduccion_simple: "¿Qué clase de cuenta tiene esa persona?", explicacion: "Las cuentas pueden ser CuentaRUT, Cuenta Vista o Cuenta Corriente." },
         { id: "banco_destino", termino_bancario: "Banco de destino", traduccion_simple: "¿En qué banco está la cuenta de la otra persona?", explicacion: "Es la institución donde la otra persona tiene su dinero." },
         { id: "monto", termino_bancario: "Monto", traduccion_simple: "¿Cuánto dinero quieres enviar?", explicacion: "Es la cantidad en pesos que vas a transferir." },
-        { id: "glosa", termino_bancario: "Glosa", traduccion_simple: "Mensaje para la otra persona (opcional)", explicacion: "Es un texto voluntario para explicar el motivo del pago." },
+        { id: "glosa", termino_bancario: "Mensaje", traduccion_simple: "Mensaje para la otra persona (opcional)", explicacion: "Es un texto voluntario para explicar el motivo del pago." },
         { id: "saldo_disponible", termino_bancario: "Saldo disponible", traduccion_simple: "Dinero que tienes listo para usar", explicacion: "Es el dinero real que puedes gastar o transferir hoy." },
         { id: "autorizar_clave_dinamica", termino_bancario: "Autorizar con clave dinámica", traduccion_simple: "Confirmar con código de seguridad", explicacion: "Es un código de 6 números para confirmar que eres tú." },
         { id: "comprobante", termino_bancario: "Comprobante", traduccion_simple: "Recibo que demuestra que el dinero fue enviado", explicacion: "Es el documento que respalda la transferencia." }
