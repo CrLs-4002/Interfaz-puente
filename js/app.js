@@ -651,6 +651,9 @@ class AppRouter {
   }
 
   openSecurityAuth() {
+    if (window.interfazPuente) {
+      window.interfazPuente.clearSpotlight();
+    }
     const modal = document.getElementById('securityModalOverlay');
     if (modal) {
       modal.classList.add('active');

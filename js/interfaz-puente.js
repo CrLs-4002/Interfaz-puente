@@ -482,8 +482,35 @@ class InterfazPuente {
         {
           target: '#safeSummaryCard',
           title: 'Revisión final de seguridad',
-          message: 'Lee atentamente el monto y el nombre de la persona. Si todo está correcto, presiona Sí, enviar.',
+          message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
           speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.'
+        },
+        {
+          target: '#btnConfirmSummary',
+          title: 'Autorizar transferencia',
+          message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
+          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.'
+        }
+      ];
+    } else if (currentView === 'receipt') {
+      return [
+        {
+          target: '.receipt-card',
+          title: '¡Transferencia Exitosa!',
+          message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
+          speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.'
+        },
+        {
+          target: '#btnShareReceipt',
+          title: 'Compartir comprobante',
+          message: 'Toca este botón para compartir el comprobante con la otra persona por WhatsApp o correo.',
+          speech: 'Toca Compartir comprobante para enviar una copia a la otra persona.'
+        },
+        {
+          target: '#btnExitToHome',
+          title: 'Volver al inicio',
+          message: 'Toca este botón verde cuando hayas terminado para regresar a la pantalla principal de tu CuentaRUT.',
+          speech: 'Toca Volver al inicio para regresar a tu CuentaRUT.'
         }
       ];
     }
