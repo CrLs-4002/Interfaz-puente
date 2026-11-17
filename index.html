@@ -2807,18 +2807,6 @@ button.spotlight-active *,
             </div>
 
             <div class="inline-error" id="recipientErrorBox" role="alert"></div>
-
-            <!-- Botones Inferiores para Guardados / Favoritos -->
-            <div class="form-bottom-actions" id="recipientSavedBottomActions">
-              <button type="button" class="btn-cta-big btn-cta-full-width" id="btnContinueRecipientSaved">
-                Continuar
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-              </button>
-              <button type="button" class="btn-cancel-full-width" id="btnCancelRecipientSaved">
-                Cancelar
-              </button>
-            </div>
-
           </div>
         </section>
 
@@ -4372,14 +4360,8 @@ class InterfazPuente {
         {
           target: '#frequentContactRosa',
           title: 'O elige un contacto guardado',
-          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
-          speech: 'O toca a Rosa Pérez para seleccionarla como destinataria.'
-        },
-        {
-          target: '#btnContinueRecipientSaved',
-          title: 'Continuar',
-          message: 'Toca el botón Continuar ubicado abajo para avanzar a la pantalla de monto.',
-          speech: 'Toca el botón verde Continuar para ingresar el monto a enviar.'
+          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla y pasar directo a ingresar el monto.',
+          speech: 'O toca directamente a Rosa Pérez para seleccionarla y pasar al monto a enviar.'
         }
       ];
     } else if (currentView === 'new-recipient') {
@@ -5956,7 +5938,7 @@ class AppRouter {
       });
     });
 
-    // Selección de contactos guardados y favoritos (ninguno viene marcado)
+    // Selección de contactos guardados y favoritos (al tocar uno pasa directo al monto)
     const selectContact = (key) => {
       const data = this.contacts[key];
       if (!data) return;
@@ -5964,7 +5946,9 @@ class AppRouter {
         c.classList.toggle('selected', c.getAttribute('data-contact') === key);
       });
       this.transferState.recipient = Object.assign({}, data);
+      this.transferState.isNewRecipient = false;
       window.puenteShowError('recipientErrorBox', '');
+      this.goTo('amount');
     };
     document.querySelectorAll('.contact-item[data-contact]').forEach(card => {
       card.addEventListener('click', (e) => {

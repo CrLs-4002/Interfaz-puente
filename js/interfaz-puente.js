@@ -462,14 +462,8 @@ class InterfazPuente {
         {
           target: '#frequentContactRosa',
           title: 'O elige un contacto guardado',
-          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla como destinataria.',
-          speech: 'O toca a Rosa Pérez para seleccionarla como destinataria.'
-        },
-        {
-          target: '#btnContinueRecipientSaved',
-          title: 'Continuar',
-          message: 'Toca el botón Continuar ubicado abajo para avanzar a la pantalla de monto.',
-          speech: 'Toca el botón verde Continuar para ingresar el monto a enviar.'
+          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla y pasar directo a ingresar el monto.',
+          speech: 'O toca directamente a Rosa Pérez para seleccionarla y pasar al monto a enviar.'
         }
       ];
     } else if (currentView === 'new-recipient') {

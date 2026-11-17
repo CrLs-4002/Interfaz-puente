@@ -396,6 +396,8 @@ class AppRouter {
         accountType: 'Cuenta Corriente',
         accountNum: '00-128-45920-01'
       };
+      this.transferState.isNewRecipient = false;
+      this.goTo('amount');
     };
 
     if (contactRosa) contactRosa.addEventListener('click', selectRosa);
