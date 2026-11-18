@@ -220,15 +220,35 @@ class AppRouter {
       });
     }
 
-    // Buscador superior "¿A quién quieres transferir?"
+    // Buscador superior "¿A quién le quieres transferir?"
     const searchInput = document.getElementById('recipientSearchInput');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
         const query = e.target.value.toLowerCase().trim();
-        const contactCards = document.querySelectorAll('#paneRecipientSaved .contact-item, #paneRecipientFavorites .contact-item');
-        contactCards.forEach(card => {
-          const text = card.textContent.toLowerCase();
-          card.style.display = text.includes(query) ? '' : 'none';
+        const personBlocks = document.querySelectorAll('.contact-person-block');
+        personBlocks.forEach(personBlock => {
+          const personName = (personBlock.getAttribute('data-person') || '').toLowerCase();
+          const accountItems = personBlock.querySelectorAll('.contact-account-item');
+          let hasMatchingAccount = false;
+
+          accountItems.forEach(item => {
+            const alias = (item.getAttribute('data-account-alias') || '').toLowerCase();
+            const bank = (item.getAttribute('data-bank') || '').toLowerCase();
+            const num = (item.getAttribute('data-account-num') || '').toLowerCase();
+            const rut = (item.getAttribute('data-rut') || '').toLowerCase();
+            const match = !query || personName.includes(query) || alias.includes(query) || bank.includes(query) || num.includes(query) || rut.includes(query);
+            item.style.display = match ? '' : 'none';
+            if (match) hasMatchingAccount = true;
+          });
+
+          personBlock.style.display = hasMatchingAccount ? '' : 'none';
+        });
+
+        // Ocultar divisores de letras si no tienen contactos visibles
+        const alphaGroups = document.querySelectorAll('.contact-alpha-group');
+        alphaGroups.forEach(group => {
+          const visiblePersons = group.querySelectorAll('.contact-person-block:not([style*="display: none"])');
+          group.style.display = visiblePersons.length > 0 ? '' : 'none';
         });
       });
     }
@@ -405,27 +425,108 @@ class AppRouter {
       });
     });
 
-    // Selección de Rosa Pérez en Guardados y Favoritos
-    const contactRosa = document.getElementById('frequentContactRosa');
-    const favRosa = document.getElementById('favContactRosa');
-    const selectRosa = () => {
-      document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
-      if (contactRosa) contactRosa.classList.add('selected');
-      if (favRosa) favRosa.classList.add('selected');
-      this.transferState.recipient = {
-        id: 'rosa_perez',
-        name: 'Rosa Pérez Sepúlveda',
-        rut: '12.876.543-2',
-        bank: 'Banco de Chile',
-        accountType: 'Cuenta Corriente',
-        accountNum: '00-128-45920-01'
-      };
-      this.transferState.isNewRecipient = false;
-      this.goTo('amount');
+    // ================= BOTTOM SHEET: ¿QUÉ DESEAS HACER? =================
+    const bsOverlay = document.getElementById('accountBottomSheetOverlay');
+    const bsCard = document.getElementById('accountBottomSheetCard');
+    const btnEdit = document.getElementById('btnBottomSheetEdit');
+    const btnDelete = document.getElementById('btnBottomSheetDelete');
+
+    const openBottomSheet = (accountData) => {
+      if (bsOverlay && bsCard) {
+        bsOverlay.classList.add('active');
+        bsCard.classList.add('active');
+      }
     };
 
-    if (contactRosa) contactRosa.addEventListener('click', selectRosa);
-    if (favRosa) favRosa.addEventListener('click', selectRosa);
+    const closeBottomSheet = () => {
+      if (bsOverlay && bsCard) {
+        bsOverlay.classList.remove('active');
+        bsCard.classList.remove('active');
+      }
+    };
+
+    if (bsOverlay) {
+      bsOverlay.addEventListener('click', closeBottomSheet);
+    }
+    if (btnEdit) {
+      btnEdit.addEventListener('click', () => {
+        closeBottomSheet();
+        window.puenteToast('Seccion no disponible');
+      });
+    }
+    if (btnDelete) {
+      btnDelete.addEventListener('click', () => {
+        closeBottomSheet();
+        window.puenteToast('Seccion no disponible');
+      });
+    }
+
+    // Botones de 3 puntos en cada cuenta (abren el bottom sheet)
+    const dotButtons = document.querySelectorAll('.btn-account-dots');
+    dotButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const accountItem = btn.closest('.contact-account-item');
+        const accountData = {
+          alias: accountItem ? accountItem.getAttribute('data-account-alias') : '',
+          person: accountItem ? accountItem.getAttribute('data-person-name') : '',
+          bank: accountItem ? accountItem.getAttribute('data-bank') : '',
+          num: accountItem ? accountItem.getAttribute('data-account-num') : ''
+        };
+        openBottomSheet(accountData);
+      });
+    });
+
+    // Clic en cualquier cuenta para seleccionarla e ir a ingresar monto
+    const accountItems = document.querySelectorAll('.contact-account-item');
+    accountItems.forEach(item => {
+      item.addEventListener('click', () => {
+        accountItems.forEach(it => it.classList.remove('selected'));
+        item.classList.add('selected');
+
+        const contactType = item.getAttribute('data-contact');
+        const personName = item.getAttribute('data-person-name') || 'Destinatario';
+        const alias = item.getAttribute('data-account-alias') || personName;
+        const bank = item.getAttribute('data-bank') || 'BancoEstado';
+        const accountType = item.getAttribute('data-account-type') || 'Cuenta Corriente';
+        const accountNum = item.getAttribute('data-account-num') || '12345678';
+        const rut = item.getAttribute('data-rut') || '12.876.543-3';
+
+        if (contactType === 'rosa' || item.id === 'frequentContactRosa') {
+          this.transferState.recipient = {
+            id: 'rosa_perez',
+            name: 'Rosa Pérez Sepúlveda',
+            rut: '12.876.543-3',
+            bank: 'Banco de Chile',
+            accountType: 'Cuenta Corriente',
+            accountNum: '001284592001'
+          };
+        } else if (contactType === 'pedro' || item.id === 'frequentContactPedro') {
+          this.transferState.recipient = {
+            id: 'pedro_retamales',
+            name: 'Pedro Retamales (Hijo)',
+            rut: '18.345.678-4',
+            bank: 'BancoEstado',
+            accountType: 'CuentaRUT',
+            accountNum: '18345678'
+          };
+        } else {
+          this.transferState.recipient = {
+            id: 'contact_' + Date.now(),
+            name: personName,
+            alias: alias,
+            rut: rut,
+            bank: bank,
+            accountType: accountType,
+            accountNum: accountNum
+          };
+        }
+
+        this.transferState.isNewRecipient = false;
+        this.goTo('amount');
+      });
+    });
 
     // Botones de Continuar (Tanto en Guardados como en Formulario Nuevo)
     const btnContinueSaved = document.getElementById('btnContinueRecipientSaved');
