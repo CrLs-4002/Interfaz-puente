@@ -497,13 +497,10 @@ input:checked + .switch-slider:before {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(13, 27, 62, 0.52);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
   z-index: 45;
   opacity: 0;
   visibility: hidden;
-  pointer-events: auto;
+  pointer-events: none;
   transition: opacity 0.25s ease, visibility 0.25s ease;
 }
 
@@ -511,6 +508,54 @@ input:checked + .switch-slider:before {
   opacity: 1;
   visibility: visible;
   display: block !important;
+}
+
+/* Cortinas perimetrales independientes: difuminan arriba, abajo, izquierda y derecha */
+/* Al ser paneles separados, la casilla activa del centro NO queda cubierta por nada y NUNCA se difumina */
+.spotlight-curtain {
+  position: absolute;
+  background: rgba(13, 27, 62, 0.52);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+
+.spotlight-curtain-top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+}
+
+.spotlight-curtain-bottom {
+  left: 0;
+  width: 100%;
+  bottom: 0;
+  height: 0;
+}
+
+.spotlight-curtain-left {
+  left: 0;
+  width: 0;
+}
+
+.spotlight-curtain-right {
+  right: 0;
+  width: 0;
+}
+
+/* Marco resaltador verde esmeralda con halo para indicar exactamente la casilla activa */
+.spotlight-frame-highlight {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 14px;
+  border: 3.5px solid var(--teal);
+  box-shadow: 0 0 0 4px rgba(13, 143, 114, 0.28), 0 8px 30px rgba(13, 27, 62, 0.45);
+  box-sizing: border-box;
+  z-index: 46;
+  display: none;
+  transition: top 0.15s ease, left 0.15s ease, width 0.15s ease, height 0.15s ease;
 }
 
 /* Casilla de formulario o elemento que se remarca sin alterar su tamaño ni espaciado */

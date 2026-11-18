@@ -60,6 +60,11 @@ class InterfazPuente {
     this.sheet = document.getElementById('puenteSheet');
     this.inactivityBubble = document.getElementById('inactivityOfferBubble');
     this.dynamicFocusOverlay = document.getElementById('dynamicFocusOverlay');
+    this.curtainTop = document.getElementById('spotlightCurtainTop');
+    this.curtainBottom = document.getElementById('spotlightCurtainBottom');
+    this.curtainLeft = document.getElementById('spotlightCurtainLeft');
+    this.curtainRight = document.getElementById('spotlightCurtainRight');
+    this.frameHighlight = document.getElementById('spotlightFrameHighlight');
     this.spotlightCard = document.getElementById('spotlightGuideCard');
     this.practiceBanner = document.getElementById('practiceBanner');
     this.onboardingOverlay = document.getElementById('puenteOnboardingOverlay');
@@ -333,9 +338,18 @@ class InterfazPuente {
   updateSpotlightOverlay(targetEl) {
     if (!this.dynamicFocusOverlay) return;
 
+    const curtainTop = this.curtainTop || document.getElementById('spotlightCurtainTop');
+    const curtainBottom = this.curtainBottom || document.getElementById('spotlightCurtainBottom');
+    const curtainLeft = this.curtainLeft || document.getElementById('spotlightCurtainLeft');
+    const curtainRight = this.curtainRight || document.getElementById('spotlightCurtainRight');
+    const frameHighlight = this.frameHighlight || document.getElementById('spotlightFrameHighlight');
+
     if (!targetEl || !this.isTutorialActive) {
-      this.dynamicFocusOverlay.style.clipPath = '';
-      this.dynamicFocusOverlay.style.webkitClipPath = '';
+      if (curtainTop) { curtainTop.style.height = '0px'; }
+      if (curtainBottom) { curtainBottom.style.height = '0px'; }
+      if (curtainLeft) { curtainLeft.style.width = '0px'; }
+      if (curtainRight) { curtainRight.style.width = '0px'; }
+      if (frameHighlight) { frameHighlight.style.display = 'none'; }
       return;
     }
 
@@ -343,50 +357,76 @@ class InterfazPuente {
     const frameRect = frame.getBoundingClientRect();
     const targetRect = targetEl.getBoundingClientRect();
 
-    const pad = 6;
+    const w = Math.round(frameRect.width);
+    const h = Math.round(frameRect.height);
+
+    const pad = 4;
     const rawX1 = targetRect.left - frameRect.left - pad;
     const rawY1 = targetRect.top - frameRect.top - pad;
     const rawX2 = targetRect.right - frameRect.left + pad;
     const rawY2 = targetRect.bottom - frameRect.top + pad;
-
-    const w = Math.round(frameRect.width);
-    const h = Math.round(frameRect.height);
 
     const x1 = Math.max(0, Math.min(w, Math.round(rawX1)));
     const y1 = Math.max(0, Math.min(h, Math.round(rawY1)));
     const x2 = Math.max(0, Math.min(w, Math.round(rawX2)));
     const y2 = Math.max(0, Math.min(h, Math.round(rawY2)));
 
-    // Si el elemento objetivo no está visible dentro de la pantalla
+    // Si el elemento no tiene dimensiones válidas o está totalmente fuera del marco visible
     if (x2 <= x1 || y2 <= y1) {
-      this.dynamicFocusOverlay.style.clipPath = '';
-      this.dynamicFocusOverlay.style.webkitClipPath = '';
+      if (curtainTop) { curtainTop.style.top = '0px'; curtainTop.style.left = '0px'; curtainTop.style.width = '100%'; curtainTop.style.height = h + 'px'; }
+      if (curtainBottom) { curtainBottom.style.height = '0px'; }
+      if (curtainLeft) { curtainLeft.style.width = '0px'; }
+      if (curtainRight) { curtainRight.style.width = '0px'; }
+      if (frameHighlight) { frameHighlight.style.display = 'none'; }
       return;
     }
 
-    const computedStyle = window.getComputedStyle ? window.getComputedStyle(targetEl) : null;
-    const rawRadius = computedStyle ? parseInt(computedStyle.borderRadius, 10) : 14;
-    const maxCorner = Math.min(Math.floor((x2 - x1) / 2), Math.floor((y2 - y1) / 2));
-    const c = Math.max(0, Math.min(isNaN(rawRadius) ? 14 : Math.max(8, rawRadius + 2), maxCorner));
+    // 1. Cortina superior: cubre y difumina desde el tope hasta el borde superior de la casilla activa
+    if (curtainTop) {
+      curtainTop.style.top = '0px';
+      curtainTop.style.left = '0px';
+      curtainTop.style.width = '100%';
+      curtainTop.style.height = y1 + 'px';
+    }
 
-    // Polígono de recorte: marco exterior en sentido horario + recorte interior en sentido antihorario
-    // Esto crea un agujero nítido e interactivo sobre la casilla activa, difuminando el resto
-    const clipPath = `polygon(
-      0px 0px, ${w}px 0px, ${w}px ${h}px, 0px ${h}px, 0px 0px,
-      ${x1 + c}px ${y1}px,
-      ${x1}px ${y1 + c}px,
-      ${x1}px ${y2 - c}px,
-      ${x1 + c}px ${y2}px,
-      ${x2 - c}px ${y2}px,
-      ${x2}px ${y2 - c}px,
-      ${x2}px ${y1 + c}px,
-      ${x2 - c}px ${y1}px,
-      ${x1 + c}px ${y1}px,
-      0px 0px
-    )`;
+    // 2. Cortina inferior: cubre y difumina desde el borde inferior de la casilla activa hasta el fondo
+    if (curtainBottom) {
+      curtainBottom.style.top = y2 + 'px';
+      curtainBottom.style.left = '0px';
+      curtainBottom.style.width = '100%';
+      curtainBottom.style.height = Math.max(0, h - y2) + 'px';
+    }
 
-    this.dynamicFocusOverlay.style.clipPath = clipPath;
-    this.dynamicFocusOverlay.style.webkitClipPath = clipPath;
+    // 3. Cortina lateral izquierda: cubre el espacio lateral izquierdo entre el tope y fondo de la casilla
+    if (curtainLeft) {
+      curtainLeft.style.top = y1 + 'px';
+      curtainLeft.style.left = '0px';
+      curtainLeft.style.width = x1 + 'px';
+      curtainLeft.style.height = Math.max(0, y2 - y1) + 'px';
+    }
+
+    // 4. Cortina lateral derecha: cubre el espacio lateral derecho entre el tope y fondo de la casilla
+    if (curtainRight) {
+      curtainRight.style.top = y1 + 'px';
+      curtainRight.style.left = x2 + 'px';
+      curtainRight.style.width = Math.max(0, w - x2) + 'px';
+      curtainRight.style.height = Math.max(0, y2 - y1) + 'px';
+    }
+
+    // 5. Marco resaltador del elemento activo (sin fondo ni filtro, solo contorno esmeralda y halo)
+    // El elemento activo en el centro queda 100% libre, nítido e interactivo
+    if (frameHighlight) {
+      const computedStyle = window.getComputedStyle ? window.getComputedStyle(targetEl) : null;
+      const rawRadius = computedStyle ? parseInt(computedStyle.borderRadius, 10) : 14;
+      const radius = isNaN(rawRadius) || rawRadius <= 0 ? 14 : Math.min(26, rawRadius + 2);
+
+      frameHighlight.style.display = 'block';
+      frameHighlight.style.top = y1 + 'px';
+      frameHighlight.style.left = x1 + 'px';
+      frameHighlight.style.width = (x2 - x1) + 'px';
+      frameHighlight.style.height = (y2 - y1) + 'px';
+      frameHighlight.style.borderRadius = radius + 'px';
+    }
   }
 
   scrollToElement(targetEl) {
@@ -469,9 +509,8 @@ class InterfazPuente {
     this.clearPreviousHighlight();
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.remove('active');
-      this.dynamicFocusOverlay.style.clipPath = '';
-      this.dynamicFocusOverlay.style.webkitClipPath = '';
     }
+    this.updateSpotlightOverlay(null);
     if (this.spotlightCard) {
       this.spotlightCard.classList.remove('show');
       this.spotlightCard.classList.remove('is-docked-top');
