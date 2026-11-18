@@ -64,6 +64,11 @@ class InterfazPuente {
     this.practiceBanner = document.getElementById('practiceBanner');
     this.onboardingOverlay = document.getElementById('puenteOnboardingOverlay');
     this.termModalOverlay = document.getElementById('termModalOverlay');
+    this.homeHelpModal = document.getElementById('homeHelpModalOverlay');
+    this.btnHomeHelpTransfer = document.getElementById('btnHomeHelpTransfer');
+    this.btnVoiceDictateHome = document.getElementById('btnVoiceDictateHome');
+    this.homeHelpVoiceFeedback = document.getElementById('homeHelpVoiceFeedback');
+    this.btnCloseHomeHelp = document.getElementById('btnCloseHomeHelp');
   }
 
   async loadGlossary() {
@@ -180,7 +185,16 @@ class InterfazPuente {
         e.stopPropagation();
         return;
       }
-      this.toggleWidgetMenu();
+
+      const activeScreen = document.querySelector('.screen-view.is-active');
+      const isHome = (activeScreen && activeScreen.id === 'view-home') ||
+                     (window.appRouter && window.appRouter.currentView === 'home');
+
+      if (isHome) {
+        this.openHomeHelpModal();
+      } else {
+        this.toggleWidgetMenu();
+      }
     });
   }
 
@@ -834,8 +848,166 @@ class InterfazPuente {
     }
   }
 
+  /* ================= DIÁLOGO DE INICIO: ¿QUÉ QUIERES HACER? ================= */
+  openHomeHelpModal() {
+    if (!this.enabled || !this.homeHelpModal) return;
+    this.dismissInactivityOffer();
+    this.closeWidgetMenu();
+    this.homeHelpModal.classList.add('active');
+    if (this.homeHelpVoiceFeedback) {
+      this.homeHelpVoiceFeedback.style.display = 'none';
+      this.homeHelpVoiceFeedback.textContent = '';
+      this.homeHelpVoiceFeedback.classList.remove('error');
+    }
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('help', 'inicio_que_quieres_hacer');
+    }
+  }
+
+  closeHomeHelpModal() {
+    if (!this.homeHelpModal) return;
+    this.homeHelpModal.classList.remove('active');
+    if (this.btnVoiceDictateHome) {
+      this.btnVoiceDictateHome.classList.remove('listening');
+    }
+    if (this.homeRecognition) {
+      try { this.homeRecognition.stop(); } catch(e) {}
+    }
+  }
+
+  handleHomeHelpTransfer() {
+    this.closeHomeHelpModal();
+    // Iniciar modo tutorial para realizar el proceso completo
+    this.startStepByStepGuide();
+  }
+
+  setupHomeVoiceDictation() {
+    const btnVoice = this.btnVoiceDictateHome;
+    const feedback = this.homeHelpVoiceFeedback;
+    if (!btnVoice) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+    const showVoiceFeedback = (text, isError = false) => {
+      if (!feedback) return;
+      feedback.textContent = text;
+      feedback.style.display = 'block';
+      if (isError) feedback.classList.add('error');
+      else feedback.classList.remove('error');
+    };
+
+    const processTranscript = (rawText) => {
+      const text = (rawText || '').toLowerCase().trim();
+      const isTransfer = text.includes('transfer') || 
+                         text.includes('transfere') || 
+                         text.includes('enviar') || 
+                         text.includes('mandar') || 
+                         text.includes('pasar') || 
+                         (text.includes('plata') && !text.includes('saldo')) || 
+                         text.includes('dinero');
+
+      if (isTransfer) {
+        showVoiceFeedback(`✓ Entendido: "${rawText}". Iniciando tutorial...`);
+        if (window.puenteSpeech) {
+          window.puenteSpeech.speak('Entendido. Te guiaremos paso a paso para hacer tu transferencia.');
+        }
+        setTimeout(() => {
+          this.handleHomeHelpTransfer();
+        }, 850);
+      } else {
+        showVoiceFeedback(`Detectamos: "${rawText}". Puedes decir "Quiero transferir" o tocar el botón arriba.`, true);
+        if (window.puenteSpeech) {
+          window.puenteSpeech.speak('Para transferir, di Quiero transferir o toca el botón de transferir dinero.');
+        }
+      }
+    };
+
+    const runSimulatedVoice = () => {
+      btnVoice.classList.add('listening');
+      showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+      setTimeout(() => {
+        btnVoice.classList.remove('listening');
+        processTranscript('Quiero hacer una transferencia');
+      }, 1100);
+    };
+
+    btnVoice.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      if (btnVoice.classList.contains('listening')) {
+        if (this.homeRecognition) {
+          try { this.homeRecognition.stop(); } catch(err) {}
+        }
+        btnVoice.classList.remove('listening');
+        return;
+      }
+
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'es-CL';
+          recognition.continuous = false;
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+          this.homeRecognition = recognition;
+
+          btnVoice.classList.add('listening');
+          showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            processTranscript(transcript);
+          };
+
+          recognition.onerror = (err) => {
+            console.warn('SpeechRecognition error:', err);
+            showVoiceFeedback('No pudimos escuchar con claridad. Toca el botón "Transferir dinero" o intenta de nuevo.', true);
+          };
+
+          recognition.onend = () => {
+            btnVoice.classList.remove('listening');
+          };
+
+          recognition.start();
+        } catch (err) {
+          console.warn('Recognition start failed:', err);
+          btnVoice.classList.remove('listening');
+          runSimulatedVoice();
+        }
+      } else {
+        runSimulatedVoice();
+      }
+    });
+  }
+
   /* ================= CONEXIONES DE EVENTOS ================= */
   setupEventListeners() {
+    // Diálogo de inicio "¿Qué quieres hacer?"
+    if (this.btnHomeHelpTransfer) {
+      this.btnHomeHelpTransfer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.handleHomeHelpTransfer();
+      });
+    }
+
+    if (this.btnCloseHomeHelp) {
+      this.btnCloseHomeHelp.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeHomeHelpModal();
+      });
+    }
+
+    if (this.homeHelpModal) {
+      this.homeHelpModal.addEventListener('click', (e) => {
+        if (e.target === this.homeHelpModal) {
+          this.closeHomeHelpModal();
+        }
+      });
+    }
+
+    if (this.btnVoiceDictateHome) {
+      this.setupHomeVoiceDictation();
+    }
+
     // Backdrop del widget para cerrar al tocar afuera
     if (this.widgetBackdrop) {
       this.widgetBackdrop.addEventListener('click', () => this.closeWidgetMenu());

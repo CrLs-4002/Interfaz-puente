@@ -2954,6 +2954,238 @@ button.spotlight-active *,
   color: var(--ink);
 }
 
+/* ================= DIÁLOGO DE INICIO: ¿QUÉ QUIERES HACER? ================= */
+.home-help-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(13, 27, 62, 0.65);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.home-help-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.home-help-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 22px 20px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: 0 16px 40px rgba(13, 27, 62, 0.35);
+  border: 2px solid var(--line);
+  transform: translateY(20px) scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-help-modal-overlay.active .home-help-card {
+  transform: translateY(0) scale(1);
+}
+
+.home-help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.home-help-title {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--navy);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.btn-close-home-help {
+  background: #F1F5F9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-close-home-help:hover {
+  background: #E2E8F0;
+  color: var(--ink);
+}
+
+.home-help-desc {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.home-help-option-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  background: #F0FDF4;
+  border: 2px solid #0D8F72;
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-bottom: 14px;
+  text-align: left;
+  box-shadow: 0 2px 8px rgba(13, 143, 114, 0.12);
+}
+
+.home-help-option-card:hover {
+  background: #DCFCE7;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(13, 143, 114, 0.22);
+}
+
+.home-help-option-card:active {
+  transform: scale(0.98);
+}
+
+.home-help-option-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #0D8F72;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(13, 143, 114, 0.25);
+}
+
+.home-help-option-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.home-help-option-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #064E3B;
+}
+
+.home-help-option-sub {
+  font-size: 13px;
+  font-weight: 700;
+  color: #047857;
+  margin-top: 2px;
+}
+
+.home-help-option-arrow {
+  color: #0D8F72;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.home-help-voice-box {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 16px;
+  padding: 14px 16px;
+}
+
+.home-help-voice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.home-help-voice-icon-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--navy);
+}
+
+.btn-voice-dictate-home {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #F0FDF4;
+  border: 1.5px solid #0D8F72;
+  color: #0D8F72;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(13, 143, 114, 0.15);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.btn-voice-dictate-home:hover {
+  background: #CCFBF1;
+  border-color: #0F766E;
+  color: #0F766E;
+  transform: scale(1.06);
+}
+
+.btn-voice-dictate-home.listening {
+  background: #EF4444 !important;
+  border-color: #DC2626 !important;
+  color: #FFFFFF !important;
+  animation: pulse-mic-active 1.2s infinite ease-in-out !important;
+}
+
+.home-help-voice-hint {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.home-help-voice-feedback {
+  font-size: 13px;
+  font-weight: 800;
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #F0FDF4;
+  color: #0D8F72;
+  border: 1px solid #A7F3D0;
+  line-height: 1.35;
+}
+
+.home-help-voice-feedback.error {
+  background: #FEF2F2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+
 
 
 /* ==========================================
@@ -4309,6 +4541,53 @@ button.spotlight-active *,
         </div>
       </div>
 
+      <!-- ================= DIÁLOGO DE INICIO: ¿QUÉ QUIERES HACER? ================= -->
+      <div class="home-help-modal-overlay" id="homeHelpModalOverlay" role="dialog" aria-modal="true" aria-labelledby="homeHelpTitle">
+        <div class="home-help-card">
+          <div class="home-help-header">
+            <h2 id="homeHelpTitle" class="home-help-title">¿Qué quieres hacer?</h2>
+            <button type="button" class="btn-close-home-help" id="btnCloseHomeHelp" aria-label="Cerrar opciones de ayuda">✕</button>
+          </div>
+          <p class="home-help-desc">Elige una opción o usa tu voz para que te guiemos paso a paso:</p>
+
+          <!-- Opción 1: Transferir dinero -->
+          <button type="button" class="home-help-option-card" id="btnHomeHelpTransfer">
+            <div class="home-help-option-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                <polyline points="17 1 21 5 17 9"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <polyline points="7 23 3 19 7 15"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </div>
+            <div class="home-help-option-info">
+              <span class="home-help-option-title">Transferir dinero</span>
+              <span class="home-help-option-sub">Enviar dinero a otra persona o cuenta</span>
+            </div>
+            <div class="home-help-option-arrow">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </button>
+
+          <!-- Opción 2: Dictar por voz -->
+          <div class="home-help-voice-box" id="homeHelpVoiceBox">
+            <div class="home-help-voice-header">
+              <div class="home-help-voice-icon-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <span>Dictar por voz</span>
+              </div>
+              <button type="button" class="btn-voice-dictate-home" id="btnVoiceDictateHome" aria-label="Toca para hablar" title="Toca y habla">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+              </button>
+            </div>
+            <p class="home-help-voice-hint">
+              Toca el micrófono y di: <strong>"Quiero hacer una transferencia"</strong> o <strong>"Quiero transferir"</strong>.
+            </p>
+            <div class="home-help-voice-feedback" id="homeHelpVoiceFeedback" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- Backdrop transparente para cerrar el menú del widget al tocar afuera -->
       <div class="puente-widget-backdrop" id="puenteWidgetBackdrop"></div>
 
@@ -4919,6 +5198,11 @@ class InterfazPuente {
     this.practiceBanner = document.getElementById('practiceBanner');
     this.onboardingOverlay = document.getElementById('puenteOnboardingOverlay');
     this.termModalOverlay = document.getElementById('termModalOverlay');
+    this.homeHelpModal = document.getElementById('homeHelpModalOverlay');
+    this.btnHomeHelpTransfer = document.getElementById('btnHomeHelpTransfer');
+    this.btnVoiceDictateHome = document.getElementById('btnVoiceDictateHome');
+    this.homeHelpVoiceFeedback = document.getElementById('homeHelpVoiceFeedback');
+    this.btnCloseHomeHelp = document.getElementById('btnCloseHomeHelp');
   }
 
   async loadGlossary() {
@@ -5035,7 +5319,16 @@ class InterfazPuente {
         e.stopPropagation();
         return;
       }
-      this.toggleWidgetMenu();
+
+      const activeScreen = document.querySelector('.screen-view.is-active');
+      const isHome = (activeScreen && activeScreen.id === 'view-home') ||
+                     (window.appRouter && window.appRouter.currentView === 'home');
+
+      if (isHome) {
+        this.openHomeHelpModal();
+      } else {
+        this.toggleWidgetMenu();
+      }
     });
   }
 
@@ -5689,8 +5982,166 @@ class InterfazPuente {
     }
   }
 
+  /* ================= DIÁLOGO DE INICIO: ¿QUÉ QUIERES HACER? ================= */
+  openHomeHelpModal() {
+    if (!this.enabled || !this.homeHelpModal) return;
+    this.dismissInactivityOffer();
+    this.closeWidgetMenu();
+    this.homeHelpModal.classList.add('active');
+    if (this.homeHelpVoiceFeedback) {
+      this.homeHelpVoiceFeedback.style.display = 'none';
+      this.homeHelpVoiceFeedback.textContent = '';
+      this.homeHelpVoiceFeedback.classList.remove('error');
+    }
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('help', 'inicio_que_quieres_hacer');
+    }
+  }
+
+  closeHomeHelpModal() {
+    if (!this.homeHelpModal) return;
+    this.homeHelpModal.classList.remove('active');
+    if (this.btnVoiceDictateHome) {
+      this.btnVoiceDictateHome.classList.remove('listening');
+    }
+    if (this.homeRecognition) {
+      try { this.homeRecognition.stop(); } catch(e) {}
+    }
+  }
+
+  handleHomeHelpTransfer() {
+    this.closeHomeHelpModal();
+    // Iniciar modo tutorial para realizar el proceso completo
+    this.startStepByStepGuide();
+  }
+
+  setupHomeVoiceDictation() {
+    const btnVoice = this.btnVoiceDictateHome;
+    const feedback = this.homeHelpVoiceFeedback;
+    if (!btnVoice) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+    const showVoiceFeedback = (text, isError = false) => {
+      if (!feedback) return;
+      feedback.textContent = text;
+      feedback.style.display = 'block';
+      if (isError) feedback.classList.add('error');
+      else feedback.classList.remove('error');
+    };
+
+    const processTranscript = (rawText) => {
+      const text = (rawText || '').toLowerCase().trim();
+      const isTransfer = text.includes('transfer') || 
+                         text.includes('transfere') || 
+                         text.includes('enviar') || 
+                         text.includes('mandar') || 
+                         text.includes('pasar') || 
+                         (text.includes('plata') && !text.includes('saldo')) || 
+                         text.includes('dinero');
+
+      if (isTransfer) {
+        showVoiceFeedback(`✓ Entendido: "${rawText}". Iniciando tutorial...`);
+        if (window.puenteSpeech) {
+          window.puenteSpeech.speak('Entendido. Te guiaremos paso a paso para hacer tu transferencia.');
+        }
+        setTimeout(() => {
+          this.handleHomeHelpTransfer();
+        }, 850);
+      } else {
+        showVoiceFeedback(`Detectamos: "${rawText}". Puedes decir "Quiero transferir" o tocar el botón arriba.`, true);
+        if (window.puenteSpeech) {
+          window.puenteSpeech.speak('Para transferir, di Quiero transferir o toca el botón de transferir dinero.');
+        }
+      }
+    };
+
+    const runSimulatedVoice = () => {
+      btnVoice.classList.add('listening');
+      showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+      setTimeout(() => {
+        btnVoice.classList.remove('listening');
+        processTranscript('Quiero hacer una transferencia');
+      }, 1100);
+    };
+
+    btnVoice.addEventListener('click', (e) => {
+      e.stopPropagation();
+
+      if (btnVoice.classList.contains('listening')) {
+        if (this.homeRecognition) {
+          try { this.homeRecognition.stop(); } catch(err) {}
+        }
+        btnVoice.classList.remove('listening');
+        return;
+      }
+
+      if (SpeechRecognition) {
+        try {
+          const recognition = new SpeechRecognition();
+          recognition.lang = 'es-CL';
+          recognition.continuous = false;
+          recognition.interimResults = false;
+          recognition.maxAlternatives = 1;
+          this.homeRecognition = recognition;
+
+          btnVoice.classList.add('listening');
+          showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+
+          recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            processTranscript(transcript);
+          };
+
+          recognition.onerror = (err) => {
+            console.warn('SpeechRecognition error:', err);
+            showVoiceFeedback('No pudimos escuchar con claridad. Toca el botón "Transferir dinero" o intenta de nuevo.', true);
+          };
+
+          recognition.onend = () => {
+            btnVoice.classList.remove('listening');
+          };
+
+          recognition.start();
+        } catch (err) {
+          console.warn('Recognition start failed:', err);
+          btnVoice.classList.remove('listening');
+          runSimulatedVoice();
+        }
+      } else {
+        runSimulatedVoice();
+      }
+    });
+  }
+
   /* ================= CONEXIONES DE EVENTOS ================= */
   setupEventListeners() {
+    // Diálogo de inicio "¿Qué quieres hacer?"
+    if (this.btnHomeHelpTransfer) {
+      this.btnHomeHelpTransfer.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.handleHomeHelpTransfer();
+      });
+    }
+
+    if (this.btnCloseHomeHelp) {
+      this.btnCloseHomeHelp.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closeHomeHelpModal();
+      });
+    }
+
+    if (this.homeHelpModal) {
+      this.homeHelpModal.addEventListener('click', (e) => {
+        if (e.target === this.homeHelpModal) {
+          this.closeHomeHelpModal();
+        }
+      });
+    }
+
+    if (this.btnVoiceDictateHome) {
+      this.setupHomeVoiceDictation();
+    }
+
     // Backdrop del widget para cerrar al tocar afuera
     if (this.widgetBackdrop) {
       this.widgetBackdrop.addEventListener('click', () => this.closeWidgetMenu());
