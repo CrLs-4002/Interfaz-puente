@@ -184,23 +184,31 @@ document.getElementById('btnToggleFullScreen').addEventListener('click', functio
   </script>'''
         html_content = html_content.replace(script_block, js_replacement)
 
-    # Reemplazo de logo por Data URI standalone
-    logo_path = os.path.join(BASE_DIR, 'assets', 'logo-bancoestado.png')
-    if os.path.exists(logo_path):
-        import base64
-        with open(logo_path, 'rb') as f_img:
-            logo_b64 = base64.b64encode(f_img.read()).decode('ascii')
-            logo_data_uri = f'data:image/png;base64,{logo_b64}'
-            html_content = re.sub(
-                r'<span class="be-logo-symbol">B</span>',
-                f'<img src="{logo_data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
-                html_content
-            )
-            html_content = re.sub(
-                r'<img\s+src=["\'][^"\']+["\']\s+alt="Logo BancoEstado"\s+class="be-logo-symbol">',
-                f'<img src="{logo_data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
-                html_content
-            )
+    # Reemplazo de imágenes por Data URI standalone
+    import base64
+    for asset_name in ['logo-bancoestado.png', 'promo-woman.png', 'piggy-bank.png']:
+        asset_path = os.path.join(BASE_DIR, 'assets', asset_name)
+        if os.path.exists(asset_path):
+            with open(asset_path, 'rb') as f_img:
+                b64 = base64.b64encode(f_img.read()).decode('ascii')
+                data_uri = f'data:image/png;base64,{b64}'
+                if asset_name == 'logo-bancoestado.png':
+                    html_content = re.sub(
+                        r'<span class="be-logo-symbol">B</span>',
+                        f'<img src="{data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
+                        html_content
+                    )
+                    html_content = re.sub(
+                        r'<img\s+src=["\'][^"\']+["\']\s+alt="Logo BancoEstado"\s+class="be-logo-symbol">',
+                        f'<img src="{data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
+                        html_content
+                    )
+                else:
+                    html_content = re.sub(
+                        rf'src=["\']assets/{asset_name}["\']',
+                        f'src="{data_uri}"',
+                        html_content
+                    )
 
     target_path = os.path.join(BASE_DIR, 'index.html')
     with open(target_path, 'w', encoding='utf-8') as f:

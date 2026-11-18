@@ -264,14 +264,22 @@ input, select, textarea {
 }
 
 .btn-header-round {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  color: #FFFFFF;
+  background: #FFFFFF;
+  color: #002D72;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn-header-round:active {
+  transform: scale(0.94);
 }
 
 /* Cabecera de Trámites */
@@ -313,11 +321,11 @@ input, select, textarea {
 }
 
 .account-card {
-  background: var(--card-bg);
-  border-radius: var(--radius-lg);
+  background: #FFFFFF;
+  border-radius: 20px;
   padding: 20px;
-  box-shadow: var(--shadow-sm);
-  border: 1.5px solid rgba(207, 215, 230, 0.6);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
   margin-bottom: 16px;
 }
 
@@ -329,51 +337,95 @@ input, select, textarea {
 }
 
 .account-card-type {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--muted);
+  font-size: 17px;
+  color: #1E293B;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .account-card-type b {
-  color: var(--ink);
-  font-size: 17px;
+  color: #0F172A;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.account-card-type span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.btn-card-dots {
+  background: transparent;
+  border: none;
+  color: #2C4391;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.btn-card-dots:hover {
+  background: #F1F5F9;
 }
 
 .account-balance-row {
-  margin: 8px 0 4px;
+  margin: 6px 0 14px;
+}
+
+.account-balance-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .account-balance {
   font-size: 32px;
   font-weight: 900;
-  color: var(--ink);
+  color: #0F172A;
   letter-spacing: -0.5px;
 }
 
+.btn-toggle-eye {
+  background: transparent;
+  border: none;
+  color: #2C4391;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
 .account-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--muted);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #64748B;
+  margin-top: 2px;
 }
 
 /* Botones dentro de la tarjeta de cuenta */
 .account-actions-row {
   display: flex;
-  gap: 10px;
-  margin-top: 18px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .btn-pill {
   flex: 1;
-  min-height: var(--touch-min);
+  min-height: 44px;
   border-radius: 28px;
   font-size: 16px;
   font-weight: 800;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
   padding: 0 16px;
+  cursor: pointer;
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
@@ -382,99 +434,306 @@ input, select, textarea {
 }
 
 .btn-pill.primary {
-  background: var(--indigo);
+  background: #2C4391;
   color: #FFFFFF;
+  border: none;
 }
 
 .btn-pill.primary:hover {
-  background: var(--indigo-dark);
+  background: #1E3374;
 }
 
 .btn-pill.secondary {
-  border: 2px solid var(--indigo);
-  color: var(--indigo);
+  border: 2px solid #2C4391;
+  color: #2C4391;
   background: #FFFFFF;
 }
 
 .btn-pill.secondary:hover {
-  background: var(--indigo-soft);
+  background: #F0F4FF;
 }
 
-/* Tarjeta Destacada de Transferencia Rápida */
+/* ================= TARJETA AZUL DE TRANSFERENCIA (IMAGEN 2) ================= */
 .quick-transfer-box {
-  background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+  background: #11204C;
   color: #FFFFFF;
-  border-radius: var(--radius-lg);
-  padding: 20px;
+  border-radius: 22px;
+  padding: 22px 20px;
   margin-bottom: 16px;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 8px 24px rgba(17, 32, 76, 0.22);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-.quick-transfer-box h2 {
-  font-size: 20px;
-  font-weight: 900;
-  display: flex;
-  align-items: center;
   gap: 8px;
 }
 
+.quick-transfer-box h2 {
+  font-size: 21px;
+  font-weight: 900;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
 .quick-transfer-box p {
-  font-size: 16px;
+  font-size: 15.5px;
   color: #E2E8F0;
-  line-height: 1.4;
+  line-height: 1.45;
+  margin: 4px 0 16px;
 }
 
 .btn-cta-big {
-  min-height: var(--touch-btn);
-  background: var(--orange);
+  min-height: 52px;
+  background: #FF7700;
   color: #FFFFFF;
-  border-radius: 16px;
+  border-radius: 20px;
   font-size: 19px;
   font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 6px 16px rgba(247, 127, 0, 0.4);
-  transition: all 0.2s var(--ease);
+  box-shadow: 0 6px 16px rgba(255, 119, 0, 0.35);
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .btn-cta-big:active {
   transform: scale(0.98);
-  background: var(--orange-dark);
+  background: #E06600;
 }
 
-/* Tarjetas Informativas / Secundarias */
-.section-heading {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--ink);
-  margin: 16px 4px 10px;
-}
-
-.mini-card {
+/* ================= BANNER PROMO CUENTA CORRIENTE DIGITAL ================= */
+.promo-banner-card {
   background: #FFFFFF;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  border: 1.5px solid var(--line);
-  margin-bottom: 12px;
+  border-radius: 20px;
+  padding: 18px 18px 18px 20px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 8px;
 }
 
-.mini-card-info b {
-  font-size: 16px;
-  color: var(--ink);
+.promo-banner-info {
+  flex: 1;
 }
 
-.mini-card-info span {
+.promo-banner-title {
+  font-size: 17px;
+  font-weight: 900;
+  color: #0F172A;
+  margin-bottom: 6px;
+}
+
+.promo-banner-text {
+  font-size: 13.5px;
+  color: #475569;
+  line-height: 1.35;
+  margin-bottom: 12px;
+}
+
+.btn-promo-action {
+  background: #2C4391;
+  color: #FFFFFF;
+  border-radius: 20px;
+  padding: 8px 18px;
   font-size: 14px;
-  color: var(--muted);
-  display: block;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease;
+}
+
+.btn-promo-action:active {
+  transform: scale(0.96);
+}
+
+.promo-banner-img {
+  width: 106px;
+  height: 145px;
+  border-radius: 14px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0 16px;
+}
+
+.carousel-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #CBD5E1;
+}
+
+.carousel-dot.active {
+  background: #FF7700;
+}
+
+/* ================= SECCIÓN TUS TARJETAS ================= */
+.section-heading-home {
+  font-size: 19px;
+  font-weight: 800;
+  color: #1E293B;
+  margin: 16px 2px 10px;
+}
+
+.card-rut-product {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 18px 20px 18px 24px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.card-rut-accent {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 6px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(to bottom, #005CA9 50%, #D6001C 50%);
+}
+
+.card-rut-name {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.card-rut-number {
+  font-size: 15px;
+  font-weight: 700;
+  color: #64748B;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+.card-rut-visa {
+  font-family: 'Arial Black', system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  font-style: italic;
+  color: #1A1F71;
+  letter-spacing: -1px;
+}
+
+/* ================= BANNER AHORRO ================= */
+.savings-promo-box {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.savings-promo-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.savings-promo-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.savings-promo-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.btn-savings-action {
+  background: #2C4391;
+  color: #FFFFFF;
+  border-radius: 24px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.btn-savings-action:active {
+  transform: scale(0.96);
+}
+
+/* ================= SECCIÓN ¿QUÉ NECESITAS HACER? ================= */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.quick-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.quick-action-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+  border: 1.5px solid rgba(226, 232, 240, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #11204C;
+  transition: transform 0.15s ease;
+}
+
+.quick-action-item:active .quick-action-circle {
+  transform: scale(0.94);
+}
+
+.quick-action-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  text-align: center;
+  line-height: 1.25;
 }
 
 /* ================= BARRA DE NAVEGACIÓN INFERIOR ================= */
@@ -485,7 +744,7 @@ input, select, textarea {
   bottom: 0;
   height: 72px;
   background: #FFFFFF;
-  border-top: 1.5px solid var(--line);
+  border-top: 1.5px solid #E2E8F0;
   display: flex;
   z-index: 10;
 }
@@ -497,17 +756,32 @@ input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: var(--muted);
+  color: #64748B;
   font-size: 13px;
   font-weight: 800;
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-tab.active {
-  color: var(--orange);
+  color: #FF7700;
+}
+
+.nav-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 3.5px;
+  background: #FF7700;
+  border-radius: 0 0 3px 3px;
 }
 
 .nav-tab.active .nav-icon {
-  stroke: var(--orange);
+  stroke: #FF7700;
 }
 
 .nav-icon {
