@@ -877,144 +877,32 @@ button:disabled {
   background: var(--teal);
 }
 
-/* ================= PANTALLA DESTINATARIO: NUEVA DISTRIBUCIÓN BANCOESTADO ================= */
-.recipient-top-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.recipient-action-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+/* ================= PANTALLA DESTINATARIO: PESTAÑAS Y LISTA ================= */
+.recipient-tabs {
+  display: flex;
+  background: #E2E8F0;
+  padding: 4px;
   border-radius: 14px;
-  padding: 12px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-  text-align: left;
-  width: 100%;
+  margin-bottom: 18px;
 }
 
-.recipient-action-card:hover {
-  border-color: #CBD5E1;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
-}
-
-.recipient-action-card:active {
-  transform: scale(0.97);
-}
-
-.recipient-action-card .card-icon-wrap {
-  width: 40px;
-  height: 40px;
+.recipient-tab-btn {
+  flex: 1;
+  min-height: 46px;
   border-radius: 10px;
-  background: #F1F5F9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.recipient-action-card .card-texts {
-  display: flex;
-  flex-direction: column;
-  font-size: 14px;
-  font-weight: 700;
-  color: #1A418A;
-  line-height: 1.2;
-}
-
-/* Buscador de Destinatario */
-.recipient-search-section {
-  margin-bottom: 16px;
-}
-
-.recipient-search-label {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1E293B;
-  margin-bottom: 8px;
-  display: block;
-}
-
-.recipient-search-input-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-.recipient-search-input-box input {
-  width: 100%;
-  height: 48px;
-  border: 1.5px solid #CBD5E1;
-  border-radius: 8px;
-  padding: 0 44px 0 14px;
-  font-size: 15px;
-  color: #1E293B;
-  background: #FFFFFF;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.recipient-search-input-box input:focus {
-  outline: none;
-  border-color: #3C50B5;
-  box-shadow: 0 0 0 3px rgba(60, 80, 181, 0.15);
-}
-
-.recipient-search-input-box input::placeholder {
-  color: #64748B;
-  font-size: 15px;
-}
-
-.recipient-search-input-box .search-icon {
-  position: absolute;
-  right: 14px;
-  color: #64748B;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Píldoras de Filtro (Favoritos, Guardados, Del celular) */
-.recipient-filter-pills {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.recipient-pill-btn {
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--muted);
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
   cursor: pointer;
+}
+
+.recipient-tab-btn.active {
   background: #FFFFFF;
-  border: 1.5px solid #3B4E8C;
-  color: #3B4E8C;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  transition: all 0.15s ease;
-}
-
-.recipient-pill-btn:hover {
-  background: #F1F4FA;
-}
-
-.recipient-pill-btn.active {
-  background: #E2E7F4;
-  border-color: #3B4E8C;
-  color: #1A2D6E;
-  font-weight: 700;
+  color: var(--indigo);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* Lista de Contactos Alfabética */
@@ -2644,6 +2532,88 @@ button.spotlight-active *,
 
 /* ================= ESTILOS DE DESTINATARIO ADAPTADOS ================= */
 
+.recipient-search-box {
+  margin-bottom: 16px;
+}
+
+.recipient-search-box label {
+  display: block;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.recipient-search-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Botón Agregar Nuevo Centrado Superior */
+.add-new-recipient-header-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.btn-add-new-recipient-top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--navy);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 16px;
+  padding: 14px 28px;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(13, 27, 62, 0.18);
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 320px;
+}
+
+.btn-add-new-recipient-top:hover {
+  background: #1E293B;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(13, 27, 62, 0.24);
+}
+
+.btn-add-new-recipient-top:active {
+  transform: scale(0.98);
+}
+
+.recipient-search-input-wrap svg {
+  position: absolute;
+  left: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.recipient-search-input {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 2px solid var(--line);
+  background: #FFFFFF;
+  padding: 12px 14px 12px 46px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: all 0.2s ease;
+}
+
+.recipient-search-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13, 143, 114, 0.15);
+}
+
 /* Botones de Tipo de Cuenta tipo Píldoras */
 .account-type-grid {
   display: grid;
@@ -3232,256 +3202,271 @@ button.spotlight-active *,
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
             </button>
             <h1>
-              <span class="term-technical">Transferir</span>
-              <span class="term-simplified">Transferir</span>
+              <span class="term-technical">Destinatario</span>
+              <span class="term-simplified">¿A quién le quieres enviar el dinero?</span>
             </h1>
           </header>
 
           <div class="scroll-area form-step-container">
-            <!-- Dos Cards Superiores: Nuevo Destinatario & Entre mis cuentas -->
-            <div class="recipient-top-actions">
-              <button type="button" class="recipient-action-card" id="btnGoToNewRecipientScreen">
-                <div class="card-icon-wrap" style="background:#FDF2E9;">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="9" cy="8" r="3.5" fill="#C25E2E"/>
-                    <path d="M3.5 19c0-3 2.5-5 5.5-5s5.5 2 5.5 5" fill="#C25E2E"/>
-                    <circle cx="16" cy="10" r="3" fill="#2E4374"/>
-                    <path d="M12.5 19c0-2.2 1.8-3.8 4-3.8 1.8 0 3.3 1.1 3.8 2.8" stroke="#2E4374" stroke-width="1.8" fill="none"/>
-                  </svg>
-                </div>
-                <div class="card-texts">
-                  <span>Nuevo</span>
-                  <span>destinatario</span>
-                </div>
-              </button>
+            
+            <div class="step-indicator-bar" aria-hidden="true">
+              <div class="step-bullet active"></div>
+              <div class="step-bullet"></div>
+              <div class="step-bullet"></div>
+            </div>
 
-              <button type="button" class="recipient-action-card" id="btnBetweenMyAccounts" onclick="window.puenteToast('Seccion no disponible')">
-                <div class="card-icon-wrap" style="background:#F0F4FA;">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <rect x="2" y="5" width="13" height="9" rx="2" fill="#2A3F74"/>
-                    <rect x="3.5" y="7" width="10" height="2" fill="#E2E8F0"/>
-                    <rect x="9" y="10" width="13" height="9" rx="2" fill="#4B6CB7"/>
-                    <rect x="10.5" y="12" width="10" height="2" fill="#CBD5E1"/>
-                    <path d="M6 16l-2-2 2-2" stroke="#F35619" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M18 8l2 2-2 2" stroke="#F35619" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <div class="card-texts">
-                  <span>Entre mis</span>
-                  <span>cuentas</span>
-                </div>
+            <!-- Botón Agregar Nuevo Centrado Arriba del Buscador -->
+            <div class="add-new-recipient-header-wrap">
+              <button type="button" class="btn-add-new-recipient-top" id="btnGoToNewRecipientScreen">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Agregar nuevo</span>
               </button>
             </div>
 
-            <!-- Buscador Superior "¿A quién le quieres transferir?" -->
-            <div class="recipient-search-section">
-              <label class="recipient-search-label" for="recipientSearchInput">¿A quién le quieres transferir?</label>
-              <div class="recipient-search-input-box">
-                <input type="text" id="recipientSearchInput" placeholder="Buscar por nombre, alias o RUT" autocomplete="off">
-                <div class="search-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="7"/>
-                    <line x1="21" y1="21" x2="16" y2="16"/>
-                  </svg>
-                </div>
+            <!-- Buscador Superior "¿A quién quieres transferir?" -->
+            <div class="recipient-search-box">
+              <label for="recipientSearchInput">
+                <span class="term-technical">Buscar destinatario</span>
+                <span class="term-simplified">¿A quién quieres transferir?</span>
+              </label>
+              <div class="recipient-search-input-wrap">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" class="recipient-search-input" id="recipientSearchInput" placeholder="Buscar por nombre o RUT...">
               </div>
             </div>
 
-            <!-- Píldoras de Filtro (Favoritos, Guardados, Del celular) -->
-            <div class="recipient-filter-pills" role="tablist">
-              <button type="button" class="recipient-pill-btn" id="btnFilterFavoritos" onclick="window.puenteToast('Seccion no disponible')">Favoritos</button>
-              <button type="button" class="recipient-pill-btn active" id="btnFilterGuardados">Guardados</button>
-              <button type="button" class="recipient-pill-btn" id="btnFilterCelular" onclick="window.puenteToast('Seccion no disponible')">Del celular</button>
+            <!-- Pestañas de contactos (Guardados y Favoritos) -->
+            <div class="recipient-tabs" role="tablist">
+              <button type="button" class="recipient-tab-btn active" id="tabRecipientSaved" role="tab">Guardados</button>
+              <button type="button" class="recipient-tab-btn" id="tabRecipientFavorites" role="tab">Favoritos</button>
             </div>
 
-            <!-- Lista de Contactos Alfabética -->
-            <div class="contacts-directory-wrap" id="contactsDirectoryWrap">
-              
-              <!-- GRUPO A -->
-              <div class="contact-alpha-group" data-alpha="A">
-                <div class="contact-alpha-header">A</div>
+            <!-- Panel de Contactos Guardados -->
+            <div id="paneRecipientSaved">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <span class="semantic-helper-text" style="font-weight:800;color:var(--muted)">Contactos habituales de Elena:</span>
+                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('destinatario')" title="¿Qué significa Destinatario?" aria-label="Significado de Destinatario">?</button>
+              </div>
 
-                <!-- Persona 1: Acheso Santander -->
-                <div class="contact-person-block" data-person="Acheso Santander">
-                  <div class="contact-person-header">
-                    <div class="contact-avatar-badge">AS</div>
-                    <span class="contact-person-name">Acheso Santander</span>
-                  </div>
-                  <div class="contact-accounts-list">
-                    <!-- Cuenta 1 -->
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Ache2so" data-person-name="Acheso Santander" data-bank="Banco Santander-chile" data-account-type="Cuenta Corriente" data-account-num="90474154" data-rut="17.432.189-5">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Ache2so</div>
-                        <div class="account-item-bank">Banco Santander-chile</div>
-                        <div class="account-item-number">Cuenta Corriente 90474154</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
+              <!-- Lista de Contactos Alfabética con la distribución oficial solicitada -->
+              <div class="contacts-directory-wrap" id="contactsDirectoryWrap">
+                
+                <!-- GRUPO A -->
+                <div class="contact-alpha-group" data-alpha="A">
+                  <div class="contact-alpha-header">A</div>
+
+                  <!-- Persona 1: Acheso Santander -->
+                  <div class="contact-person-block" data-person="Acheso Santander">
+                    <div class="contact-person-header">
+                      <div class="contact-avatar-badge">AS</div>
+                      <span class="contact-person-name">Acheso Santander</span>
                     </div>
-
-                    <!-- Cuenta 2 -->
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Ache2so Ripley" data-person-name="Acheso Santander" data-bank="Banco Ripley" data-account-type="Cuenta Corriente" data-account-num="4017664229" data-rut="17.432.189-5">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Ache2so Ripley</div>
-                        <div class="account-item-bank">Banco Ripley</div>
-                        <div class="account-item-number">Cuenta Corriente 4017664229</div>
+                    <div class="contact-accounts-list">
+                      <!-- Cuenta 1 -->
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Ache2so" data-person-name="Acheso Santander" data-bank="Banco Santander-chile" data-account-type="Cuenta Corriente" data-account-num="90474154" data-rut="17.432.189-5">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Ache2so</div>
+                          <div class="account-item-bank">Banco Santander-chile</div>
+                          <div class="account-item-number">Cuenta Corriente 90474154</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
                       </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
+
+                      <!-- Cuenta 2 -->
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Ache2so Ripley" data-person-name="Acheso Santander" data-bank="Banco Ripley" data-account-type="Cuenta Corriente" data-account-num="4017664229" data-rut="17.432.189-5">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Ache2so Ripley</div>
+                          <div class="account-item-bank">Banco Ripley</div>
+                          <div class="account-item-number">Cuenta Corriente 4017664229</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="contact-person-divider"></div>
+
+                  <!-- Persona 2: Alex Barrios -->
+                  <div class="contact-person-block" data-person="Alex Barrios">
+                    <div class="contact-person-header">
+                      <div class="contact-avatar-badge">AB</div>
+                      <span class="contact-person-name">Alex Barrios</span>
+                    </div>
+                    <div class="contact-accounts-list">
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Alex" data-person-name="Alex Barrios" data-bank="Banco Falabella" data-account-type="Cuenta Corriente" data-account-num="14930045161" data-rut="16.920.314-2">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Alex</div>
+                          <div class="account-item-bank">Banco Falabella</div>
+                          <div class="account-item-number">Cuenta Corriente 14930045161</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="contact-person-divider"></div>
+
+                  <!-- Persona 3: Amaro Alonzo Latoja -->
+                  <div class="contact-person-block" data-person="Amaro Alonzo Latoja">
+                    <div class="contact-person-header">
+                      <div class="contact-avatar-badge">AA</div>
+                      <span class="contact-person-name">Amaro Alonzo Latoja</span>
+                    </div>
+                    <div class="contact-accounts-list">
+                      <!-- Cuenta 1 -->
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Inacap" data-person-name="Amaro Alonzo Latoja" data-bank="BancoEstado" data-account-type="CuentaRUT" data-account-num="20745820" data-rut="20.745.820-8">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Amaro Inacap</div>
+                          <div class="account-item-bank">BancoEstado</div>
+                          <div class="account-item-number">CuentaRUT 20745820</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <!-- Cuenta 2 -->
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Lajota" data-person-name="Amaro Alonzo Latoja" data-bank="Banco Santander-chile" data-account-type="Cuenta Corriente" data-account-num="91614502" data-rut="20.745.820-8">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Amaro Lajota</div>
+                          <div class="account-item-bank">Banco Santander-chile</div>
+                          <div class="account-item-number">Cuenta Corriente 91614502</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <!-- Cuenta 3 -->
+                      <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Bci" data-person-name="Amaro Alonzo Latoja" data-bank="Banco De Credito E Inversiones" data-account-type="Cuenta Corriente" data-account-num="32848811" data-rut="20.745.820-8">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Amaro Bci</div>
+                          <div class="account-item-bank">Banco De Credito E Inversiones</div>
+                          <div class="account-item-number">Cuenta Corriente 32848811</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <div class="contact-person-divider"></div>
-
-                <!-- Persona 2: Alex Barrios -->
-                <div class="contact-person-block" data-person="Alex Barrios">
-                  <div class="contact-person-header">
-                    <div class="contact-avatar-badge">AB</div>
-                    <span class="contact-person-name">Alex Barrios</span>
-                  </div>
-                  <div class="contact-accounts-list">
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Alex" data-person-name="Alex Barrios" data-bank="Banco Falabella" data-account-type="Cuenta Corriente" data-account-num="14930045161" data-rut="16.920.314-2">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Alex</div>
-                        <div class="account-item-bank">Banco Falabella</div>
-                        <div class="account-item-number">Cuenta Corriente 14930045161</div>
+                <!-- GRUPO P -->
+                <div class="contact-alpha-group" data-alpha="P">
+                  <div class="contact-alpha-header">P</div>
+                  <div class="contact-person-block" data-person="Pedro Retamales">
+                    <div class="contact-person-header">
+                      <div class="contact-avatar-badge">PR</div>
+                      <span class="contact-person-name">Pedro Retamales</span>
+                    </div>
+                    <div class="contact-accounts-list">
+                      <div class="contact-account-item" id="frequentContactPedro" role="button" tabindex="0" data-account-alias="Pedro Hijo" data-person-name="Pedro Retamales (Hijo)" data-bank="BancoEstado" data-account-type="CuentaRUT" data-account-num="18345678" data-rut="18.345.678-4" data-contact="pedro">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Pedro Hijo</div>
+                          <div class="account-item-bank">BancoEstado</div>
+                          <div class="account-item-number">CuentaRUT 18345678</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
                       </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
                     </div>
                   </div>
                 </div>
 
-                <div class="contact-person-divider"></div>
-
-                <!-- Persona 3: Amaro Alonzo Latoja -->
-                <div class="contact-person-block" data-person="Amaro Alonzo Latoja">
-                  <div class="contact-person-header">
-                    <div class="contact-avatar-badge">AA</div>
-                    <span class="contact-person-name">Amaro Alonzo Latoja</span>
+                <!-- GRUPO R -->
+                <div class="contact-alpha-group" data-alpha="R">
+                  <div class="contact-alpha-header">R</div>
+                  <div class="contact-person-block" data-person="Rosa Pérez Sepúlveda">
+                    <div class="contact-person-header">
+                      <div class="contact-avatar-badge">RP</div>
+                      <span class="contact-person-name">Rosa Pérez Sepúlveda</span>
+                    </div>
+                    <div class="contact-accounts-list">
+                      <div class="contact-account-item" id="frequentContactRosa" role="button" tabindex="0" data-account-alias="Rosa Pérez" data-person-name="Rosa Pérez Sepúlveda" data-bank="Banco de Chile" data-account-type="Cuenta Corriente" data-account-num="001284592001" data-rut="12.876.543-3" data-contact="rosa">
+                        <div class="account-item-info">
+                          <div class="account-item-alias">Rosa Pérez</div>
+                          <div class="account-item-bank">Banco de Chile</div>
+                          <div class="account-item-number">Cuenta Corriente 001284592001 · RUT 12.876.543-3</div>
+                        </div>
+                        <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <circle cx="12" cy="5" r="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <circle cx="12" cy="19" r="2"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div class="contact-accounts-list">
-                    <!-- Cuenta 1 -->
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Inacap" data-person-name="Amaro Alonzo Latoja" data-bank="BancoEstado" data-account-type="CuentaRUT" data-account-num="20745820" data-rut="20.745.820-8">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Amaro Inacap</div>
-                        <div class="account-item-bank">BancoEstado</div>
-                        <div class="account-item-number">CuentaRUT 20745820</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
-                    </div>
+                </div>
 
-                    <!-- Cuenta 2 -->
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Lajota" data-person-name="Amaro Alonzo Latoja" data-bank="Banco Santander-chile" data-account-type="Cuenta Corriente" data-account-num="91614502" data-rut="20.745.820-8">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Amaro Lajota</div>
-                        <div class="account-item-bank">Banco Santander-chile</div>
-                        <div class="account-item-number">Cuenta Corriente 91614502</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
-                    </div>
+              </div>
+            </div>
 
-                    <!-- Cuenta 3 -->
-                    <div class="contact-account-item" role="button" tabindex="0" data-account-alias="Amaro Bci" data-person-name="Amaro Alonzo Latoja" data-bank="Banco De Credito E Inversiones" data-account-type="Cuenta Corriente" data-account-num="32848811" data-rut="20.745.820-8">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Amaro Bci</div>
-                        <div class="account-item-bank">Banco De Credito E Inversiones</div>
-                        <div class="account-item-number">Cuenta Corriente 32848811</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
+            <!-- Panel de Favoritos -->
+            <div id="paneRecipientFavorites" class="hidden">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <span class="semantic-helper-text" style="font-weight:800;color:var(--muted)">Tus contactos favoritos:</span>
+                <span class="semantic-helper-text" style="font-size:16px;color:var(--teal);font-weight:800">⭐ Destacados</span>
+              </div>
+              <div class="contact-person-block" data-person="Rosa Pérez Sepúlveda">
+                <div class="contact-person-header">
+                  <div class="contact-avatar-badge" style="background:#FEF3C7;color:#D97706">⭐</div>
+                  <span class="contact-person-name">Rosa Pérez Sepúlveda</span>
+                </div>
+                <div class="contact-accounts-list">
+                  <div class="contact-account-item" id="favContactRosa" role="button" tabindex="0" data-account-alias="Rosa Pérez" data-person-name="Rosa Pérez Sepúlveda" data-bank="Banco de Chile" data-account-type="Cuenta Corriente" data-account-num="001284592001" data-rut="12.876.543-3" data-contact="rosa">
+                    <div class="account-item-info">
+                      <div class="account-item-alias">Rosa Pérez</div>
+                      <div class="account-item-bank">Banco de Chile</div>
+                      <div class="account-item-number">Cuenta Corriente 001284592001 · RUT 12.876.543-3</div>
                     </div>
+                    <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <circle cx="12" cy="19" r="2"/>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
-
-              <!-- GRUPO P -->
-              <div class="contact-alpha-group" data-alpha="P">
-                <div class="contact-alpha-header">P</div>
-                <div class="contact-person-block" data-person="Pedro Retamales">
-                  <div class="contact-person-header">
-                    <div class="contact-avatar-badge">PR</div>
-                    <span class="contact-person-name">Pedro Retamales</span>
-                  </div>
-                  <div class="contact-accounts-list">
-                    <div class="contact-account-item" id="frequentContactPedro" role="button" tabindex="0" data-account-alias="Pedro Hijo" data-person-name="Pedro Retamales (Hijo)" data-bank="BancoEstado" data-account-type="CuentaRUT" data-account-num="18345678" data-rut="18.345.678-4" data-contact="pedro">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Pedro Hijo</div>
-                        <div class="account-item-bank">BancoEstado</div>
-                        <div class="account-item-number">CuentaRUT 18345678</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- GRUPO R -->
-              <div class="contact-alpha-group" data-alpha="R">
-                <div class="contact-alpha-header">R</div>
-                <div class="contact-person-block" data-person="Rosa Pérez Sepúlveda">
-                  <div class="contact-person-header">
-                    <div class="contact-avatar-badge">RP</div>
-                    <span class="contact-person-name">Rosa Pérez Sepúlveda</span>
-                  </div>
-                  <div class="contact-accounts-list">
-                    <div class="contact-account-item" id="frequentContactRosa" role="button" tabindex="0" data-account-alias="Rosa Pérez" data-person-name="Rosa Pérez Sepúlveda" data-bank="Banco de Chile" data-account-type="Cuenta Corriente" data-account-num="001284592001" data-rut="12.876.543-3" data-contact="rosa">
-                      <div class="account-item-info">
-                        <div class="account-item-alias">Rosa Pérez</div>
-                        <div class="account-item-bank">Banco de Chile</div>
-                        <div class="account-item-number">Cuenta Corriente 001284592001</div>
-                      </div>
-                      <button type="button" class="btn-account-dots" aria-label="Opciones de cuenta" title="Opciones">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="5" r="2"/>
-                          <circle cx="12" cy="12" r="2"/>
-                          <circle cx="12" cy="19" r="2"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
             </div>
 
             <div class="inline-error" id="recipientErrorBox" role="alert"></div>
