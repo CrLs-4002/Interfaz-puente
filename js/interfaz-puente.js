@@ -186,7 +186,11 @@ class InterfazPuente {
 
   /* ================= WATCHDOG DE INACTIVIDAD (15 SEGUNDOS) ================= */
   setupInactivityWatchdog() {
-    const resetTimer = () => {
+    const resetTimer = (e) => {
+      // Si el evento ocurrió dentro de la burbuja, dejamos que su propio handler lo procese
+      if (e && e.target && e.target.closest && e.target.closest('#inactivityOfferBubble')) {
+        return;
+      }
       this.inactivitySeconds = 0;
       if (this.inactivityBubble) {
         this.inactivityBubble.classList.remove('show');
@@ -203,6 +207,7 @@ class InterfazPuente {
       if (window.appRouter && window.appRouter.currentView === 'receipt') return;
       if (this.sheet && this.sheet.classList.contains('open')) return;
       if (this.dynamicFocusOverlay && this.dynamicFocusOverlay.classList.contains('active')) return;
+      if (this.isWidgetMenuOpen) return;
 
       this.inactivitySeconds++;
       if (this.inactivitySeconds === this.INACTIVITY_THRESHOLD) {
@@ -860,21 +865,16 @@ class InterfazPuente {
     if (btnClose) btnClose.addEventListener('click', () => this.closeSheet());
     if (this.sheetBackdrop) this.sheetBackdrop.addEventListener('click', () => this.closeSheet());
 
-    // Botones de oferta de inactividad
-    const btnYes = document.getElementById('btnOfferYes');
-    const btnNo = document.getElementById('btnOfferNo');
-    const btnCloseX = document.getElementById('btnOfferCloseX');
-    if (btnYes) {
-      btnYes.addEventListener('click', () => {
+    // Oferta de inactividad: al tocar "¿Te ayudo?", se despliega el menú de ayuda
+    if (this.inactivityBubble) {
+      this.inactivityBubble.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.dismissInactivityOffer();
-        this.spotlightCurrentStep();
+        this.openWidgetMenu();
+        if (window.facilitatorPanel) {
+          window.facilitatorPanel.recordMetric('help', 'oferta15s');
+        }
       });
-    }
-    if (btnNo) {
-      btnNo.addEventListener('click', () => this.dismissInactivityOffer());
-    }
-    if (btnCloseX) {
-      btnCloseX.addEventListener('click', () => this.dismissInactivityOffer());
     }
 
     // Botón de Foco en el Sheet

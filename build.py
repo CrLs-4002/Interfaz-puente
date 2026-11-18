@@ -63,6 +63,41 @@ def bundle():
 window.PUENTE_GLOSSARY_DATA = {glossary_json_str};
 
 /* ==========================================
+   0. CONFIGURACIÓN DE LA PRUEBA Y AVISOS EN PANTALLA
+   ========================================== */
+window.PUENTE_TEST = {{
+  SALDO_INICIAL: 350000,
+  MONTO_TAREA: 15000,      // Tarea que entrega el facilitador: "envía $15.000 a Rosa Pérez"
+  MONTO_CON_ERROR: 150000, // Mismo monto con un cero de más (dentro del saldo, para que llegue al resumen)
+  CLAVE_PRUEBA: '123456'
+}};
+
+window.puenteToast = function (msg, ms) {{
+  const el = document.getElementById('puenteToast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window.__puenteToastTimer);
+  window.__puenteToastTimer = setTimeout(() => el.classList.remove('show'), ms || 3500);
+}};
+
+window.puenteShowError = function (id, msg) {{
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (msg) {{
+    el.textContent = msg;
+    el.classList.add('show');
+  }} else {{
+    el.textContent = '';
+    el.classList.remove('show');
+  }}
+}};
+
+window.puenteHelp = function (detail) {{
+  if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('help', detail);
+}};
+
+/* ==========================================
    1. SPEECH.JS - Síntesis de Voz (TTS)
    ========================================== */
 {js_speech}

@@ -173,136 +173,9 @@ input, select, textarea {
   }
 }
 
-/* ================= AVISO ACADÉMICO (visible siempre) ================= */
-.contact-item .contact-check { visibility: hidden; }
-.contact-item.selected .contact-check { visibility: visible; }
-
+/* ================= AVISO ACADÉMICO (ELIMINADO) ================= */
 .inacap-banner {
-  display: block;
-  flex: none;
-  background: #1E2538;
-  color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 800;
-  text-align: center;
-  padding: 6px 12px;
-  line-height: 1.3;
-  z-index: 46;
-  cursor: default;
-  user-select: none;
-}
-
-/* ================= AVISO EN PANTALLA (reemplaza las alertas del navegador) ================= */
-.puente-toast {
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 96px;
-  z-index: 80;
-  background: #1E2538;
-  color: #FFFFFF;
-  font-size: 17px;
-  font-weight: 700;
-  line-height: 1.35;
-  padding: 14px 16px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(13, 27, 62, 0.35);
-  opacity: 0;
-  transform: translateY(12px);
-  pointer-events: none;
-  transition: opacity 0.25s ease, transform 0.25s ease;
-}
-.puente-toast.show {
-  opacity: 1;
-  transform: none;
-}
-
-/* Mensaje de error dentro de la pantalla */
-.inline-error {
-  display: none;
-  background: #FEF2F2;
-  color: #B91C1C;
-  border: 1.5px solid #FCA5A5;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.35;
-  margin-top: 10px;
-}
-.inline-error.show {
-  display: block;
-}
-
-/* Centrado simétrico de botones de acción inferiores */
-.form-bottom-actions,
-.receipt-actions,
-.safe-summary-actions,
-.app-bridge-on .form-bottom-actions,
-.app-bridge-on .receipt-actions,
-.app-bridge-on .safe-summary-actions {
-  padding-right: 0 !important;
-  padding-left: 0 !important;
-  margin-right: 0 !important;
-  margin-left: 0 !important;
-  width: 100% !important;
-  align-items: stretch !important;
-}
-
-/* Grupo control (sin Interfaz Puente): sin ayudas de voz ni dictado */
-.app-bridge-off .btn-speak-section,
-.app-bridge-off #btnVoiceDictateRut,
-.app-bridge-off #rutVoiceFeedback,
-.app-bridge-off .safe-summary-warning,
-.app-bridge-off .safe-summary-icon {
   display: none !important;
-}
-
-/* Confirmación estándar para el grupo control */
-.standard-confirm-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 17px;
-  margin: 4px 0 8px;
-}
-.standard-confirm-table td {
-  padding: 9px 0;
-  border-bottom: 1px solid var(--line);
-  vertical-align: top;
-}
-.standard-confirm-table td:first-child {
-  color: var(--muted);
-  font-weight: 700;
-  width: 45%;
-}
-.standard-confirm-table td:last-child {
-  font-weight: 800;
-  text-align: right;
-}
-
-/* Datos de la cuenta en el Resumen Seguro */
-.safe-summary-account {
-  font-size: 16px;
-  color: var(--ink);
-  background: var(--indigo-soft);
-  border-radius: 12px;
-  padding: 10px 12px;
-  margin-top: 12px;
-  line-height: 1.45;
-}
-
-/* Modo práctica en el comprobante */
-.receipt-practice-note {
-  display: none;
-  background: #FEF3C7;
-  color: #92400E;
-  border: 1.5px solid #FCD34D;
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 16px;
-  font-weight: 800;
-  text-align: center;
-  margin-bottom: 16px;
 }
 
 /* Banner de Modo Práctica */
@@ -581,9 +454,6 @@ input, select, textarea {
 }
 
 .btn-cta-big {
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0;
   min-height: var(--touch-btn);
   background: var(--orange);
   color: #FFFFFF;
@@ -1463,57 +1333,74 @@ body.dynamic-focus-active .puente-fab-container {
 /* ================= OFERTA INACTIVIDAD TRAS 15 SEGUNDOS ================= */
 .inactivity-offer-bubble {
   position: absolute;
-  bottom: 70px;
+  bottom: 72px;
   right: 0;
   background: #FFFFFF;
   border: 2.5px solid var(--teal);
-  border-radius: 20px;
-  padding: 16px;
-  width: 280px;
-  box-shadow: 0 12px 32px rgba(13, 27, 62, 0.3);
+  border-radius: 22px;
+  padding: 10px 18px;
+  box-shadow: 0 10px 28px rgba(13, 27, 62, 0.22);
   z-index: 45;
   display: none;
-  animation: bubble-appear 0.3s var(--ease);
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--navy);
+  cursor: pointer;
+  white-space: nowrap;
+  animation: bubble-appear 0.25s var(--ease);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  outline: none;
+}
+
+.inactivity-offer-bubble:hover,
+.inactivity-offer-bubble:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13, 27, 62, 0.3);
+  background: #F0FDF4;
+}
+
+.inactivity-offer-bubble:active {
+  transform: scale(0.97);
 }
 
 .inactivity-offer-bubble.show {
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.inactivity-offer-bubble p {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--ink);
-  line-height: 1.35;
-  margin-bottom: 12px;
+/* Puntero tipo globo de diálogo apuntando hacia el botón flotante */
+.inactivity-offer-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  right: 21px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 9px solid var(--teal);
 }
 
-.inactivity-offer-btns {
-  display: flex;
-  gap: 8px;
-}
-
-.inactivity-offer-btns button {
-  flex: 1;
-  min-height: 40px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.btn-offer-yes {
-  background: var(--teal);
-  color: #FFFFFF;
-}
-
-.btn-offer-no {
-  background: var(--bg);
-  color: var(--muted);
-  border: 1px solid var(--line);
+.inactivity-offer-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 22px;
+  width: 0;
+  height: 0;
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid #FFFFFF;
+  z-index: 1;
 }
 
 @keyframes bubble-appear {
-  from { opacity: 0; transform: translateY(10px) scale(0.95); }
+  from { opacity: 0; transform: translateY(8px) scale(0.94); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
@@ -1672,20 +1559,9 @@ input:checked + .switch-slider:before {
   50% { opacity: 0.75; }
 }
 
-/* ================= FOCO DINÁMICO ================= */
-/* La capa separada no se usa: el oscurecimiento se dibuja con la sombra del elemento destacado
-   para que funcione dentro de cada pantalla. */
+/* ================= FOCO DINÁMICO (RESALTADO DE CASILLA SIN OSCURECER) ================= */
 .dynamic-focus-overlay {
-  display: none !important;
-}
-
-/* Oscurece el resto de la pantalla al 85% SOLO cuando la persona activó la guía (no al tocar un campo) */
-body.dynamic-focus-active .spotlight-active {
-  box-shadow: 0 0 0 4px var(--teal), 0 0 0 9999px rgba(13, 27, 62, 0.85) !important;
-  border-radius: 14px;
-}
-body.dynamic-focus-active .view-header {
-  filter: brightness(0.25);
+  display: none !important; /* Desactivado el oscurecimiento de la pantalla */
 }
 
 /* Casilla de formulario o elemento que se remarca sin alterar su tamaño ni espaciado */
@@ -3344,22 +3220,10 @@ button.spotlight-active *,
       <!-- ================= WIDGET INTERFAZ PUENTE (BOTÓN FLOTANTE) ================= -->
       <div class="puente-fab-container" id="puenteFabContainer">
         
-        <!-- Burbuja de bienvenida/oferta de ayuda (Hallazgo E1) -->
-        <div class="inactivity-offer-bubble" id="inactivityOfferBubble">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px">
-            <b style="font-size:17px;color:var(--navy);font-weight:900">¡Hola! ¿Te ayudo?</b>
-            <button type="button" id="btnOfferCloseX" aria-label="Cerrar mensaje" title="Cerrar mensaje" style="width:28px;height:28px;border-radius:50%;background:#F1F5F9;border:1px solid #CBD5E1;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            </button>
-          </div>
-          <p style="font-size:16px;line-height:1.35;margin-bottom:12px;color:var(--ink)">
-            Te guiaré paso a paso para transferir sin errores.
-          </p>
-          <div class="inactivity-offer-btns">
-            <button type="button" class="btn-offer-yes" id="btnOfferYes" style="font-size:15px;font-weight:900">Sí, muéstrame</button>
-            <button type="button" class="btn-offer-no" id="btnOfferNo" style="font-size:14px">Ahora no</button>
-          </div>
-        </div>
+        <!-- Burbuja de bienvenida/oferta de ayuda: ¿Te ayudo? -->
+        <button type="button" class="inactivity-offer-bubble" id="inactivityOfferBubble" aria-label="¿Te ayudo? Toca para abrir las opciones de ayuda">
+          <span>¿Te ayudo?</span>
+        </button>
 
         <!-- Menú emergente de 3 botones que se deslizan hacia arriba del Widget -->
         <div class="puente-widget-menu" id="puenteWidgetMenu" role="menu" aria-label="Opciones del Widget">
@@ -3923,8 +3787,6 @@ class InterfazPuente {
 
   async init() {
     this.cacheElements();
-    const main = document.getElementById('appMainContainer');
-    if (main && !main.classList.contains('app-bridge-off')) main.classList.add('app-bridge-on');
     await this.loadGlossary();
     this.setupDraggable();
     this.setupEventListeners();
@@ -4076,7 +3938,11 @@ class InterfazPuente {
 
   /* ================= WATCHDOG DE INACTIVIDAD (15 SEGUNDOS) ================= */
   setupInactivityWatchdog() {
-    const resetTimer = () => {
+    const resetTimer = (e) => {
+      // Si el evento ocurrió dentro de la burbuja, dejamos que su propio handler lo procese
+      if (e && e.target && e.target.closest && e.target.closest('#inactivityOfferBubble')) {
+        return;
+      }
       this.inactivitySeconds = 0;
       if (this.inactivityBubble) {
         this.inactivityBubble.classList.remove('show');
@@ -4093,12 +3959,7 @@ class InterfazPuente {
       if (window.appRouter && window.appRouter.currentView === 'receipt') return;
       if (this.sheet && this.sheet.classList.contains('open')) return;
       if (this.dynamicFocusOverlay && this.dynamicFocusOverlay.classList.contains('active')) return;
-      if (this.isTutorialActive) return;
-      const blocking = ['puenteOnboardingOverlay', 'securityModalOverlay', 'termModalOverlay', 'facilitatorOverlay'];
-      if (blocking.some(id => { const el = document.getElementById(id); return el && el.classList.contains('active'); })) {
-        this.inactivitySeconds = 0;
-        return;
-      }
+      if (this.isWidgetMenuOpen) return;
 
       this.inactivitySeconds++;
       if (this.inactivitySeconds === this.INACTIVITY_THRESHOLD) {
@@ -4309,9 +4170,7 @@ class InterfazPuente {
   }
 
   /* Flujo interactivo paso a paso para completar la transferencia */
-  startStepByStepGuide(source) {
-    if (!this.enabled) return;
-    window.puenteHelp(source || 'tutorial');
+  startStepByStepGuide() {
     this.isTutorialActive = true;
     this.currentStepIndex = 0;
     this.executeCurrentStep();
@@ -4338,8 +4197,8 @@ class InterfazPuente {
         {
           target: '#cardCuentaRut',
           title: 'Revisar tu dinero disponible',
-          message: `Aquí puedes ver el saldo de tu CuentaRUT. Tienes ${window.appRouter ? window.appRouter.formatCLP(window.appRouter.user.balance) : ''} listos para usar.`,
-          speech: `Paso 1: Revisa tu dinero disponible. Tienes ${window.appRouter ? window.appRouter.formatCLPForSpeech(window.appRouter.user.balance) : ''} en tu CuentaRUT.`
+          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
+          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
         },
         {
           target: '#btnQuickTransfer',
@@ -4584,7 +4443,9 @@ class InterfazPuente {
     if (!item || !this.termModalOverlay) return;
 
     // Registrar uso de ayuda en facilitador
-    window.puenteHelp('glosario');
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('help');
+    }
 
     const titleEl = document.getElementById('termModalTitle');
     const subtitleEl = document.getElementById('termModalSubtitle');
@@ -4703,11 +4564,6 @@ class InterfazPuente {
   }
 
   /* ================= AUTOOCULTAMIENTO ================= */
-  resetAutoHide() {
-    this.successiveIndependentRuns = 0;
-    if (this.fabContainer) this.fabContainer.classList.remove('is-minimized');
-  }
-
   recordSuccessfulTransfer(askedForHelp) {
     if (askedForHelp) {
       this.successiveIndependentRuns = 0;
@@ -4733,7 +4589,6 @@ class InterfazPuente {
       this.btnWidgetSpeech.addEventListener('click', (e) => {
         e.stopPropagation();
         this.closeWidgetMenu();
-        window.puenteHelp('voz');
         if (window.appRouter) {
           window.appRouter.readCurrentScreenAloud();
         }
@@ -4754,7 +4609,6 @@ class InterfazPuente {
       this.btnWidgetLanguage.addEventListener('click', (e) => {
         e.stopPropagation();
         this.toggleSemanticMode();
-        window.puenteHelp('lenguaje');
       });
     }
 
@@ -4763,21 +4617,16 @@ class InterfazPuente {
     if (btnClose) btnClose.addEventListener('click', () => this.closeSheet());
     if (this.sheetBackdrop) this.sheetBackdrop.addEventListener('click', () => this.closeSheet());
 
-    // Botones de oferta de inactividad
-    const btnYes = document.getElementById('btnOfferYes');
-    const btnNo = document.getElementById('btnOfferNo');
-    const btnCloseX = document.getElementById('btnOfferCloseX');
-    if (btnYes) {
-      btnYes.addEventListener('click', () => {
+    // Oferta de inactividad: al tocar "¿Te ayudo?", se despliega el menú de ayuda
+    if (this.inactivityBubble) {
+      this.inactivityBubble.addEventListener('click', (e) => {
+        e.stopPropagation();
         this.dismissInactivityOffer();
-        this.startStepByStepGuide('oferta15s');
+        this.openWidgetMenu();
+        if (window.facilitatorPanel) {
+          window.facilitatorPanel.recordMetric('help', 'oferta15s');
+        }
       });
-    }
-    if (btnNo) {
-      btnNo.addEventListener('click', () => this.dismissInactivityOffer());
-    }
-    if (btnCloseX) {
-      btnCloseX.addEventListener('click', () => this.dismissInactivityOffer());
     }
 
     // Botón de Foco en el Sheet
@@ -4846,7 +4695,6 @@ class InterfazPuente {
       btnSpotlightVoice.addEventListener('click', (e) => {
         e.stopPropagation();
         const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
-        window.puenteHelp('voz');
         if (speechText && window.puenteSpeech) {
           window.puenteSpeech.speak(speechText);
         }
@@ -4872,7 +4720,6 @@ class InterfazPuente {
       if (speakBtn) {
         e.stopPropagation();
         const textToRead = speakBtn.getAttribute('data-speak') || '';
-        if (speakBtn.id !== 'btnSpeakSummaryCard') window.puenteHelp('voz');
         if (textToRead && window.puenteSpeech) {
           window.puenteSpeech.speak(textToRead);
         }
@@ -4939,32 +4786,29 @@ class InterfazPuente {
     this.activeSpotlightElement = targetElement;
     targetElement.classList.add('spotlight-active');
 
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.add('active');
+    }
+
+    // Registrar en métricas
+    if (window.facilitatorPanel) {
+      window.facilitatorPanel.recordMetric('spotlight');
+    }
   }
 
   /* Activar o Desactivar completamente Interfaz Puente (para Grupo Control vs Experimental) */
   setBridgeEnabled(enabled) {
     this.enabled = enabled;
-    const main = document.getElementById('appMainContainer');
-    if (main) {
-      main.classList.toggle('app-bridge-on', enabled);
-      main.classList.toggle('app-bridge-off', !enabled);
-    }
     if (this.fabContainer) {
       this.fabContainer.style.display = enabled ? 'flex' : 'none';
-    }
-    if (!enabled && this.onboardingOverlay) {
-      this.onboardingOverlay.classList.remove('active');
-    }
-    if (window.appRouter && window.appRouter.currentView === 'summary') {
-      window.appRouter.renderSummary();
     }
     if (!enabled) {
       this.clearSpotlight();
       this.closeSheet();
       this.dismissInactivityOffer();
-      this.toggleSemanticMode(false, false);
+      this.toggleSemanticMode(false);
     } else {
-      this.toggleSemanticMode(true, false);
+      this.toggleSemanticMode(true);
     }
   }
 
@@ -5005,27 +4849,18 @@ class FacilitatorPanel {
     this.practiceMode = false;
 
     // Métricas de la sesión en curso
-    this.currentMetrics = this.emptyMetrics();
-    this.taskStarted = false;
-    this.taskLogged = false;
+    this.currentMetrics = {
+      helpRequests: 0,
+      spotlightActivations: 0,
+      errorsCount: 0,
+      correctedInSummary: false,
+      completed: false
+    };
 
     // Historial acumulado en LocalStorage
     this.sessionLogs = this.loadLogs();
-    this.loadSettings();
 
     this.init();
-  }
-
-  emptyMetrics() {
-    return {
-      helpRequests: 0,
-      helpDetail: { glosario: 0, tutorial: 0, oferta15s: 0, voz: 0, lenguaje: 0 },
-      errorsCount: 0,
-      errorDetection: 'no aplica',   // 'pantalla de monto' | 'resumen' | 'no detectado' | 'no aplica'
-      correctedInSummary: false,
-      amountSent: 0,
-      completed: false
-    };
   }
 
   init() {
@@ -5033,46 +4868,8 @@ class FacilitatorPanel {
     this.setupSecretTrigger();
     this.setupTabs();
     this.setupControls();
-    this.applySettingsToUI();
     this.renderLogsTable();
-    this.setupSessionTimer();
-  }
-
-  /* ================= CONFIGURACIÓN GUARDADA (sobrevive a recargar la página) ================= */
-  loadSettings() {
-    let saved = {};
-    try { saved = JSON.parse(localStorage.getItem('puente_facilitator_settings') || '{}') || {}; } catch (e) {}
-    if (saved.participant) this.participant = saved.participant;
-    if (typeof saved.bridgeEnabled === 'boolean') this.bridgeEnabled = saved.bridgeEnabled;
-    if (saved.summaryTitleVariant) this.summaryTitleVariant = saved.summaryTitleVariant;
-    if (typeof saved.errorInjectionActive === 'boolean') this.errorInjectionActive = saved.errorInjectionActive;
-    if (typeof saved.practiceMode === 'boolean') this.practiceMode = saved.practiceMode;
-  }
-
-  saveSettings() {
-    try {
-      localStorage.setItem('puente_facilitator_settings', JSON.stringify({
-        participant: this.participant,
-        bridgeEnabled: this.bridgeEnabled,
-        summaryTitleVariant: this.summaryTitleVariant,
-        errorInjectionActive: this.errorInjectionActive,
-        practiceMode: this.practiceMode
-      }));
-    } catch (e) {}
-  }
-
-  applySettingsToUI() {
-    if (this.participantSelect) this.participantSelect.value = this.participant;
-    if (this.switchBridge) this.switchBridge.checked = this.bridgeEnabled;
-    if (this.switchError) this.switchError.checked = this.errorInjectionActive;
-    if (this.switchPractice) this.switchPractice.checked = this.practiceMode;
-    document.querySelectorAll('.fac-summary-variant').forEach(b => {
-      b.classList.toggle('active', b.getAttribute('data-variant') === this.summaryTitleVariant);
-    });
-    if (window.interfazPuente) {
-      window.interfazPuente.setBridgeEnabled(this.bridgeEnabled);
-      window.interfazPuente.setPracticeMode(this.practiceMode);
-    }
+    this.startSessionTimer();
   }
 
   cacheElements() {
@@ -5172,7 +4969,6 @@ class FacilitatorPanel {
     if (this.participantSelect) {
       this.participantSelect.addEventListener('change', (e) => {
         this.participant = e.target.value;
-        this.saveSettings();
       });
     }
 
@@ -5183,7 +4979,6 @@ class FacilitatorPanel {
         if (window.interfazPuente) {
           window.interfazPuente.setBridgeEnabled(this.bridgeEnabled);
         }
-        this.saveSettings();
       });
     }
 
@@ -5197,7 +4992,6 @@ class FacilitatorPanel {
         if (window.appRouter) {
           window.appRouter.updateSummaryTitle(this.summaryTitleVariant);
         }
-        this.saveSettings();
       });
     });
 
@@ -5208,7 +5002,6 @@ class FacilitatorPanel {
         if (window.appRouter) {
           window.appRouter.setErrorInjection(this.errorInjectionActive);
         }
-        this.saveSettings();
       });
     }
 
@@ -5218,22 +5011,6 @@ class FacilitatorPanel {
         this.practiceMode = e.target.checked;
         if (window.interfazPuente) {
           window.interfazPuente.setPracticeMode(this.practiceMode);
-        }
-        this.saveSettings();
-      });
-    }
-
-    // Botón registrar tarea no completada (abandono o tiempo agotado)
-    const btnAbandon = document.getElementById('btnFacAbandon');
-    if (btnAbandon) {
-      btnAbandon.addEventListener('click', () => {
-        if (this.taskLogged) {
-          window.puenteToast('Esta tarea ya quedó registrada. Reinicia la sesión para la siguiente.');
-          return;
-        }
-        if (confirm(`¿Registrar la tarea de ${this.participant} como NO completada?`)) {
-          this.finishSession(false);
-          window.puenteToast(`Tarea de ${this.participant} registrada como no completada.`);
         }
       });
     }
@@ -5264,11 +5041,11 @@ class FacilitatorPanel {
   }
 
   /* ================= REGISTRO DE MÉTRICAS ================= */
-  /* El cronómetro corre solo desde que la persona toca "Transferir dinero" hasta el comprobante */
-  setupSessionTimer() {
+  startSessionTimer() {
     this.sessionSeconds = 0;
-    this.isSessionActive = false;
+    this.isSessionActive = true;
     clearInterval(this.sessionTimer);
+
     this.sessionTimer = setInterval(() => {
       if (this.isSessionActive) {
         this.sessionSeconds++;
@@ -5279,22 +5056,11 @@ class FacilitatorPanel {
     }, 1000);
   }
 
-  startTask() {
-    if (this.taskStarted) return;
-    this.taskStarted = true;
-    this.taskLogged = false;
-    this.isSessionActive = true;
-  }
-
-  recordMetric(type, detail) {
-    // Solo se mide mientras la tarea está en curso (no durante la bienvenida ni el ensayo del facilitador)
-    if (this.taskLogged) return;
+  recordMetric(type) {
     if (type === 'help') {
-      if (!this.taskStarted) return;
       this.currentMetrics.helpRequests++;
-      if (detail && this.currentMetrics.helpDetail[detail] !== undefined) {
-        this.currentMetrics.helpDetail[detail]++;
-      }
+    } else if (type === 'spotlight') {
+      this.currentMetrics.spotlightActivations++;
     } else if (type === 'error') {
       this.currentMetrics.errorsCount++;
     } else if (type === 'correction') {
@@ -5303,22 +5069,9 @@ class FacilitatorPanel {
     this.updateMetricsUI();
   }
 
-  setErrorDetection(stage) {
-    this.currentMetrics.errorDetection = stage;
-    if (stage === 'resumen') this.currentMetrics.correctedInSummary = true;
-    this.updateMetricsUI();
-  }
-
-  finishSession(isCompleted, amountSent) {
-    if (this.taskLogged) return;
+  finishSession(isCompleted) {
     this.isSessionActive = false;
-    this.taskLogged = true;
     this.currentMetrics.completed = isCompleted;
-    if (amountSent !== undefined) this.currentMetrics.amountSent = amountSent;
-    const T = window.PUENTE_TEST;
-    let deteccion = this.errorInjectionActive ? this.currentMetrics.errorDetection : 'no aplica';
-    if (this.errorInjectionActive && deteccion === 'no aplica') deteccion = isCompleted ? 'no detectado' : 'sin dato';
-    const d = this.currentMetrics.helpDetail;
 
     const record = {
       id: Date.now(),
@@ -5326,20 +5079,13 @@ class FacilitatorPanel {
       participante: this.participant,
       interfazPuente: this.bridgeEnabled ? 'CON AYUDA' : 'SIN AYUDA (Control)',
       varianteTitulo: this.summaryTitleVariant === 'resumen_seguro' ? 'Resumen Seguro' : 'Revisa antes de enviar',
-      errorInyectado: this.errorInjectionActive ? `SÍ (${T.MONTO_CON_ERROR})` : 'NO',
-      montoEnviado: isCompleted ? this.currentMetrics.amountSent : '',
-      deteccionError: deteccion,
-      modoPractica: this.practiceMode ? 'SÍ' : 'NO',
+      errorInyectado: this.errorInjectionActive ? 'SÍ ($500.000)' : 'NO ($0)',
       tiempoSegundos: this.sessionSeconds,
       ayudasPedidas: this.currentMetrics.helpRequests,
-      ayudaGlosario: d.glosario,
-      ayudaTutorial: d.tutorial,
-      ayudaOferta15s: d.oferta15s,
-      ayudaVoz: d.voz,
-      ayudaLenguaje: d.lenguaje,
+      focosUsados: this.currentMetrics.spotlightActivations,
       erroresCometidos: this.currentMetrics.errorsCount,
       corrigioEnResumen: this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO',
-      completada: isCompleted ? 'EXITOSA' : 'NO COMPLETADA'
+      completada: isCompleted ? 'EXITOSA' : 'INCOMPLETA'
     };
 
     this.sessionLogs.push(record);
@@ -5350,33 +5096,28 @@ class FacilitatorPanel {
   updateMetricsUI() {
     if (this.metricHelp) this.metricHelp.textContent = this.currentMetrics.helpRequests;
     if (this.metricErrors) this.metricErrors.textContent = this.currentMetrics.errorsCount;
-    if (this.metricCorrected) {
-      const det = this.currentMetrics.errorDetection;
-      this.metricCorrected.textContent = !this.errorInjectionActive ? '—' : (det === 'no aplica' ? 'NO' : det.toUpperCase());
-    }
-    if (this.metricTimer) this.metricTimer.textContent = `${this.sessionSeconds}s`;
+    if (this.metricCorrected) this.metricCorrected.textContent = this.currentMetrics.correctedInSummary ? 'SÍ' : 'NO';
   }
 
   resetSession() {
     this.sessionSeconds = 0;
-    this.isSessionActive = false;
-    this.taskStarted = false;
-    this.taskLogged = false;
-    this.currentMetrics = this.emptyMetrics();
+    this.currentMetrics = {
+      helpRequests: 0,
+      spotlightActivations: 0,
+      errorsCount: 0,
+      correctedInSummary: false,
+      completed: false
+    };
     localStorage.removeItem('puente_onboarding_shown');
 
     if (window.appRouter) {
-      window.appRouter.resetAll();
-    }
-    if (window.interfazPuente) {
-      window.interfazPuente.resetAutoHide();
-      window.interfazPuente.clearSpotlight();
-      if (this.bridgeEnabled) window.interfazPuente.checkOnboarding();
+      window.appRouter.resetToHome();
     }
 
     this.updateMetricsUI();
+    this.startSessionTimer();
     this.close();
-    window.puenteToast(`Sesión lista para ${this.participant}.`, 1800);
+    alert(`Sesión reiniciada para ${this.participant}.`);
   }
 
   /* ================= PERSISTENCIA Y CSV ================= */
@@ -5412,7 +5153,7 @@ class FacilitatorPanel {
         <td>${log.interfazPuente}</td>
         <td>${log.tiempoSegundos}s</td>
         <td>${log.ayudasPedidas}</td>
-        <td>${log.deteccionError || log.corrigioEnResumen}</td>
+        <td>${log.corrigioEnResumen}</td>
         <td>${log.errorInyectado}</td>
         <td><b style="color:${log.completada === 'EXITOSA' ? 'var(--teal)' : 'var(--red)'}">${log.completada}</b></td>
       `;
@@ -5422,7 +5163,7 @@ class FacilitatorPanel {
 
   exportToCSV() {
     if (this.sessionLogs.length === 0) {
-      window.puenteToast('No hay datos registrados aún para exportar.');
+      alert('No hay datos registrados aún para exportar.');
       return;
     }
 
@@ -5432,47 +5173,31 @@ class FacilitatorPanel {
       'Participante',
       'Condicion_Interfaz_Puente',
       'Variante_Titulo_Resumen',
-      'Modo_Practica',
       'Error_Inyectado_Monto',
-      'Monto_Enviado',
-      'Deteccion_Error',
-      'Tiempo_Tarea_Segundos',
-      'Ayudas_Total',
-      'Ayuda_Glosario',
-      'Ayuda_Tutorial',
-      'Ayuda_Oferta_15s',
-      'Ayuda_Voz',
-      'Ayuda_Lenguaje_Simple',
+      'Tiempo_Total_Segundos',
+      'Veces_Ayuda_Solicitada',
+      'Veces_Foco_Dinamico',
       'Errores_Cometidos',
-      'Corrigio_En_Resumen',
+      'Corrigio_En_Resumen_Seguro',
       'Tarea_Completada'
     ];
 
-    const q = v => `"${String(v === undefined ? '' : v).replace(/"/g, '""')}"`;
     const rows = this.sessionLogs.map(log => [
       log.id,
-      q(log.fecha),
+      `"${log.fecha}"`,
       log.participante,
-      q(log.interfazPuente),
-      q(log.varianteTitulo),
-      q(log.modoPractica),
-      q(log.errorInyectado),
-      log.montoEnviado === undefined ? '' : log.montoEnviado,
-      q(log.deteccionError),
+      `"${log.interfazPuente}"`,
+      `"${log.varianteTitulo}"`,
+      `"${log.errorInyectado}"`,
       log.tiempoSegundos,
       log.ayudasPedidas,
-      log.ayudaGlosario === undefined ? '' : log.ayudaGlosario,
-      log.ayudaTutorial === undefined ? '' : log.ayudaTutorial,
-      log.ayudaOferta15s === undefined ? '' : log.ayudaOferta15s,
-      log.ayudaVoz === undefined ? '' : log.ayudaVoz,
-      log.ayudaLenguaje === undefined ? '' : log.ayudaLenguaje,
+      log.focosUsados,
       log.erroresCometidos,
       log.corrigioEnResumen,
-      q(log.completada)
+      log.completada
     ]);
 
-    // Punto y coma: Excel en español de Chile abre el archivo en columnas sin pasos extra
-    const csvContent = '\uFEFF' + [headers.join(';'), ...rows.map(e => e.join(';'))].join('\n');
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -5501,40 +5226,28 @@ window.facilitatorPanel = new FacilitatorPanel();
 class AppRouter {
   constructor() {
     this.currentView = 'home';
-    const fp = window.facilitatorPanel;
-    this.summaryTitleVariant = fp ? fp.summaryTitleVariant : 'resumen_seguro';
-    this.errorInjection = fp ? fp.errorInjectionActive : false;
-    this.contacts = {
-      rosa: {
-        id: 'rosa_perez',
-        name: 'Rosa Pérez Sepúlveda',
-        rut: '12.876.543-3',
-        bank: 'Banco de Chile',
-        accountType: 'Cuenta Corriente',
-        accountNum: '00-128-45920-01'
-      },
-      pedro: {
-        id: 'pedro_retamales',
-        name: 'Pedro Retamales (Hijo)',
-        rut: '18.345.678-4',
-        bank: 'BancoEstado',
-        accountType: 'CuentaRUT',
-        accountNum: '18345678'
-      }
-    };
+    this.summaryTitleVariant = 'resumen_seguro';
+    this.errorInjection = false;
 
     // Estado del usuario (Elena Retamales)
     this.user = {
       name: 'Elena Retamales Morales',
       accountType: 'CuentaRUT',
       accountNum: '0007845129',
-      rut: '7.845.129-7',
-      balance: window.PUENTE_TEST.SALDO_INICIAL
+      rut: '7.845.129-3',
+      balance: 350000
     };
 
-    // Estado del formulario de transferencia (nadie viene preseleccionado)
+    // Estado del formulario de transferencia
     this.transferState = {
-      recipient: null,
+      recipient: {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-2',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      },
       amount: 0,
       glosa: '',
       isNewRecipient: false
@@ -5585,61 +5298,14 @@ class AppRouter {
     }
   }
 
-  /* Deja el formulario de transferencia como nuevo */
-  resetTransferForm() {
-    const T = window.PUENTE_TEST;
-    this.transferState.recipient = null;
-    this.transferState.isNewRecipient = false;
-    this.transferState.amount = this.errorInjection ? T.MONTO_CON_ERROR : 0;
+  resetToHome() {
+    this.transferState.amount = this.errorInjection ? 500000 : 0;
     this.transferState.glosa = '';
-    this.amountChangedFromError = false;
-    document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
-      amountInput.classList.remove('has-error');
     }
-    const glosa = document.getElementById('inputGlosa');
-    if (glosa) glosa.value = '';
-    ['newRecipientRut', 'newRecipientName', 'newRecipientNum', 'newRecipientEmail', 'recipientSearchInput'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = '';
-    });
-    document.querySelectorAll('#paneRecipientSaved .contact-item, #paneRecipientFavorites .contact-item').forEach(c => { c.style.display = ''; });
-    const amountErrorBox = document.getElementById('amountErrorBox');
-    if (amountErrorBox) { amountErrorBox.textContent = ''; amountErrorBox.classList.add('hidden'); }
-    ['recipientErrorBox', 'rutErrorBox', 'newRecipientErrorBox', 'pinErrorBox'].forEach(id => window.puenteShowError(id, ''));
-  }
-
-  resetToHome() {
-    this.resetTransferForm();
     this.goTo('home');
-  }
-
-  /* Reinicio completo entre participantes: saldo, formulario y pantalla de inicio */
-  resetAll() {
-    this.user.balance = window.PUENTE_TEST.SALDO_INICIAL;
-    this.updateBalanceUI();
-    const modal = document.getElementById('securityModalOverlay');
-    if (modal) modal.classList.remove('active');
-    this.resetToHome();
-  }
-
-  /* ================= VALIDACIÓN DE RUT (dígito verificador, módulo 11) ================= */
-  isValidRut(value) {
-    const clean = String(value || '').replace(/[^0-9kK]/g, '').toUpperCase();
-    if (clean.length < 2) return false;
-    const body = clean.slice(0, -1);
-    const dv = clean.slice(-1);
-    if (!/^\d+$/.test(body) || body.length < 6) return false;
-    let sum = 0, mul = 2;
-    for (let i = body.length - 1; i >= 0; i--) {
-      sum += parseInt(body[i], 10) * mul;
-      mul = mul === 7 ? 2 : mul + 1;
-    }
-    const res = 11 - (sum % 11);
-    const expected = res === 11 ? '0' : res === 10 ? 'K' : String(res);
-    return dv === expected;
   }
 
   /* ================= FORMATEADORES ================= */
@@ -5673,10 +5339,10 @@ class AppRouter {
     const navTransfer = document.getElementById('navBtnTransfer');
 
     const startTransferFlow = () => {
-      // Comienza la tarea: parte el cronómetro y el formulario queda limpio
-      // (si el error está activado, el monto viene escrito con un cero de más)
-      if (window.facilitatorPanel) window.facilitatorPanel.startTask();
-      this.resetTransferForm();
+      // Inyección de error si está activada
+      this.transferState.amount = this.errorInjection ? 500000 : 0;
+      const amountInput = document.getElementById('inputAmount');
+      if (amountInput) amountInput.value = this.formatCLP(this.transferState.amount);
       this.goTo('recipient');
     };
 
@@ -5890,14 +5556,10 @@ class AppRouter {
     if (btnConfirmRutNext) {
       btnConfirmRutNext.addEventListener('click', () => {
         const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
-        if (!this.isValidRut(rutVal)) {
-          window.puenteShowError('rutErrorBox', rutVal.length < 3
-            ? 'Escribe el RUT de la persona para continuar.'
-            : 'Revisa el RUT: el número o el último dígito no coinciden.');
-          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+        if (rutVal.length < 3) {
+          alert('Por favor ingresa un RUT válido con los números o el micrófono.');
           return;
         }
-        window.puenteShowError('rutErrorBox', '');
         // Ocultar etapa RUT y mostrar formulario de datos
         if (stepRut) stepRut.classList.add('hidden');
         if (stepDetails) {
@@ -5938,30 +5600,27 @@ class AppRouter {
       });
     });
 
-    // Selección de contactos guardados y favoritos (al tocar uno pasa directo al monto)
-    const selectContact = (key) => {
-      const data = this.contacts[key];
-      if (!data) return;
-      document.querySelectorAll('.contact-item').forEach(c => {
-        c.classList.toggle('selected', c.getAttribute('data-contact') === key);
-      });
-      this.transferState.recipient = Object.assign({}, data);
+    // Selección de Rosa Pérez en Guardados y Favoritos
+    const contactRosa = document.getElementById('frequentContactRosa');
+    const favRosa = document.getElementById('favContactRosa');
+    const selectRosa = () => {
+      document.querySelectorAll('.contact-item').forEach(c => c.classList.remove('selected'));
+      if (contactRosa) contactRosa.classList.add('selected');
+      if (favRosa) favRosa.classList.add('selected');
+      this.transferState.recipient = {
+        id: 'rosa_perez',
+        name: 'Rosa Pérez Sepúlveda',
+        rut: '12.876.543-2',
+        bank: 'Banco de Chile',
+        accountType: 'Cuenta Corriente',
+        accountNum: '00-128-45920-01'
+      };
       this.transferState.isNewRecipient = false;
-      window.puenteShowError('recipientErrorBox', '');
       this.goTo('amount');
     };
-    document.querySelectorAll('.contact-item[data-contact]').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.btn-speak-section')) return;
-        selectContact(card.getAttribute('data-contact'));
-      });
-      card.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectContact(card.getAttribute('data-contact'));
-        }
-      });
-    });
+
+    if (contactRosa) contactRosa.addEventListener('click', selectRosa);
+    if (favRosa) favRosa.addEventListener('click', selectRosa);
 
     // Botones de Continuar (Tanto en Guardados como en Formulario Nuevo)
     const btnContinueSaved = document.getElementById('btnContinueRecipientSaved');
@@ -5977,11 +5636,10 @@ class AppRouter {
         const emailInput = document.getElementById('newRecipientEmail');
 
         if (!nameInput || !nameInput.value.trim() || !rutInput.value.trim() || !numInput.value.trim()) {
-          window.puenteShowError('newRecipientErrorBox', 'Falta completar el nombre o el número de cuenta.');
+          alert('Por favor completa el nombre, RUT y número de cuenta para continuar.');
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
-        window.puenteShowError('newRecipientErrorBox', '');
 
         this.transferState.recipient = {
           id: 'nuevo_' + Date.now(),
@@ -5992,10 +5650,6 @@ class AppRouter {
           accountNum: numInput.value.trim(),
           email: emailInput ? emailInput.value.trim() : ''
         };
-      } else if (!this.transferState.recipient) {
-        window.puenteShowError('recipientErrorBox', 'Primero toca el nombre de la persona a quien quieres enviar el dinero.');
-        if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
-        return;
       }
 
       this.goTo('amount');
@@ -6055,7 +5709,6 @@ class AppRouter {
         }
 
         this.transferState.amount = val;
-        if (this.errorInjection && val !== window.PUENTE_TEST.MONTO_CON_ERROR) this.amountChangedFromError = true;
         e.target.value = val > 0 ? this.formatCLP(val) : '$0';
       });
     }
@@ -6066,7 +5719,6 @@ class AppRouter {
       btn.addEventListener('click', () => {
         const amt = parseInt(btn.getAttribute('data-amount'), 10);
         this.transferState.amount = amt;
-        if (this.errorInjection && amt !== window.PUENTE_TEST.MONTO_CON_ERROR) this.amountChangedFromError = true;
         if (inputAmount) {
           inputAmount.value = this.formatCLP(amt);
           inputAmount.classList.remove('has-error');
@@ -6089,7 +5741,8 @@ class AppRouter {
         if (!val || val <= 0) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = 'Escribe cuánto dinero quieres enviar o toca uno de los montos.';
+          amountErrorBox.textContent = 'Por favor ingresa una cantidad de dinero a transferir.';
+          alert('Por favor ingresa una cantidad de dinero a transferir.');
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -6097,7 +5750,8 @@ class AppRouter {
         if (val > MAX_AMOUNT) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          alert(`El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`);
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -6106,6 +5760,7 @@ class AppRouter {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
+          alert(`El monto supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`);
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -6115,12 +5770,6 @@ class AppRouter {
 
         if (inputGlosa) {
           this.transferState.glosa = inputGlosa.value.trim();
-        }
-
-        // Si el error estaba activado y la persona cambió el monto antes del resumen, lo detectó en esta pantalla
-        if (this.errorInjection && window.facilitatorPanel && val !== window.PUENTE_TEST.MONTO_CON_ERROR &&
-            window.facilitatorPanel.currentMetrics.errorDetection === 'no aplica') {
-          window.facilitatorPanel.setErrorDetection('pantalla de monto');
         }
 
         this.goTo('summary');
@@ -6154,19 +5803,15 @@ class AppRouter {
 
     if (btnReview) {
       btnReview.addEventListener('click', () => {
-        // Solo cuenta como "detectó el error" si el monto con el cero de más estaba en el resumen
-        if (this.errorInjection && window.facilitatorPanel &&
-            this.transferState.amount === window.PUENTE_TEST.MONTO_CON_ERROR) {
-          window.facilitatorPanel.setErrorDetection('resumen');
+        // El usuario detectó un posible error o desea cambiar el monto
+        if (window.facilitatorPanel) {
+          window.facilitatorPanel.recordMetric('correction');
         }
         this.goTo('amount');
       });
     }
 
-    if (btnSpeakCard) btnSpeakCard.addEventListener('click', () => {
-      window.puenteHelp('voz');
-      speakSummaryContent();
-    });
+    if (btnSpeakCard) btnSpeakCard.addEventListener('click', speakSummaryContent);
   }
 
   renderSummary() {
@@ -6177,51 +5822,11 @@ class AppRouter {
     // Microcopy determinista requerido por el enunciado:
     // "Vas a enviar $50.000 a Rosa Pérez, a su cuenta en Banco de Chile. Una vez enviado, no se puede deshacer."
     const amtStr = this.formatCLP(this.transferState.amount);
-    const destName = this.transferState.recipient ? this.transferState.recipient.name : '';
-    const destBank = this.transferState.recipient ? this.transferState.recipient.bank : '';
+    const destName = this.transferState.recipient.name;
+    const destBank = this.transferState.recipient.bank;
 
-    const r = this.transferState.recipient || {};
-    const esc = (v) => String(v || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    const bridgeOn = !window.interfazPuente || window.interfazPuente.enabled;
-    const accountEl = document.getElementById('safeSummaryAccount');
-    const cardTitle = document.querySelector('#safeSummaryCard .safe-summary-title');
-    const cardSub = document.querySelector('#safeSummaryCard .safe-summary-header .semantic-helper-text');
-
-    // Título de la pantalla según la variante A/B elegida en el panel
-    const variantLabel = this.summaryTitleVariant === 'revisa_antes' ? 'Revisa antes de enviar' : 'Resumen Seguro';
-    if (titleEl) {
-      const simple = titleEl.querySelector('.term-simplified');
-      if (simple) simple.textContent = variantLabel;
-    }
-
-    if (bridgeOn) {
-      // Con Interfaz Puente: Resumen Seguro en lenguaje simple (datos tomados del formulario, nunca de IA)
-      if (cardTitle) cardTitle.innerHTML = '<span class="term-technical">Resumen de la transferencia</span><span class="term-simplified">Lee esto antes de confirmar</span>';
-      if (cardSub) cardSub.style.display = '';
-      if (textEl) {
-        textEl.innerHTML = `Vas a enviar <strong>${esc(amtStr)}</strong> a <strong>${esc(destName)}</strong>, a su cuenta en <strong>${esc(destBank)}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
-      }
-      if (accountEl) {
-        accountEl.style.display = '';
-        accountEl.innerHTML = `Cuenta: <strong>${esc(r.accountType)} N° ${esc(r.accountNum)}</strong><br>RUT: <strong>${esc(r.rut)}</strong>`;
-      }
-    } else {
-      // Grupo control: confirmación bancaria estándar, sin lenguaje simple ni advertencias
-      if (cardTitle) cardTitle.innerHTML = 'Datos de la transferencia';
-      if (cardSub) cardSub.style.display = 'none';
-      if (textEl) {
-        textEl.innerHTML = `<table class="standard-confirm-table">
-          <tr><td>Monto</td><td>${esc(amtStr)}</td></tr>
-          <tr><td>Destinatario</td><td>${esc(destName)}</td></tr>
-          <tr><td>RUT</td><td>${esc(r.rut)}</td></tr>
-          <tr><td>Banco</td><td>${esc(destBank)}</td></tr>
-          <tr><td>Tipo de cuenta</td><td>${esc(r.accountType)}</td></tr>
-          <tr><td>N° de cuenta</td><td>${esc(r.accountNum)}</td></tr>
-          <tr><td>Cuenta de cargo</td><td>CuentaRUT ${esc(this.user.accountNum)}</td></tr>
-          ${this.transferState.glosa ? `<tr><td>Mensaje</td><td>${esc(this.transferState.glosa)}</td></tr>` : ''}
-        </table>`;
-      }
-      if (accountEl) accountEl.style.display = 'none';
+    if (textEl) {
+      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
     }
 
     // Si el monto excede el saldo o el límite máximo de $200.000
@@ -6229,9 +5834,9 @@ class AppRouter {
       if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
         warnBox.classList.remove('hidden');
         if (this.transferState.amount > this.user.balance) {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
         } else {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${esc(amtStr)}) supera el límite máximo permitido de $200.000.`;
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
         }
       } else {
         warnBox.classList.add('hidden');
@@ -6248,7 +5853,7 @@ class AppRouter {
 
   setErrorInjection(active) {
     this.errorInjection = active;
-    this.transferState.amount = active ? window.PUENTE_TEST.MONTO_CON_ERROR : 0;
+    this.transferState.amount = active ? 500000 : 0;
     const amountInput = document.getElementById('inputAmount');
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
@@ -6304,17 +5909,9 @@ class AppRouter {
     if (btnAuthorize) {
       btnAuthorize.addEventListener('click', () => {
         if (this.enteredPin.length < 6) {
-          window.puenteShowError('pinErrorBox', 'Faltan números: la clave tiene 6 números.');
+          alert('Por favor completa los 6 números de tu clave tocando el teclado.');
           return;
         }
-        if (this.enteredPin !== window.PUENTE_TEST.CLAVE_PRUEBA) {
-          window.puenteShowError('pinErrorBox', `Ese no es el código de prueba. Escribe ${window.PUENTE_TEST.CLAVE_PRUEBA}.`);
-          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
-          this.enteredPin = '';
-          this.updatePinDisplay();
-          return;
-        }
-        window.puenteShowError('pinErrorBox', '');
         this.executeTransfer();
       });
     }
@@ -6335,7 +5932,6 @@ class AppRouter {
       modal.classList.add('active');
       // Iniciar con las casillas listas para escribir tocando el teclado
       this.enteredPin = '';
-      window.puenteShowError('pinErrorBox', '');
       if (this.updatePinDisplay) {
         this.updatePinDisplay();
       }
@@ -6346,20 +5942,15 @@ class AppRouter {
     const modal = document.getElementById('securityModalOverlay');
     if (modal) modal.classList.remove('active');
 
-    // En Modo Práctica no se descuenta dinero
-    const practice = window.interfazPuente && window.interfazPuente.practiceMode;
-    if (!practice && this.transferState.amount <= this.user.balance) {
+    // Descontar saldo si está dentro del límite
+    if (this.transferState.amount <= this.user.balance) {
       this.user.balance -= this.transferState.amount;
     }
     this.updateBalanceUI();
 
-    // Registrar en facilitador: si el monto con error llegó hasta el final, no fue detectado
+    // Registrar éxito en facilitador
     if (window.facilitatorPanel) {
-      const fp = window.facilitatorPanel;
-      if (this.errorInjection && this.transferState.amount === window.PUENTE_TEST.MONTO_CON_ERROR) {
-        fp.setErrorDetection('no detectado');
-      }
-      fp.finishSession(true, this.transferState.amount);
+      window.facilitatorPanel.finishSession(true);
     }
 
     // Registrar en Interfaz Puente para autoocultamiento
@@ -6389,7 +5980,7 @@ class AppRouter {
             text: `Transferencia realizada por ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name}.`
           }).catch(() => {});
         } else {
-          window.puenteToast('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
+          alert('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
         }
       });
     }
@@ -6402,13 +5993,6 @@ class AppRouter {
     const dateEl = document.getElementById('receiptDate');
     const opEl = document.getElementById('receiptOpNumber');
 
-    const practice = window.interfazPuente && window.interfazPuente.practiceMode;
-    const note = document.getElementById('receiptPracticeNote');
-    const title = document.getElementById('receiptTitle');
-    const sub = document.getElementById('receiptSubtitle');
-    if (note) note.style.display = practice ? 'block' : 'none';
-    if (title) title.textContent = practice ? '¡Práctica completada!' : '¡Transferencia Exitosa!';
-    if (sub) sub.textContent = practice ? 'Así se ve el comprobante. No se envió dinero real.' : 'Tu dinero fue enviado correctamente';
     if (amtEl) amtEl.textContent = this.formatCLP(this.transferState.amount);
     if (nameEl) nameEl.textContent = this.transferState.recipient.name;
     if (detailsEl) {
@@ -6430,7 +6014,7 @@ class AppRouter {
     if (this.currentView === 'home') {
       window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
     } else if (this.currentView === 'recipient') {
-      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, tocar el nombre de una persona de tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
+      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
     } else if (this.currentView === 'new-recipient') {
       const isStepRut = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       if (isStepRut) {
@@ -6442,12 +6026,11 @@ class AppRouter {
       window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
     } else if (this.currentView === 'summary') {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
-      const destName = this.transferState.recipient ? this.transferState.recipient.name : '';
-      const destBank = this.transferState.recipient ? this.transferState.recipient.bank : '';
+      const destName = this.transferState.recipient.name;
+      const destBank = this.transferState.recipient.bank;
       window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
     } else if (this.currentView === 'receipt') {
-      const practice = window.interfazPuente && window.interfazPuente.practiceMode;
-      window.puenteSpeech.speak(practice ? 'Práctica completada. No se envió dinero real.' : `¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient ? this.transferState.recipient.name : ''}.`);
+      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
     }
   }
 }
