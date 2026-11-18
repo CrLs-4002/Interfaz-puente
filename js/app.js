@@ -49,6 +49,7 @@ class AppRouter {
     this.setupReceiptStep();
     this.setupBalanceToggle();
     this.updateBalanceUI();
+    this.setupVoiceDictation();
   }
 
   /* ================= NAVEGACIÓN ENTRE VISTAS ================= */
@@ -327,83 +328,6 @@ class AppRouter {
       });
     });
 
-    // Dictado por voz de RUT
-    const btnVoiceDictate = document.getElementById('btnVoiceDictateRut');
-    const rutVoiceFeedback = document.getElementById('rutVoiceFeedback');
-    if (btnVoiceDictate && newRecipientRutInput) {
-      btnVoiceDictate.addEventListener('click', () => {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-          const recognition = new SpeechRecognition();
-          recognition.lang = 'es-CL';
-          recognition.interimResults = false;
-          recognition.maxAlternatives = 1;
-
-          if (rutVoiceFeedback) {
-            rutVoiceFeedback.style.display = 'block';
-            rutVoiceFeedback.textContent = '🎙️ Escuchando... Di los números de tu RUT (ej: doce ocho siete seis...)';
-          }
-          btnVoiceDictate.style.background = '#FEE2E2';
-          btnVoiceDictate.style.borderColor = '#EF4444';
-
-          recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            // Convertir palabras habladas a dígitos comunes
-            let digits = transcript
-              .replace(/\buno\b/gi, '1')
-              .replace(/\bdos\b/gi, '2')
-              .replace(/\btres\b/gi, '3')
-              .replace(/\bcuatro\b/gi, '4')
-              .replace(/\bcinco\b/gi, '5')
-              .replace(/\bseis\b/gi, '6')
-              .replace(/\bsiete\b/gi, '7')
-              .replace(/\bocho\b/gi, '8')
-              .replace(/\bnueve\b/gi, '9')
-              .replace(/\bcero\b/gi, '0')
-              .replace(/\bka\b/gi, 'K')
-              .replace(/[^0-9kK]/g, '');
-
-            if (digits) {
-              newRecipientRutInput.value = formatRutValue(digits);
-              newRecipientRutInput.dispatchEvent(new Event('input'));
-              if (rutVoiceFeedback) {
-                rutVoiceFeedback.textContent = `✓ Entendido: ${newRecipientRutInput.value}`;
-              }
-            } else {
-              if (rutVoiceFeedback) {
-                rutVoiceFeedback.textContent = `No se detectaron números. Intenta dictar de nuevo o usa el teclado.`;
-              }
-            }
-          };
-
-          recognition.onerror = () => {
-            if (rutVoiceFeedback) {
-              rutVoiceFeedback.textContent = 'No pudimos escuchar con claridad. Puedes tocar los números del teclado abajo.';
-            }
-          };
-
-          recognition.onend = () => {
-            btnVoiceDictate.style.background = '';
-            btnVoiceDictate.style.borderColor = '';
-            setTimeout(() => {
-              if (rutVoiceFeedback) rutVoiceFeedback.style.display = 'none';
-            }, 3500);
-          };
-
-          recognition.start();
-        } else {
-          // Fallback amigable si el navegador no soporta Web Speech API
-          const demoRut = '15.678.910-K';
-          newRecipientRutInput.value = demoRut;
-          newRecipientRutInput.dispatchEvent(new Event('input'));
-          if (rutVoiceFeedback) {
-            rutVoiceFeedback.style.display = 'block';
-            rutVoiceFeedback.textContent = `✓ RUT dictado (simulado): ${demoRut}`;
-            setTimeout(() => { rutVoiceFeedback.style.display = 'none'; }, 3000);
-          }
-        }
-      });
-    }
 
     // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
     if (btnConfirmRutNext) {
@@ -1050,6 +974,366 @@ class AppRouter {
       window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
     } else if (this.currentView === 'receipt') {
       window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
+    }
+  }
+
+  /* ================= DICTADO POR VOZ EN TODAS LAS CASILLAS ================= */
+  setupVoiceDictation() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // Helper: Normalizar texto para reconocimiento
+    const normalizeText = (str) => {
+      return (str || '')
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim();
+    };
+
+    // Helper: Extraer dígitos de texto hablado (soporta números hablados y "K")
+    const parseSpokenDigits = (transcript, allowK = false) => {
+      let t = normalizeText(transcript)
+        .replace(/\buno\b/g, '1')
+        .replace(/\bun\b/g, '1')
+        .replace(/\bdos\b/g, '2')
+        .replace(/\btres\b/g, '3')
+        .replace(/\bcuatro\b/g, '4')
+        .replace(/\bcinco\b/g, '5')
+        .replace(/\bseis\b/g, '6')
+        .replace(/\bsiete\b/g, '7')
+        .replace(/\bocho\b/g, '8')
+        .replace(/\bnueve\b/g, '9')
+        .replace(/\bcero\b/g, '0')
+        .replace(/\bdiez\b/g, '10')
+        .replace(/\bonce\b/g, '11')
+        .replace(/\bdoce\b/g, '12')
+        .replace(/\btrece\b/g, '13')
+        .replace(/\bcatorce\b/g, '14')
+        .replace(/\bquince\b/g, '15')
+        .replace(/\bveinte\b/g, '20');
+
+      if (allowK) {
+        t = t.replace(/\bka\b/g, 'K').replace(/\bk\b/g, 'K');
+        return t.replace(/[^0-9kK]/g, '');
+      }
+      return t.replace(/[^0-9]/g, '');
+    };
+
+    // Helper: Extraer nombre propio capitalizado
+    const parseSpokenName = (transcript) => {
+      return (transcript || '')
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
+        .trim()
+        .split(/\s+/)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+    };
+
+    // Helper: Extraer correo electrónico
+    const parseSpokenEmail = (transcript) => {
+      let em = normalizeText(transcript)
+        .replace(/\s*arroba\s*/g, '@')
+        .replace(/\s*punto\s*/g, '.')
+        .replace(/\s*guion\s*bajo\s*/g, '_')
+        .replace(/\s*guion\s*/g, '-')
+        .replace(/\s+/g, '');
+      return em;
+    };
+
+    // Helper: Extraer monto numérico en CLP desde texto hablado en español
+    const parseSpokenAmount = (transcript) => {
+      const clean = normalizeText(transcript);
+      if (!clean) return 0;
+
+      // Si dice "15 mil" o "15k"
+      const directMil = clean.match(/(\d+)\s*(mil|k)\b/);
+      if (directMil) {
+        return (parseInt(directMil[1], 10) || 0) * 1000;
+      }
+
+      // Si contiene dígitos directos (ej: "$15.000", "15000", "50000")
+      const digitsOnly = clean.replace(/[^\d]/g, '');
+      if (digitsOnly.length >= 3 && !clean.includes('mil') && !clean.includes('pesos')) {
+        return parseInt(digitsOnly, 10);
+      }
+
+      const words = clean.split(/\s+/);
+      let total = 0;
+      let current = 0;
+
+      const units = {
+        'un': 1, 'uno': 1, 'una': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5,
+        'seis': 6, 'siete': 7, 'ocho': 8, 'nueve': 9, 'diez': 10,
+        'once': 11, 'doce': 12, 'trece': 13, 'catorce': 14, 'quince': 15,
+        'dieciseis': 16, 'diecisiete': 17, 'dieciocho': 18, 'diecinueve': 19,
+        'veinte': 20, 'veintiuno': 21, 'veintidos': 22, 'veintitres': 23, 'veinticuatro': 24,
+        'veinticinco': 25, 'veintiseis': 26, 'veintisiete': 27, 'veintiocho': 28, 'veintinueve': 29,
+        'treinta': 30, 'cuarenta': 40, 'cincuenta': 50, 'sesenta': 60,
+        'setenta': 70, 'ochenta': 80, 'noventa': 90
+      };
+
+      const hundreds = {
+        'cien': 100, 'ciento': 100, 'doscientos': 200, 'trescientos': 300,
+        'cuatrocientos': 400, 'quinientos': 500, 'seiscientos': 600,
+        'setecientos': 700, 'ochocientos': 800, 'novecientos': 900
+      };
+
+      for (let i = 0; i < words.length; i++) {
+        const w = words[i];
+        if (w === 'y' || w === 'pesos' || w === 'peso' || w === 'de' || w === 'a' || w === 'en') continue;
+
+        if (units[w] !== undefined) {
+          current += units[w];
+        } else if (hundreds[w] !== undefined) {
+          current += hundreds[w];
+        } else if (w === 'mil') {
+          if (current === 0) current = 1;
+          total += current * 1000;
+          current = 0;
+        } else if (w === 'millon' || w === 'millones') {
+          if (current === 0) current = 1;
+          total += current * 1000000;
+          current = 0;
+        } else if (/^\d+$/.test(w)) {
+          current += parseInt(w, 10);
+        }
+      }
+      total += current;
+
+      if (total === 0 && digitsOnly) {
+        return parseInt(digitsOnly, 10) || 0;
+      }
+      return total;
+    };
+
+    // Helper: Mostrar retroalimentación
+    const showFeedback = (el, msg, isError = false) => {
+      if (!el) return;
+      el.style.display = 'block';
+      el.textContent = msg;
+      if (isError) el.classList.add('error');
+      else el.classList.remove('error');
+    };
+
+    const hideFeedback = (el, delay = 4000) => {
+      if (!el) return;
+      clearTimeout(el.__feedbackTimer);
+      el.__feedbackTimer = setTimeout(() => {
+        el.style.display = 'none';
+        el.classList.remove('error');
+      }, delay);
+    };
+
+    // Helper para formato RUT
+    const formatRut = (raw) => {
+      let val = raw.replace(/[^0-9kK]/g, '').toUpperCase();
+      if (!val) return '';
+      if (val.length === 1) return val;
+      const dv = val.slice(-1);
+      const cuerpo = val.slice(0, -1);
+      let formatted = '';
+      let count = 0;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        formatted = cuerpo[i] + formatted;
+        count++;
+        if (count === 3 && i > 0) {
+          formatted = '.' + formatted;
+          count = 0;
+        }
+      }
+      return formatted + '-' + dv;
+    };
+
+    // Asociar a todos los botones de dictado por voz de campos de texto (.btn-voice-dictate)
+    const voiceButtons = document.querySelectorAll('.btn-voice-dictate');
+    voiceButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const targetId = btn.getAttribute('data-target');
+        const fieldType = btn.getAttribute('data-field-type') || 'text';
+        const targetInput = document.getElementById(targetId);
+        if (!targetInput) return;
+
+        // Buscar feedback correspondiente
+        let feedbackEl = btn.closest('.form-group, .recipient-search-box, .amount-display-box, #newRecipientStepRut')?.querySelector('.voice-dictate-feedback');
+        if (!feedbackEl) {
+          feedbackEl = document.getElementById(`feedbackVoice${targetId.charAt(0).toUpperCase() + targetId.slice(1)}`);
+        }
+
+        if (SpeechRecognition) {
+          try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-CL';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            btn.classList.add('listening');
+            showFeedback(feedbackEl, '🎙️ Escuchando... habla ahora');
+
+            recognition.onresult = (event) => {
+              const transcript = event.results[0][0].transcript;
+
+              if (fieldType === 'search') {
+                const query = transcript.trim();
+                targetInput.value = query;
+                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                showFeedback(feedbackEl, `✓ Buscando: "${query}"`);
+              } else if (fieldType === 'rut') {
+                const digits = parseSpokenDigits(transcript, true);
+                if (digits) {
+                  const formatted = formatRut(digits);
+                  targetInput.value = formatted;
+                  targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ RUT entendido: ${formatted}`);
+                } else {
+                  showFeedback(feedbackEl, 'No se detectaron números. Intenta de nuevo o usa el teclado.', true);
+                }
+              } else if (fieldType === 'name') {
+                const name = parseSpokenName(transcript);
+                if (name) {
+                  targetInput.value = name;
+                  targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ Nombre: ${name}`);
+                }
+              } else if (fieldType === 'number') {
+                const digits = parseSpokenDigits(transcript, false);
+                if (digits) {
+                  targetInput.value = digits;
+                  targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ Número: ${digits}`);
+                }
+              } else if (fieldType === 'email') {
+                const email = parseSpokenEmail(transcript);
+                if (email) {
+                  targetInput.value = email;
+                  targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ Correo: ${email}`);
+                }
+              } else if (fieldType === 'amount') {
+                let amount = parseSpokenAmount(transcript);
+                if (amount > 0) {
+                  if (amount > 200000) amount = 200000;
+                  this.transferState.amount = amount;
+                  targetInput.value = this.formatCLP(amount);
+                  targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
+                } else {
+                  showFeedback(feedbackEl, 'No detectamos una cantidad clara. Ej: "quince mil pesos".', true);
+                }
+              } else {
+                // Texto general (Glosa / Mensaje)
+                const text = transcript.charAt(0).toUpperCase() + transcript.slice(1);
+                targetInput.value = text;
+                targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                showFeedback(feedbackEl, `✓ Mensaje: "${text}"`);
+              }
+            };
+
+            recognition.onerror = () => {
+              showFeedback(feedbackEl, 'No pudimos escuchar con claridad. Puedes intentar de nuevo o usar el teclado.', true);
+            };
+
+            recognition.onend = () => {
+              btn.classList.remove('listening');
+              hideFeedback(feedbackEl, 4000);
+            };
+
+            recognition.start();
+          } catch (err) {
+            console.warn('SpeechRecognition error:', err);
+            btn.classList.remove('listening');
+          }
+        } else {
+          // Fallback pedagógico simulado
+          const simulatedValues = {
+            search: 'Rosa Pérez',
+            rut: '15.678.910-K',
+            name: 'Carmen Gloria Morales',
+            number: '00-128-45920-01',
+            email: 'carmen.morales@correo.cl',
+            amount: '$15.000',
+            text: 'Regalo de cumpleaños'
+          };
+          const simVal = simulatedValues[fieldType] || 'Texto dictado';
+          if (fieldType === 'amount') {
+            this.transferState.amount = 15000;
+            targetInput.value = '$15.000';
+          } else {
+            targetInput.value = simVal;
+          }
+          targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+          showFeedback(feedbackEl, `✓ Dictado (simulado): ${targetInput.value}`);
+          hideFeedback(feedbackEl, 3000);
+        }
+      });
+    });
+
+    // Botón de dictado por voz para la clave de 6 números (.btn-voice-dictate-pin)
+    const btnVoicePin = document.getElementById('btnVoiceDictatePin');
+    const feedbackPin = document.getElementById('feedbackVoicePin');
+
+    if (btnVoicePin) {
+      btnVoicePin.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (SpeechRecognition) {
+          try {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-CL';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            btnVoicePin.classList.add('listening');
+            showFeedback(feedbackPin, '🎙️ Escuchando... Di los 6 números de tu clave');
+
+            recognition.onresult = (event) => {
+              const transcript = event.results[0][0].transcript;
+              const digits = parseSpokenDigits(transcript, false);
+
+              if (digits.length >= 6) {
+                this.enteredPin = digits.slice(0, 6);
+                if (this.updatePinDisplay) this.updatePinDisplay();
+                showFeedback(feedbackPin, `✓ Clave de 6 números ingresada: ${this.enteredPin}`);
+                setTimeout(() => {
+                  this.executeTransfer();
+                }, 800);
+              } else if (digits.length > 0) {
+                this.enteredPin = digits;
+                if (this.updatePinDisplay) this.updatePinDisplay();
+                showFeedback(feedbackPin, `Detectamos ${digits.length} dígitos (${digits}). Faltan ${6 - digits.length}. Puedes completar con los botones abajo.`);
+              } else {
+                showFeedback(feedbackPin, 'No detectamos números. Puedes tocar los números abajo.', true);
+              }
+            };
+
+            recognition.onerror = () => {
+              showFeedback(feedbackPin, 'No pudimos escuchar los números. Toca los números del teclado abajo.', true);
+            };
+
+            recognition.onend = () => {
+              btnVoicePin.classList.remove('listening');
+              hideFeedback(feedbackPin, 4000);
+            };
+
+            recognition.start();
+          } catch (err) {
+            console.warn('SpeechRecognition PIN error:', err);
+            btnVoicePin.classList.remove('listening');
+          }
+        } else {
+          // Fallback simulado
+          this.enteredPin = '123456';
+          if (this.updatePinDisplay) this.updatePinDisplay();
+          showFeedback(feedbackPin, '✓ Clave de 6 números ingresada (simulada): 123456');
+          hideFeedback(feedbackPin, 3000);
+          setTimeout(() => {
+            this.executeTransfer();
+          }, 800);
+        }
+      });
     }
   }
 }

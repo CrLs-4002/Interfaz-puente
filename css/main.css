@@ -1705,3 +1705,104 @@ button:disabled {
   color: #DC2626;
   flex-shrink: 0;
 }
+
+/* ================= DICTADO POR VOZ EN TODAS LAS CASILLAS ================= */
+.input-with-voice-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-voice-dictate {
+  position: absolute;
+  right: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--teal-light);
+  border: 1.5px solid var(--teal);
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
+  flex-shrink: 0;
+}
+
+.btn-voice-dictate:hover {
+  background: #CCFBF1;
+  transform: scale(1.05);
+}
+
+.btn-voice-dictate:active {
+  transform: scale(0.95);
+}
+
+.btn-voice-dictate.listening {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+  color: #DC2626 !important;
+  animation: pulse-mic-active 1.2s infinite ease-in-out !important;
+}
+
+@keyframes pulse-mic-active {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+  }
+}
+
+.btn-voice-dictate-pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 20px;
+  background: var(--teal-light);
+  border: 1.5px solid var(--teal);
+  color: var(--teal);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(13, 143, 114, 0.12);
+}
+
+.btn-voice-dictate-pin:hover {
+  background: #CCFBF1;
+  transform: translateY(-1px);
+}
+
+.btn-voice-dictate-pin.listening {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+  color: #DC2626 !important;
+  animation: pulse-mic-active 1.2s infinite ease-in-out !important;
+}
+
+.voice-dictate-feedback {
+  font-size: 15px;
+  color: var(--teal);
+  font-weight: 800;
+  margin-top: 6px;
+  line-height: 1.35;
+  transition: all 0.2s ease;
+}
+
+.voice-dictate-feedback.error {
+  color: var(--red);
+}
+
