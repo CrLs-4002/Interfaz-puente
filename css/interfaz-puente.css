@@ -31,20 +31,21 @@ body.dynamic-focus-active .puente-fab-container {
 }
 
 .puente-fab-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
+  min-width: 82px;
+  height: 50px;
+  padding: 0 16px;
   background: linear-gradient(135deg, #102048 0%, #1A2F6C 100%);
   color: #FFFFFF;
   border: 3px solid var(--mint);
-  border-radius: 50%;
+  border-radius: 25px;
   box-shadow: 0 8px 26px rgba(13, 27, 62, 0.45);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), min-width 0.2s ease, border-radius 0.2s ease;
   animation: puente-pulse 3s infinite ease-out;
   cursor: pointer;
-  padding: 0;
+  gap: 6px;
 }
 
 .puente-fab-btn:active {
@@ -56,6 +57,11 @@ body.dynamic-focus-active .puente-fab-container {
   background: var(--navy);
   border-color: #EF4444;
   box-shadow: 0 8px 26px rgba(239, 68, 68, 0.45);
+  min-width: 50px;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .puente-fab-btn.is-active .icon-open {
@@ -208,33 +214,27 @@ body.dynamic-focus-active .puente-fab-container {
 }
 
 .puente-fab-icon {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--mint);
-  color: #0D1B3E;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: none;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: inherit;
 }
 
 .puente-fab-icon svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
-.puente-fab-icon .fab-question-mark {
-  font-size: 34px;
+.puente-fab-btn .fab-ayuda-text {
+  font-size: 16px;
   font-weight: 900;
-  line-height: 1;
-  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-  color: #0D1B3E;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
   user-select: none;
-  margin-top: -2px;
+  display: inline-block;
 }
 
 .puente-fab-label {
@@ -683,32 +683,32 @@ button.spotlight-active *,
   transform: scale(1.08);
 }
 
-/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
+/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN 'AYUDA' ================= */
 .semantic-translation-badge {
   display: none !important;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  padding: 3px 10px;
+  min-height: 26px;
+  border-radius: 13px;
   background: var(--indigo-soft);
   border: 1.5px solid var(--indigo);
   color: var(--indigo);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
   margin-left: 6px;
   flex: none;
   line-height: 1;
-  padding: 0;
   vertical-align: middle;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
 }
 
 .semantic-translation-badge:hover, .semantic-translation-badge:focus {
   background: var(--indigo);
   color: #FFFFFF;
-  transform: scale(1.1);
+  transform: translateY(-1px);
 }
 
 /* ================= CONTROL DE LENGUAJE SIMPLE / BANCA ESTÁNDAR ================= */
@@ -967,9 +967,11 @@ button.spotlight-active *,
   transform: scale(0.98);
 }
 
-.recipient-search-input-wrap svg {
+.recipient-search-input-wrap > svg {
   position: absolute;
   left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--muted);
   pointer-events: none;
 }

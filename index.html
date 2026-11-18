@@ -1727,7 +1727,7 @@ button:disabled {
   flex-shrink: 0;
 }
 
-/* ================= DICTADO POR VOZ EN TODAS LAS CASILLAS ================= */
+/* ================= DICTADO POR VOZ EN TODAS LAS CASILLAS (ESTILO WHATSAPP) ================= */
 .input-with-voice-wrap {
   position: relative;
   display: flex;
@@ -1735,83 +1735,75 @@ button:disabled {
   width: 100%;
 }
 
+.input-with-voice-wrap input,
+.input-with-voice-wrap .form-input {
+  padding-right: 50px !important;
+}
+
+.amount-voice-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
 .btn-voice-dictate {
   position: absolute;
   right: 8px;
-  width: 40px;
-  height: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: var(--teal-light);
-  border: 1.5px solid var(--teal);
-  color: var(--teal);
+  background: #F0FDF4;
+  border: 1.5px solid #0D8F72;
+  color: #0D8F72;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 2;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+  padding: 0;
+  margin: 0;
   box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
   flex-shrink: 0;
 }
 
 .btn-voice-dictate:hover {
   background: #CCFBF1;
-  transform: scale(1.05);
+  border-color: #0F766E;
+  color: #0F766E;
+  transform: translateY(-50%) scale(1.06);
 }
 
 .btn-voice-dictate:active {
-  transform: scale(0.95);
+  transform: translateY(-50%) scale(0.94);
 }
 
 .btn-voice-dictate.listening {
-  background: #FEE2E2 !important;
-  border-color: #EF4444 !important;
-  color: #DC2626 !important;
+  background: #EF4444 !important;
+  border-color: #DC2626 !important;
+  color: #FFFFFF !important;
   animation: pulse-mic-active 1.2s infinite ease-in-out !important;
 }
 
 @keyframes pulse-mic-active {
   0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+    transform: translateY(-50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
   }
   50% {
-    transform: scale(1.08);
+    transform: translateY(-50%) scale(1.1);
     box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
   }
   100% {
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
     box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
   }
-}
-
-.btn-voice-dictate-pin {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 20px;
-  background: var(--teal-light);
-  border: 1.5px solid var(--teal);
-  color: var(--teal);
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(13, 143, 114, 0.12);
-}
-
-.btn-voice-dictate-pin:hover {
-  background: #CCFBF1;
-  transform: translateY(-1px);
-}
-
-.btn-voice-dictate-pin.listening {
-  background: #FEE2E2 !important;
-  border-color: #EF4444 !important;
-  color: #DC2626 !important;
-  animation: pulse-mic-active 1.2s infinite ease-in-out !important;
 }
 
 .voice-dictate-feedback {
@@ -1826,6 +1818,7 @@ button:disabled {
 .voice-dictate-feedback.error {
   color: var(--red);
 }
+
 
 
 
@@ -1865,20 +1858,21 @@ body.dynamic-focus-active .puente-fab-container {
 }
 
 .puente-fab-btn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 58px;
-  height: 58px;
+  min-width: 82px;
+  height: 50px;
+  padding: 0 16px;
   background: linear-gradient(135deg, #102048 0%, #1A2F6C 100%);
   color: #FFFFFF;
   border: 3px solid var(--mint);
-  border-radius: 50%;
+  border-radius: 25px;
   box-shadow: 0 8px 26px rgba(13, 27, 62, 0.45);
-  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease), min-width 0.2s ease, border-radius 0.2s ease;
   animation: puente-pulse 3s infinite ease-out;
   cursor: pointer;
-  padding: 0;
+  gap: 6px;
 }
 
 .puente-fab-btn:active {
@@ -1890,6 +1884,11 @@ body.dynamic-focus-active .puente-fab-container {
   background: var(--navy);
   border-color: #EF4444;
   box-shadow: 0 8px 26px rgba(239, 68, 68, 0.45);
+  min-width: 50px;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border-radius: 50%;
 }
 
 .puente-fab-btn.is-active .icon-open {
@@ -2042,33 +2041,27 @@ body.dynamic-focus-active .puente-fab-container {
 }
 
 .puente-fab-icon {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--mint);
-  color: #0D1B3E;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: none;
+  width: auto;
+  height: auto;
+  background: transparent;
+  color: inherit;
 }
 
 .puente-fab-icon svg {
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
 }
 
-.puente-fab-icon .fab-question-mark {
-  font-size: 34px;
+.puente-fab-btn .fab-ayuda-text {
+  font-size: 16px;
   font-weight: 900;
-  line-height: 1;
-  font-family: 'Nunito', system-ui, -apple-system, sans-serif;
-  color: #0D1B3E;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: #FFFFFF;
+  letter-spacing: 0.5px;
   user-select: none;
-  margin-top: -2px;
+  display: inline-block;
 }
 
 .puente-fab-label {
@@ -2517,32 +2510,32 @@ button.spotlight-active *,
   transform: scale(1.08);
 }
 
-/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN CIRCULAR '?' ================= */
+/* ================= TRADUCCIÓN SEMÁNTICA INLINE: BOTÓN 'AYUDA' ================= */
 .semantic-translation-badge {
   display: none !important;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
+  padding: 3px 10px;
+  min-height: 26px;
+  border-radius: 13px;
   background: var(--indigo-soft);
   border: 1.5px solid var(--indigo);
   color: var(--indigo);
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
   cursor: pointer;
   margin-left: 6px;
   flex: none;
   line-height: 1;
-  padding: 0;
   vertical-align: middle;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
 }
 
 .semantic-translation-badge:hover, .semantic-translation-badge:focus {
   background: var(--indigo);
   color: #FFFFFF;
-  transform: scale(1.1);
+  transform: translateY(-1px);
 }
 
 /* ================= CONTROL DE LENGUAJE SIMPLE / BANCA ESTÁNDAR ================= */
@@ -2801,9 +2794,11 @@ button.spotlight-active *,
   transform: scale(0.98);
 }
 
-.recipient-search-input-wrap svg {
+.recipient-search-input-wrap > svg {
   position: absolute;
   left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--muted);
   pointer-events: none;
 }
@@ -3295,7 +3290,7 @@ button.spotlight-active *,
                   <div class="account-label">
                     <span class="term-technical">Saldo disponible</span>
                     <span class="term-simplified">Dinero que tienes listo para usar</span>
-                    <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('saldo_disponible')" title="¿Qué significa Saldo disponible?" aria-label="Significado de Saldo disponible">?</button>
+                    <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('saldo_disponible')" title="¿Qué significa Saldo disponible?" aria-label="Significado de Saldo disponible">Ayuda</button>
                   </div>
                 </div>
 
@@ -3462,7 +3457,7 @@ button.spotlight-active *,
             <div id="paneRecipientSaved">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
                 <span class="semantic-helper-text" style="font-weight:800;color:var(--muted)">Contactos habituales de Elena:</span>
-                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('destinatario')" title="¿Qué significa Destinatario?" aria-label="Significado de Destinatario">?</button>
+                <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('destinatario')" title="¿Qué significa Destinatario?" aria-label="Significado de Destinatario">Ayuda</button>
               </div>
 
               <!-- Lista de Contactos Alfabética con la distribución oficial solicitada -->
@@ -3739,7 +3734,7 @@ button.spotlight-active *,
                 <span class="term-technical">NUEVO DESTINATARIO</span>
                 <span class="term-simplified">AGREGAR NUEVO DESTINATARIO</span>
               </span>
-              <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('inscribir_destinatario')" title="¿Qué significa Inscribir destinatario?" aria-label="Significado de Inscribir destinatario">?</button>
+              <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('inscribir_destinatario')" title="¿Qué significa Inscribir destinatario?" aria-label="Significado de Inscribir destinatario">Ayuda</button>
             </div>
 
             <!-- ETAPA A: SOLO INGRESO DE RUT CON TECLADO NUMÉRICO Y DICTADO POR VOZ -->
@@ -3758,7 +3753,7 @@ button.spotlight-active *,
                   <span class="semantic-helper-text" style="font-size:16px;font-weight:700;color:var(--muted)">RUT de la persona que recibirá el dinero</span>
                 </label>
                 
-                <div style="position:relative;display:flex;align-items:center">
+                <div class="input-with-voice-wrap">
                   <input type="text" class="form-input" id="newRecipientRut" placeholder="Ej: 15678910K (automático)" inputmode="numeric" style="padding-right:54px;font-size:20px;font-weight:800;letter-spacing:1px">
                   <button type="button" class="btn-voice-dictate" id="btnVoiceDictateRut" data-target="newRecipientRut" data-field-type="rut" aria-label="Dictar RUT por voz" title="Dictar RUT por voz">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
@@ -3954,7 +3949,7 @@ button.spotlight-active *,
                 <b>CuentaRUT de Elena</b>
                 <div style="font-size:16px;color:var(--ink);margin-top:2px">Saldo disponible: <strong data-bind="user-balance">$350.000</strong></div>
               </div>
-              <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('cuenta_cargo')" title="¿Qué significa Cuenta de cargo?" aria-label="Significado de Cuenta de cargo">?</button>
+              <button type="button" class="semantic-translation-badge" onclick="window.interfazPuente.showTermExplanation('cuenta_cargo')" title="¿Qué significa Cuenta de cargo?" aria-label="Significado de Cuenta de cargo">Ayuda</button>
             </div>
 
             <!-- Input de Monto Grande con opción de escribir o elegir montos sugeridos -->
@@ -3971,9 +3966,9 @@ button.spotlight-active *,
               
               <!-- Input editable directamente donde se puede escribir cualquier monto -->
               <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;margin:6px 0 10px">
-                <div style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:100%;max-width:320px">
+                <div class="amount-voice-input-wrap">
                   <input type="text" class="amount-input-big" id="inputAmount" value="$0" inputmode="numeric" placeholder="$0" aria-label="Escribe aquí el monto en pesos (máximo $200.000)" style="padding-right:54px">
-                  <button type="button" class="btn-voice-dictate" id="btnVoiceDictateAmount" data-target="inputAmount" data-field-type="amount" aria-label="Dictar monto por voz" title="Dictar monto por voz" style="position:absolute;right:12px">
+                  <button type="button" class="btn-voice-dictate" id="btnVoiceDictateAmount" data-target="inputAmount" data-field-type="amount" aria-label="Dictar monto por voz" title="Dictar monto por voz">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                   </button>
                 </div>
@@ -4247,14 +4242,6 @@ button.spotlight-active *,
             <input type="text" class="security-digit" maxlength="1" readonly value="">
           </div>
 
-          <!-- Botón de dictado por voz para la clave de 6 números -->
-          <div style="display:flex;justify-content:center;margin:-6px 0 10px">
-            <button type="button" class="btn-voice-dictate-pin" id="btnVoiceDictatePin" data-target="securityCodeBox" data-field-type="pin" aria-label="Dictar los 6 números por voz" title="Dictar los 6 números por voz">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-              <span>Dictar los 6 números por voz</span>
-            </button>
-          </div>
-          <div class="voice-dictate-feedback" id="feedbackVoicePin" style="display:none;text-align:center;margin-bottom:10px"></div>
 
           <!-- Tablero numérico en pantalla (0-9 y borrar, sin la K) -->
           <div class="virtual-num-keypad" id="authVirtualKeypad" style="margin:12px auto 16px">
@@ -4358,9 +4345,9 @@ button.spotlight-active *,
         </div>
 
         <!-- Botón Flotante Principal (Widget) -->
-        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Widget de ayuda" title="Widget de ayuda">
+        <button type="button" class="puente-fab-btn" id="puenteFabBtn" aria-label="Ayuda" title="Ayuda">
           <span class="puente-fab-icon" id="puenteFabIcon">
-            <span class="icon-open fab-question-mark" aria-hidden="true">?</span>
+            <span class="icon-open fab-ayuda-text">Ayuda</span>
             <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" style="display:none"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </span>
         </button>
@@ -7609,72 +7596,6 @@ class AppRouter {
         }
       });
     });
-
-    // Botón de dictado por voz para la clave de 6 números (.btn-voice-dictate-pin)
-    const btnVoicePin = document.getElementById('btnVoiceDictatePin');
-    const feedbackPin = document.getElementById('feedbackVoicePin');
-
-    if (btnVoicePin) {
-      btnVoicePin.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (SpeechRecognition) {
-          try {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'es-CL';
-            recognition.interimResults = false;
-            recognition.maxAlternatives = 1;
-
-            btnVoicePin.classList.add('listening');
-            showFeedback(feedbackPin, '🎙️ Escuchando... Di los 6 números de tu clave');
-
-            recognition.onresult = (event) => {
-              const transcript = event.results[0][0].transcript;
-              const digits = parseSpokenDigits(transcript, false);
-
-              if (digits.length >= 6) {
-                this.enteredPin = digits.slice(0, 6);
-                if (this.updatePinDisplay) this.updatePinDisplay();
-                showFeedback(feedbackPin, `✓ Clave de 6 números ingresada: ${this.enteredPin}`);
-                setTimeout(() => {
-                  this.executeTransfer();
-                }, 800);
-              } else if (digits.length > 0) {
-                this.enteredPin = digits;
-                if (this.updatePinDisplay) this.updatePinDisplay();
-                showFeedback(feedbackPin, `Detectamos ${digits.length} dígitos (${digits}). Faltan ${6 - digits.length}. Puedes completar con los botones abajo.`);
-              } else {
-                showFeedback(feedbackPin, 'No detectamos números. Puedes tocar los números abajo.', true);
-              }
-            };
-
-            recognition.onerror = () => {
-              showFeedback(feedbackPin, 'No pudimos escuchar los números. Toca los números del teclado abajo.', true);
-            };
-
-            recognition.onend = () => {
-              btnVoicePin.classList.remove('listening');
-              hideFeedback(feedbackPin, 4000);
-            };
-
-            recognition.start();
-          } catch (err) {
-            console.warn('SpeechRecognition PIN error:', err);
-            btnVoicePin.classList.remove('listening');
-          }
-        } else {
-          // Fallback simulado
-          this.enteredPin = '123456';
-          if (this.updatePinDisplay) this.updatePinDisplay();
-          showFeedback(feedbackPin, '✓ Clave de 6 números ingresada (simulada): 123456');
-          hideFeedback(feedbackPin, 3000);
-          setTimeout(() => {
-            this.executeTransfer();
-          }, 800);
-        }
-      });
-    }
   }
 }
 
