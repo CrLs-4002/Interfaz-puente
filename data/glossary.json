@@ -88,7 +88,7 @@
       "traduccion_simple": "Confirmar con código de seguridad",
       "pregunta_guia": "¿Confirmas el envío con tu código de seguridad BE Pass?",
       "explicacion": "Es un candado de seguridad: un código de 6 números que solo tú conoces para asegurar que nadie envíe dinero por ti.",
-      "ejemplo": "En esta prueba simulada usaremos el código 123456."
+      "ejemplo": "Puedes ingresar cualquier clave de 6 números para autorizar."
     },
     {
       "id": "comprobante",

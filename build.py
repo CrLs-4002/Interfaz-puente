@@ -69,7 +69,7 @@ window.PUENTE_TEST = {{
   SALDO_INICIAL: 350000,
   MONTO_TAREA: 15000,      // Tarea que entrega el facilitador: "envía $15.000 a Rosa Pérez"
   MONTO_CON_ERROR: 150000, // Mismo monto con un cero de más (dentro del saldo, para que llegue al resumen)
-  CLAVE_PRUEBA: '123456'
+  CLAVE_PRUEBA: 'Cualquiera de 6 dígitos'
 }};
 
 window.puenteToast = function (msg, ms) {{

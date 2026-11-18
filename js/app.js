@@ -474,19 +474,21 @@ class AppRouter {
       inputAmount.addEventListener('input', (e) => {
         let val = this.parseCLP(e.target.value);
 
-        // Límite máximo para transferir y digitar: $200.000
-        if (val > MAX_AMOUNT) {
-          val = MAX_AMOUNT;
+        if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `El monto máximo para transferir y digitar es de ${this.formatCLP(MAX_AMOUNT)}.`;
-        } else if (val > this.user.balance) {
+          amountErrorBox.classList.add('show');
+          amountErrorBox.textContent = `El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
+        } else if (val > MAX_AMOUNT) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
+          amountErrorBox.classList.add('show');
+          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
         } else {
           inputAmount.classList.remove('has-error');
           amountErrorBox.classList.add('hidden');
+          amountErrorBox.classList.remove('show');
+          amountErrorBox.textContent = '';
         }
 
         this.transferState.amount = val;
@@ -504,7 +506,16 @@ class AppRouter {
           inputAmount.value = this.formatCLP(amt);
           inputAmount.classList.remove('has-error');
         }
-        amountErrorBox.classList.add('hidden');
+        if (amt > this.user.balance) {
+          inputAmount && inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.classList.add('show');
+          amountErrorBox.textContent = `El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
+        } else {
+          amountErrorBox.classList.add('hidden');
+          amountErrorBox.classList.remove('show');
+          amountErrorBox.textContent = '';
+        }
       });
     });
 
@@ -522,17 +533,8 @@ class AppRouter {
         if (!val || val <= 0) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
+          amountErrorBox.classList.add('show');
           amountErrorBox.textContent = 'Por favor ingresa una cantidad de dinero a transferir.';
-          alert('Por favor ingresa una cantidad de dinero a transferir.');
-          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
-          return;
-        }
-
-        if (val > MAX_AMOUNT) {
-          inputAmount.classList.add('has-error');
-          amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
-          alert(`El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`);
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
@@ -540,14 +542,33 @@ class AppRouter {
         if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
-          amountErrorBox.textContent = `No cuentas con ese dinero. Tu saldo disponible es ${this.formatCLP(this.user.balance)}.`;
-          alert(`El monto supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`);
+          amountErrorBox.classList.add('show');
+          const msg = `El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
+          amountErrorBox.textContent = msg;
+          if (window.puenteSpeech) {
+            window.puenteSpeech.speak(msg);
+          }
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (val > MAX_AMOUNT) {
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.classList.add('show');
+          const msg = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          amountErrorBox.textContent = msg;
+          if (window.puenteSpeech) {
+            window.puenteSpeech.speak(msg);
+          }
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
         }
 
         inputAmount.classList.remove('has-error');
         amountErrorBox.classList.add('hidden');
+        amountErrorBox.classList.remove('show');
+        amountErrorBox.textContent = '';
 
         if (inputGlosa) {
           this.transferState.glosa = inputGlosa.value.trim();
@@ -615,7 +636,7 @@ class AppRouter {
       if (this.transferState.amount > this.user.balance || this.transferState.amount > 200000) {
         warnBox.classList.remove('hidden');
         if (this.transferState.amount > this.user.balance) {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera tu saldo disponible (${this.formatCLP(this.user.balance)}).`;
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
         } else {
           warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
         }
@@ -687,10 +708,34 @@ class AppRouter {
       });
     });
 
+    // Soporte para teclado físico (0-9, Backspace, Enter)
+    window.addEventListener('keydown', (e) => {
+      if (!modal || !modal.classList.contains('active')) return;
+      if (e.key === 'Backspace') {
+        if (this.enteredPin.length > 0) {
+          this.enteredPin = this.enteredPin.slice(0, -1);
+          this.updatePinDisplay();
+        }
+      } else if (/^[0-9]$/.test(e.key)) {
+        if (this.enteredPin.length < 6) {
+          this.enteredPin += e.key;
+          this.updatePinDisplay();
+        }
+      } else if (e.key === 'Enter') {
+        if (this.enteredPin.length === 6) {
+          this.executeTransfer();
+        }
+      }
+    });
+
     if (btnAuthorize) {
       btnAuthorize.addEventListener('click', () => {
         if (this.enteredPin.length < 6) {
-          alert('Por favor completa los 6 números de tu clave tocando el teclado.');
+          if (window.puenteToast) {
+            window.puenteToast('Por favor ingresa los 6 números de tu clave.');
+          } else {
+            alert('Por favor completa los 6 números de tu clave.');
+          }
           return;
         }
         this.executeTransfer();

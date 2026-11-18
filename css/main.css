@@ -692,12 +692,18 @@ input, select, textarea {
 
 .form-error-msg {
   display: none;
-  color: var(--red);
-  font-size: 14px;
+  color: #B91C1C;
+  background: #FEF2F2;
+  border: 1.5px solid #F87171;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 15px;
   font-weight: 800;
-  margin-top: 6px;
+  line-height: 1.4;
+  margin-top: 10px;
 }
 
+.form-error-msg.show,
 .form-group.has-error .form-error-msg {
   display: block;
 }
