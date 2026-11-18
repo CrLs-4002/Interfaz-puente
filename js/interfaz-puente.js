@@ -484,9 +484,9 @@ class InterfazPuente {
           },
           {
             target: '#btnConfirmRutNext',
-            title: 'Paso 2: Continuar a los datos',
-            message: 'Una vez anotado el RUT, toca este botón para completar el nombre y banco de la persona.',
-            speech: 'Paso 2: Toca el botón verde Continuar a datos del destinatario.'
+            title: 'Paso 2: Continuar',
+            message: 'Una vez anotado el RUT, toca Continuar para completar el nombre y banco de la persona.',
+            speech: 'Paso 2: Toca el botón Continuar para avanzar.'
           }
         ];
       } else {

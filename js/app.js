@@ -201,9 +201,26 @@ class AppRouter {
     if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
     if (tabFavorites) tabFavorites.addEventListener('click', showFavoritesTab);
 
+    // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
+    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
+    const btnCancelAddRecipientRut = document.getElementById('btnCancelAddRecipientRut');
+    const newRecipientRutInput = document.getElementById('newRecipientRut');
+
+    const updateRutNextButtonState = () => {
+      if (!btnConfirmRutNext) return;
+      const clean = newRecipientRutInput ? newRecipientRutInput.value.replace(/[^0-9kK]/g, '') : '';
+      if (clean.length >= 7) {
+        btnConfirmRutNext.removeAttribute('disabled');
+      } else {
+        btnConfirmRutNext.setAttribute('disabled', 'disabled');
+      }
+    };
+
     // Botón Agregar Nuevo: Abre una nueva pantalla independiente (view-new-recipient)
     const openNewRecipientScreen = () => {
       this.transferState.isNewRecipient = true;
+      if (newRecipientRutInput) newRecipientRutInput.value = '';
+      updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
       if (stepDetails) stepDetails.classList.add('hidden');
       this.goTo('new-recipient');
@@ -215,6 +232,13 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        this.transferState.isNewRecipient = false;
+        this.goTo('recipient');
+      });
+    }
+
+    if (btnCancelAddRecipientRut) {
+      btnCancelAddRecipientRut.addEventListener('click', () => {
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -254,7 +278,6 @@ class AppRouter {
     }
 
     // Formateo automático de RUT mientras la persona escribe o presiona teclas
-    const newRecipientRutInput = document.getElementById('newRecipientRut');
     const formatRutValue = (raw) => {
       let val = raw.replace(/[^0-9kK]/g, '').toUpperCase();
       if (val.length > 9) val = val.slice(0, 9);
@@ -278,6 +301,7 @@ class AppRouter {
     if (newRecipientRutInput) {
       newRecipientRutInput.addEventListener('input', (e) => {
         e.target.value = formatRutValue(e.target.value);
+        updateRutNextButtonState();
       });
     }
 
@@ -338,6 +362,7 @@ class AppRouter {
 
             if (digits) {
               newRecipientRutInput.value = formatRutValue(digits);
+              newRecipientRutInput.dispatchEvent(new Event('input'));
               if (rutVoiceFeedback) {
                 rutVoiceFeedback.textContent = `✓ Entendido: ${newRecipientRutInput.value}`;
               }
@@ -367,6 +392,7 @@ class AppRouter {
           // Fallback amigable si el navegador no soporta Web Speech API
           const demoRut = '15.678.910-K';
           newRecipientRutInput.value = demoRut;
+          newRecipientRutInput.dispatchEvent(new Event('input'));
           if (rutVoiceFeedback) {
             rutVoiceFeedback.style.display = 'block';
             rutVoiceFeedback.textContent = `✓ RUT dictado (simulado): ${demoRut}`;
@@ -377,9 +403,9 @@ class AppRouter {
     }
 
     // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
-    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
     if (btnConfirmRutNext) {
       btnConfirmRutNext.addEventListener('click', () => {
+        if (btnConfirmRutNext.hasAttribute('disabled')) return;
         const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
         if (rutVal.length < 3) {
           alert('Por favor ingresa un RUT válido con los números o el micrófono.');
@@ -397,6 +423,7 @@ class AppRouter {
         }
       });
     }
+    updateRutNextButtonState();
 
     // Selección de Tipo de Cuenta con 4 Botones (Pills)
     const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');

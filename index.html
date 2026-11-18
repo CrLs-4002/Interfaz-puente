@@ -33,11 +33,12 @@
   --orange-light: #FFF1EB;
 
   /* Secundario: Azul Eléctrico / Corporativo para jerarquía, tarjetas y navegación */
-  --navy: #1A418A;
-  --navy-sheet: #123270;
-  --indigo: #1A418A;
-  --indigo-dark: #0E285B;
-  --indigo-soft: #EBF1FA;
+  --navy: #0D1B3E;
+  --navy-sheet: #102048;
+  --indigo: #202F7B;
+  --indigo-dark: #141E52;
+  --indigo-soft: #EAEFFA;
+  --be-blue: #1A418A;
 
   /* Fondo: Blanco / Gris Neutro Claro */
   --bg: #F4F6F9;
@@ -50,12 +51,15 @@
   --muted: #5B5C5D;
   --line: #E2E8F0;
 
+  /* Accesibilidad e Interfaz Puente (Widget '?' y Modo Tutorial: Verde Menta y Verde Azulado Originales) */
+  --teal: #0D8F72;
+  --teal-light: #E0F5EE;
+  --mint: #2EC4A4;
+  --focus-ring: #0D8F72;
+
   /* Estados Transaccionales */
   /* Éxito (Success): Verde esmeralda (#2E7D32) para transferencias realizadas */
   --green-success: #2E7D32;
-  --teal: #2E7D32;
-  --teal-light: #E8F5E9;
-  --mint: #43A047;
 
   /* Error / Alerta: Rojo estándar (#D32F2F) para fondos insuficientes o errores */
   --red-error: #D32F2F;
@@ -63,7 +67,6 @@
   --red-soft: #FFEBEE;
   --yellow-alert: #FFF8E1;
   --yellow-border: #FFD54F;
-  --focus-ring: #1A418A;
 
   /* Tipografía Mobile-First Nativa (SF Pro / Roboto / Nunito Sans) */
   --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Nunito Sans', sans-serif;
@@ -546,6 +549,22 @@ input, select, textarea {
 .btn-cta-big:active {
   transform: scale(0.98);
   background: var(--orange-dark);
+}
+
+.btn-cta-big:disabled,
+.btn-cta-full-width:disabled,
+button:disabled {
+  background: #CBD5E1 !important;
+  color: #94A3B8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+}
+
+.btn-cta-big:disabled svg,
+.btn-cta-full-width:disabled svg {
+  stroke: #94A3B8 !important;
 }
 
 /* ================= BANNER PROMO CUENTA CORRIENTE DIGITAL ================= */
@@ -3568,9 +3587,8 @@ button.spotlight-active *,
               <div class="inline-error" id="rutErrorBox" role="alert"></div>
 
               <div class="form-bottom-actions" style="margin-top:20px">
-                <button type="button" class="btn-cta-big btn-cta-full-width" id="btnConfirmRutNext">
-                  <span class="term-technical">Continuar</span>
-                  <span class="term-simplified">Continuar a datos del destinatario</span>
+                <button type="button" class="btn-cta-big btn-cta-full-width" id="btnConfirmRutNext" disabled>
+                  <span>Continuar</span>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
                 </button>
                 <button type="button" class="btn-cancel-full-width" id="btnCancelAddRecipientRut">
@@ -5051,9 +5069,9 @@ class InterfazPuente {
           },
           {
             target: '#btnConfirmRutNext',
-            title: 'Paso 2: Continuar a los datos',
-            message: 'Una vez anotado el RUT, toca este botón para completar el nombre y banco de la persona.',
-            speech: 'Paso 2: Toca el botón verde Continuar a datos del destinatario.'
+            title: 'Paso 2: Continuar',
+            message: 'Una vez anotado el RUT, toca Continuar para completar el nombre y banco de la persona.',
+            speech: 'Paso 2: Toca el botón Continuar para avanzar.'
           }
         ];
       } else {
@@ -6235,9 +6253,26 @@ class AppRouter {
     if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
     if (tabFavorites) tabFavorites.addEventListener('click', showFavoritesTab);
 
+    // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
+    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
+    const btnCancelAddRecipientRut = document.getElementById('btnCancelAddRecipientRut');
+    const newRecipientRutInput = document.getElementById('newRecipientRut');
+
+    const updateRutNextButtonState = () => {
+      if (!btnConfirmRutNext) return;
+      const clean = newRecipientRutInput ? newRecipientRutInput.value.replace(/[^0-9kK]/g, '') : '';
+      if (clean.length >= 7) {
+        btnConfirmRutNext.removeAttribute('disabled');
+      } else {
+        btnConfirmRutNext.setAttribute('disabled', 'disabled');
+      }
+    };
+
     // Botón Agregar Nuevo: Abre una nueva pantalla independiente (view-new-recipient)
     const openNewRecipientScreen = () => {
       this.transferState.isNewRecipient = true;
+      if (newRecipientRutInput) newRecipientRutInput.value = '';
+      updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
       if (stepDetails) stepDetails.classList.add('hidden');
       this.goTo('new-recipient');
@@ -6249,6 +6284,13 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        this.transferState.isNewRecipient = false;
+        this.goTo('recipient');
+      });
+    }
+
+    if (btnCancelAddRecipientRut) {
+      btnCancelAddRecipientRut.addEventListener('click', () => {
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -6288,7 +6330,6 @@ class AppRouter {
     }
 
     // Formateo automático de RUT mientras la persona escribe o presiona teclas
-    const newRecipientRutInput = document.getElementById('newRecipientRut');
     const formatRutValue = (raw) => {
       let val = raw.replace(/[^0-9kK]/g, '').toUpperCase();
       if (val.length > 9) val = val.slice(0, 9);
@@ -6312,6 +6353,7 @@ class AppRouter {
     if (newRecipientRutInput) {
       newRecipientRutInput.addEventListener('input', (e) => {
         e.target.value = formatRutValue(e.target.value);
+        updateRutNextButtonState();
       });
     }
 
@@ -6372,6 +6414,7 @@ class AppRouter {
 
             if (digits) {
               newRecipientRutInput.value = formatRutValue(digits);
+              newRecipientRutInput.dispatchEvent(new Event('input'));
               if (rutVoiceFeedback) {
                 rutVoiceFeedback.textContent = `✓ Entendido: ${newRecipientRutInput.value}`;
               }
@@ -6401,6 +6444,7 @@ class AppRouter {
           // Fallback amigable si el navegador no soporta Web Speech API
           const demoRut = '15.678.910-K';
           newRecipientRutInput.value = demoRut;
+          newRecipientRutInput.dispatchEvent(new Event('input'));
           if (rutVoiceFeedback) {
             rutVoiceFeedback.style.display = 'block';
             rutVoiceFeedback.textContent = `✓ RUT dictado (simulado): ${demoRut}`;
@@ -6411,9 +6455,9 @@ class AppRouter {
     }
 
     // Botón Continuar de la Etapa RUT (Avanza a los datos del destinatario)
-    const btnConfirmRutNext = document.getElementById('btnConfirmRutNext');
     if (btnConfirmRutNext) {
       btnConfirmRutNext.addEventListener('click', () => {
+        if (btnConfirmRutNext.hasAttribute('disabled')) return;
         const rutVal = newRecipientRutInput ? newRecipientRutInput.value.trim() : '';
         if (rutVal.length < 3) {
           alert('Por favor ingresa un RUT válido con los números o el micrófono.');
@@ -6431,6 +6475,7 @@ class AppRouter {
         }
       });
     }
+    updateRutNextButtonState();
 
     // Selección de Tipo de Cuenta con 4 Botones (Pills)
     const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
