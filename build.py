@@ -184,6 +184,24 @@ document.getElementById('btnToggleFullScreen').addEventListener('click', functio
   </script>'''
         html_content = html_content.replace(script_block, js_replacement)
 
+    # Reemplazo de logo por Data URI standalone
+    logo_path = os.path.join(BASE_DIR, 'assets', 'logo-bancoestado.png')
+    if os.path.exists(logo_path):
+        import base64
+        with open(logo_path, 'rb') as f_img:
+            logo_b64 = base64.b64encode(f_img.read()).decode('ascii')
+            logo_data_uri = f'data:image/png;base64,{logo_b64}'
+            html_content = re.sub(
+                r'<span class="be-logo-symbol">B</span>',
+                f'<img src="{logo_data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
+                html_content
+            )
+            html_content = re.sub(
+                r'<img\s+src=["\'][^"\']+["\']\s+alt="Logo BancoEstado"\s+class="be-logo-symbol">',
+                f'<img src="{logo_data_uri}" alt="Logo BancoEstado" class="be-logo-symbol">',
+                html_content
+            )
+
     target_path = os.path.join(BASE_DIR, 'index.html')
     with open(target_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
