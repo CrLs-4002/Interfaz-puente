@@ -927,6 +927,7 @@ button.spotlight-active *,
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
 }
 
 /* Botón Agregar Nuevo Centrado Superior */
@@ -987,6 +988,7 @@ button.spotlight-active *,
   font-weight: 700;
   color: var(--ink);
   transition: all 0.2s ease;
+  box-sizing: border-box;
 }
 
 .recipient-search-input:focus {
