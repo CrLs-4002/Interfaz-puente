@@ -45,6 +45,7 @@ class AppRouter {
     this.setupAmountStep();
     this.setupSummaryStep();
     this.setupAuthStep();
+    this.setupSuccessStep();
     this.setupReceiptStep();
     this.setupBalanceToggle();
     this.updateBalanceUI();
@@ -77,6 +78,8 @@ class AppRouter {
     // Configurar contenidos específicos según la vista
     if (viewName === 'summary') {
       this.renderSummary();
+    } else if (viewName === 'success') {
+      this.renderSuccess();
     } else if (viewName === 'receipt') {
       this.renderReceipt();
     }
@@ -937,7 +940,34 @@ class AppRouter {
       window.interfazPuente.recordSuccessfulTransfer(window.facilitatorPanel.currentMetrics.helpRequests > 0);
     }
 
-    this.goTo('receipt');
+    this.goTo('success');
+  }
+
+  /* Paso 4.5: Pantalla de Éxito en la Transferencia */
+  setupSuccessStep() {
+    const btnContinue = document.getElementById('btnContinueFromSuccess');
+    if (btnContinue) {
+      btnContinue.addEventListener('click', () => {
+        this.goTo('receipt');
+      });
+    }
+  }
+
+  renderSuccess() {
+    const msgEl = document.getElementById('transferSuccessMessage');
+    const amtStr = this.formatCLP(this.transferState.amount);
+    const destName = (this.transferState.recipient && this.transferState.recipient.name)
+      ? this.transferState.recipient.name
+      : 'Rosa Pérez Sepúlveda';
+
+    if (msgEl) {
+      msgEl.innerHTML = `Listo haz enviado <strong>${amtStr}</strong> a <strong>${destName}</strong>`;
+    }
+
+    if (window.puenteSpeech) {
+      const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
+      window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
+    }
   }
 
   /* Paso 5: Comprobante */

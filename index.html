@@ -1510,6 +1510,79 @@ button:disabled {
   margin-bottom: 16px;
 }
 
+/* ================= PANTALLA: ÉXITO EN TRANSFERENCIA ================= */
+.success-screen-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  padding: 32px 20px;
+  box-sizing: border-box;
+}
+
+.success-screen-card {
+  width: 100%;
+  max-width: 380px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 40px 24px 34px 24px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  border: 1.5px solid var(--line);
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-screen-icon-wrap {
+  margin-bottom: 22px;
+}
+
+.success-screen-icon-circle {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: #2E7D32;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(46, 125, 50, 0.35);
+  animation: successPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes successPop {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.success-screen-heading {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1E293B;
+  margin: 0 0 14px 0;
+}
+
+.success-screen-message {
+  font-size: 19px;
+  line-height: 1.5;
+  color: #334155;
+  font-weight: 500;
+  margin: 0;
+  padding: 0 8px;
+}
+
+.success-screen-message strong {
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.success-screen-actions {
+  width: 100%;
+  max-width: 380px;
+}
+
 /* ================= COMPROBANTE FINAL ================= */
 .receipt-card {
   background: #FFFFFF;
@@ -3867,6 +3940,34 @@ button.spotlight-active *,
           </div>
         </section>
 
+        <!-- ================= PANTALLA INTERMEDIA: ÉXITO EN LA TRANSFERENCIA ================= -->
+        <section class="screen-view" id="view-success" aria-label="Transferencia realizada con éxito">
+          <div class="scroll-area form-step-container success-screen-container">
+            <article class="success-screen-card">
+              <div class="success-screen-icon-wrap">
+                <div class="success-screen-icon-circle">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </div>
+              </div>
+
+              <h1 class="success-screen-heading">¡Transferencia exitosa!</h1>
+
+              <p class="success-screen-message" id="transferSuccessMessage">
+                Listo haz enviado $15.000 a Rosa Pérez Sepúlveda
+              </p>
+            </article>
+
+            <div class="success-screen-actions">
+              <button type="button" class="btn-cta-big btn-cta-full-width" id="btnContinueFromSuccess">
+                <span>Continuar</span>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </section>
+
         <!-- ================= PANTALLA 5: COMPROBANTE FINAL ================= -->
         <section class="screen-view" id="view-receipt" aria-label="Comprobante de transferencia">
           <div class="scroll-area form-step-container" style="padding-top:24px">
@@ -5130,6 +5231,15 @@ class InterfazPuente {
           speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.'
         }
       ];
+    } else if (currentView === 'success') {
+      return [
+        {
+          target: '#btnContinueFromSuccess',
+          title: '¡Transferencia Exitosa!',
+          message: 'Tu dinero ya fue enviado. Toca este botón para ver el comprobante detallado.',
+          speech: 'Tu dinero ya fue enviado. Toca Continuar para ver tu comprobante.'
+        }
+      ];
     } else if (currentView === 'receipt') {
       return [
         {
@@ -6082,6 +6192,7 @@ class AppRouter {
     this.setupAmountStep();
     this.setupSummaryStep();
     this.setupAuthStep();
+    this.setupSuccessStep();
     this.setupReceiptStep();
     this.setupBalanceToggle();
     this.updateBalanceUI();
@@ -6114,6 +6225,8 @@ class AppRouter {
     // Configurar contenidos específicos según la vista
     if (viewName === 'summary') {
       this.renderSummary();
+    } else if (viewName === 'success') {
+      this.renderSuccess();
     } else if (viewName === 'receipt') {
       this.renderReceipt();
     }
@@ -6974,7 +7087,34 @@ class AppRouter {
       window.interfazPuente.recordSuccessfulTransfer(window.facilitatorPanel.currentMetrics.helpRequests > 0);
     }
 
-    this.goTo('receipt');
+    this.goTo('success');
+  }
+
+  /* Paso 4.5: Pantalla de Éxito en la Transferencia */
+  setupSuccessStep() {
+    const btnContinue = document.getElementById('btnContinueFromSuccess');
+    if (btnContinue) {
+      btnContinue.addEventListener('click', () => {
+        this.goTo('receipt');
+      });
+    }
+  }
+
+  renderSuccess() {
+    const msgEl = document.getElementById('transferSuccessMessage');
+    const amtStr = this.formatCLP(this.transferState.amount);
+    const destName = (this.transferState.recipient && this.transferState.recipient.name)
+      ? this.transferState.recipient.name
+      : 'Rosa Pérez Sepúlveda';
+
+    if (msgEl) {
+      msgEl.innerHTML = `Listo haz enviado <strong>${amtStr}</strong> a <strong>${destName}</strong>`;
+    }
+
+    if (window.puenteSpeech) {
+      const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
+      window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
+    }
   }
 
   /* Paso 5: Comprobante */

@@ -560,6 +560,15 @@ class InterfazPuente {
           speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.'
         }
       ];
+    } else if (currentView === 'success') {
+      return [
+        {
+          target: '#btnContinueFromSuccess',
+          title: '¡Transferencia Exitosa!',
+          message: 'Tu dinero ya fue enviado. Toca este botón para ver el comprobante detallado.',
+          speech: 'Tu dinero ya fue enviado. Toca Continuar para ver tu comprobante.'
+        }
+      ];
     } else if (currentView === 'receipt') {
       return [
         {
