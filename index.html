@@ -26,41 +26,62 @@
    ========================================================================== */
 
 :root {
-  /* Paleta BancoEstado adaptada a alto contraste */
-  --orange: #F77F00;
-  --orange-dark: #D46A00;
-  --orange-light: #FFF2E5;
-  --navy: #0D1B3E;
-  --navy-sheet: #102048;
-  --indigo: #202F7B;
-  --indigo-dark: #141E52;
-  --indigo-soft: #EAEFFA;
-  --teal: #0D8F72;
-  --teal-light: #E0F5EE;
-  --mint: #2EC4A4;
-  --bg: #F4F6FA;
+  /* ================= PALETA DE COLORES (UI TOKENS BANCOESTADO) ================= */
+  /* Primario (Marca): Naranja Institucional para CTA principal, alertas críticas */
+  --orange: #F35619;
+  --orange-dark: #D84209;
+  --orange-light: #FFF1EB;
+
+  /* Secundario: Azul Eléctrico / Corporativo para jerarquía, tarjetas y navegación */
+  --navy: #1A418A;
+  --navy-sheet: #123270;
+  --indigo: #1A418A;
+  --indigo-dark: #0E285B;
+  --indigo-soft: #EBF1FA;
+
+  /* Fondo: Blanco / Gris Neutro Claro */
+  --bg: #F4F6F9;
   --card-bg: #FFFFFF;
-  --ink: #141A29;
-  --muted: #4A5568;
-  --line: #CFD7E6;
-  --red: #C52224;
-  --red-soft: #FDECEC;
+
+  /* Texto Principal: Gris Oscuro / Antracita (#2D2D2D / #0F0F0E) */
+  --ink: #2D2D2D;
+
+  /* Texto Secundario: Gris Medio (#5B5C5D / #666666) */
+  --muted: #5B5C5D;
+  --line: #E2E8F0;
+
+  /* Estados Transaccionales */
+  /* Éxito (Success): Verde esmeralda (#2E7D32) para transferencias realizadas */
+  --green-success: #2E7D32;
+  --teal: #2E7D32;
+  --teal-light: #E8F5E9;
+  --mint: #43A047;
+
+  /* Error / Alerta: Rojo estándar (#D32F2F) para fondos insuficientes o errores */
+  --red-error: #D32F2F;
+  --red: #D32F2F;
+  --red-soft: #FFEBEE;
   --yellow-alert: #FFF8E1;
   --yellow-border: #FFD54F;
-  --focus-ring: #0D8F72;
+  --focus-ring: #1A418A;
 
-  /* Accesibilidad Cognitiva y Táctil */
-  --font-main: 'Nunito Sans', system-ui, -apple-system, sans-serif;
-  --font-brand: 'Nunito', system-ui, sans-serif;
-  --text-base: 18px;
+  /* Tipografía Mobile-First Nativa (SF Pro / Roboto / Nunito Sans) */
+  --font-main: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', 'Nunito Sans', sans-serif;
+  --font-brand: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Nunito', sans-serif;
+  --text-base: 16px;
   --touch-min: 48px;
-  --touch-btn: 56px;
-  --radius-lg: 18px;
-  --radius-md: 14px;
+  --touch-btn: 52px;
+
+  /* Bordes Redondeados: 12px a 16px en tarjetas, 100px (pill) en botones */
+  --radius-lg: 16px;
+  --radius-md: 12px;
   --radius-sm: 8px;
-  --shadow-sm: 0 2px 8px rgba(13, 27, 62, 0.08);
-  --shadow-md: 0 8px 24px rgba(13, 27, 62, 0.14);
-  --shadow-lg: 0 16px 40px rgba(13, 27, 62, 0.22);
+  --radius-pill: 100px;
+
+  /* Sombras y elevaciones limpias */
+  --shadow-sm: 0 2px 8px rgba(26, 65, 138, 0.06);
+  --shadow-md: 0 8px 20px rgba(26, 65, 138, 0.10);
+  --shadow-lg: 0 16px 36px rgba(26, 65, 138, 0.14);
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -506,16 +527,16 @@ input, select, textarea {
 
 .btn-cta-big {
   min-height: 52px;
-  background: #FF7700;
+  background: var(--orange);
   color: #FFFFFF;
-  border-radius: 20px;
-  font-size: 19px;
-  font-weight: 900;
+  border-radius: var(--radius-pill);
+  font-size: 17px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 6px 16px rgba(255, 119, 0, 0.35);
+  box-shadow: 0 4px 14px rgba(243, 86, 25, 0.28);
   border: none;
   cursor: pointer;
   width: 100%;
@@ -524,7 +545,7 @@ input, select, textarea {
 
 .btn-cta-big:active {
   transform: scale(0.98);
-  background: #E06600;
+  background: var(--orange-dark);
 }
 
 /* ================= BANNER PROMO CUENTA CORRIENTE DIGITAL ================= */
@@ -1152,21 +1173,23 @@ input, select, textarea {
   box-sizing: border-box !important;
   margin: 0 !important;
   align-self: stretch !important;
-  min-height: 58px;
-  background: var(--teal);
+  min-height: 54px;
+  background: var(--orange);
   color: #FFFFFF;
-  border-radius: 16px;
-  font-size: 19px;
-  font-weight: 900;
+  border-radius: var(--radius-pill);
+  font-size: 18px;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35);
+  box-shadow: 0 4px 14px rgba(243, 86, 25, 0.28);
+  border: none;
+  cursor: pointer;
 }
 
 .btn-confirm-send:active {
-  background: #09725a;
+  background: var(--orange-dark);
   transform: scale(0.98);
 }
 
@@ -1176,21 +1199,44 @@ input, select, textarea {
   box-sizing: border-box !important;
   margin: 0 !important;
   align-self: stretch !important;
-  min-height: 52px;
+  min-height: 48px;
   background: #FFFFFF;
   color: var(--muted);
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  font-size: 17px;
-  font-weight: 800;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
+  cursor: pointer;
 }
 
 .btn-cancel-review:active {
   background: var(--bg);
+}
+
+.btn-cancel-full-width {
+  width: 100%;
+  min-height: 48px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: 15px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-full-width:active {
+  background: #E2E8F0;
+  transform: scale(0.98);
 }
 
 /* ================= MODAL CLAVE DINÁMICA ================= */
