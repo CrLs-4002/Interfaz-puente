@@ -326,6 +326,67 @@ class InterfazPuente {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
     }
+
+    this.updateSpotlightOverlay(targetEl);
+  }
+
+  updateSpotlightOverlay(targetEl) {
+    if (!this.dynamicFocusOverlay) return;
+
+    if (!targetEl || !this.isTutorialActive) {
+      this.dynamicFocusOverlay.style.clipPath = '';
+      this.dynamicFocusOverlay.style.webkitClipPath = '';
+      return;
+    }
+
+    const frame = document.getElementById('appMainContainer') || document.querySelector('.device-frame') || document.body;
+    const frameRect = frame.getBoundingClientRect();
+    const targetRect = targetEl.getBoundingClientRect();
+
+    const pad = 6;
+    const rawX1 = targetRect.left - frameRect.left - pad;
+    const rawY1 = targetRect.top - frameRect.top - pad;
+    const rawX2 = targetRect.right - frameRect.left + pad;
+    const rawY2 = targetRect.bottom - frameRect.top + pad;
+
+    const w = Math.round(frameRect.width);
+    const h = Math.round(frameRect.height);
+
+    const x1 = Math.max(0, Math.min(w, Math.round(rawX1)));
+    const y1 = Math.max(0, Math.min(h, Math.round(rawY1)));
+    const x2 = Math.max(0, Math.min(w, Math.round(rawX2)));
+    const y2 = Math.max(0, Math.min(h, Math.round(rawY2)));
+
+    // Si el elemento objetivo no está visible dentro de la pantalla
+    if (x2 <= x1 || y2 <= y1) {
+      this.dynamicFocusOverlay.style.clipPath = '';
+      this.dynamicFocusOverlay.style.webkitClipPath = '';
+      return;
+    }
+
+    const computedStyle = window.getComputedStyle ? window.getComputedStyle(targetEl) : null;
+    const rawRadius = computedStyle ? parseInt(computedStyle.borderRadius, 10) : 14;
+    const maxCorner = Math.min(Math.floor((x2 - x1) / 2), Math.floor((y2 - y1) / 2));
+    const c = Math.max(0, Math.min(isNaN(rawRadius) ? 14 : Math.max(8, rawRadius + 2), maxCorner));
+
+    // Polígono de recorte: marco exterior en sentido horario + recorte interior en sentido antihorario
+    // Esto crea un agujero nítido e interactivo sobre la casilla activa, difuminando el resto
+    const clipPath = `polygon(
+      0px 0px, ${w}px 0px, ${w}px ${h}px, 0px ${h}px, 0px 0px,
+      ${x1 + c}px ${y1}px,
+      ${x1}px ${y1 + c}px,
+      ${x1}px ${y2 - c}px,
+      ${x1 + c}px ${y2}px,
+      ${x2 - c}px ${y2}px,
+      ${x2}px ${y2 - c}px,
+      ${x2}px ${y1 + c}px,
+      ${x2 - c}px ${y1}px,
+      ${x1 + c}px ${y1}px,
+      0px 0px
+    )`;
+
+    this.dynamicFocusOverlay.style.clipPath = clipPath;
+    this.dynamicFocusOverlay.style.webkitClipPath = clipPath;
   }
 
   scrollToElement(targetEl) {
@@ -408,6 +469,8 @@ class InterfazPuente {
     this.clearPreviousHighlight();
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.remove('active');
+      this.dynamicFocusOverlay.style.clipPath = '';
+      this.dynamicFocusOverlay.style.webkitClipPath = '';
     }
     if (this.spotlightCard) {
       this.spotlightCard.classList.remove('show');
@@ -1188,17 +1251,23 @@ class InterfazPuente {
       };
     }
 
-    // Reubicar dinámicamente la tarjeta del tutorial al cambiar tamaño de pantalla o al hacer scroll
+    // Reubicar dinámicamente la tarjeta del tutorial y el recorte de difuminado al cambiar tamaño o hacer scroll
     window.addEventListener('resize', () => {
-      if (this.activeSpotlightElement && document.body.classList.contains('dynamic-focus-active')) {
+      if (this.activeSpotlightElement && this.isTutorialActive) {
         this.positionSpotlightCard(this.activeSpotlightElement);
+        this.updateSpotlightOverlay(this.activeSpotlightElement);
       }
     });
 
     let scrollRelocateTimer = null;
+    let scrollOverlayRaf = null;
     document.addEventListener('scroll', (e) => {
-      if (!this.activeSpotlightElement || !document.body.classList.contains('dynamic-focus-active')) return;
+      if (!this.activeSpotlightElement || !this.isTutorialActive) return;
       if (e.target && e.target.classList && (e.target.classList.contains('scroll-area') || e.target.classList.contains('screen-view'))) {
+        if (scrollOverlayRaf) cancelAnimationFrame(scrollOverlayRaf);
+        scrollOverlayRaf = requestAnimationFrame(() => {
+          this.updateSpotlightOverlay(this.activeSpotlightElement);
+        });
         if (scrollRelocateTimer) clearTimeout(scrollRelocateTimer);
         scrollRelocateTimer = setTimeout(() => {
           this.positionSpotlightCard(this.activeSpotlightElement);
@@ -1207,17 +1276,13 @@ class InterfazPuente {
     }, { passive: true, capture: true });
   }
 
-  /* Foco dinámico en sección específica con oscurecimiento del fondo al 85% */
+  /* Resaltado suave de casilla activa al interactuar normalmente (sin difuminar la pantalla entera) */
   activateSectionFocus(targetElement, labelText) {
     if (!this.enabled || !targetElement || this.isTutorialActive) return;
     this.clearSpotlight();
 
     this.activeSpotlightElement = targetElement;
     targetElement.classList.add('spotlight-active');
-
-    if (this.dynamicFocusOverlay) {
-      this.dynamicFocusOverlay.classList.add('active');
-    }
 
     // Registrar en métricas
     if (window.facilitatorPanel) {
