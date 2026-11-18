@@ -1578,6 +1578,45 @@ button:disabled {
   color: #0F172A;
 }
 
+.btn-speak-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--indigo-soft, #E6F7F2);
+  color: var(--indigo, #0D8F72);
+  border: 1.5px solid var(--indigo, #0D8F72);
+  border-radius: 100px;
+  padding: 10px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-speak-pill:hover {
+  background: var(--indigo, #0D8F72);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.btn-speak-pill:active {
+  transform: scale(0.97);
+}
+
+.btn-speak-pill.speaking {
+  background: var(--orange);
+  color: #FFFFFF;
+  border-color: var(--orange-dark);
+  animation: pulse-speaking 1s infinite alternate;
+}
+
+.btn-speak-pill.speaking svg {
+  stroke: #FFFFFF;
+}
+
 .success-screen-actions {
   width: 100%;
   max-width: 380px;
@@ -3957,6 +3996,16 @@ button.spotlight-active *,
               <p class="success-screen-message" id="transferSuccessMessage">
                 Listo haz enviado $15.000 a Rosa Pérez Sepúlveda
               </p>
+
+              <!-- Botón opcional de Escuchar por voz -->
+              <button type="button" class="btn-speak-pill" id="btnSpeakSuccessMessage" aria-label="Escuchar mensaje de confirmación" title="Escuchar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                </svg>
+                <span>Escuchar</span>
+              </button>
             </article>
 
             <div class="success-screen-actions">
@@ -5682,7 +5731,7 @@ class InterfazPuente {
     // Escucha de estado de voz para animar botones de audio
     if (window.puenteSpeech) {
       window.puenteSpeech.onStatusChange = (speaking) => {
-        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section');
+        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section, .btn-speak-pill');
         triggers.forEach(t => t.classList.toggle('speaking', speaking));
       };
     }
@@ -7095,7 +7144,21 @@ class AppRouter {
     const btnContinue = document.getElementById('btnContinueFromSuccess');
     if (btnContinue) {
       btnContinue.addEventListener('click', () => {
+        if (window.puenteSpeech) window.puenteSpeech.stop();
         this.goTo('receipt');
+      });
+    }
+
+    const btnSpeak = document.getElementById('btnSpeakSuccessMessage');
+    if (btnSpeak) {
+      btnSpeak.addEventListener('click', () => {
+        if (window.puenteSpeech) {
+          const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
+          const destName = (this.transferState.recipient && this.transferState.recipient.name)
+            ? this.transferState.recipient.name
+            : 'Rosa Pérez Sepúlveda';
+          window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
+        }
       });
     }
   }
@@ -7110,11 +7173,7 @@ class AppRouter {
     if (msgEl) {
       msgEl.innerHTML = `Listo haz enviado <strong>${amtStr}</strong> a <strong>${destName}</strong>`;
     }
-
-    if (window.puenteSpeech) {
-      const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
-      window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
-    }
+    // La pantalla NO se lee automáticamente; la lectura es opcional mediante el botón "Escuchar".
   }
 
   /* Paso 5: Comprobante */

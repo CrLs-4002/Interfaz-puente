@@ -948,7 +948,21 @@ class AppRouter {
     const btnContinue = document.getElementById('btnContinueFromSuccess');
     if (btnContinue) {
       btnContinue.addEventListener('click', () => {
+        if (window.puenteSpeech) window.puenteSpeech.stop();
         this.goTo('receipt');
+      });
+    }
+
+    const btnSpeak = document.getElementById('btnSpeakSuccessMessage');
+    if (btnSpeak) {
+      btnSpeak.addEventListener('click', () => {
+        if (window.puenteSpeech) {
+          const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
+          const destName = (this.transferState.recipient && this.transferState.recipient.name)
+            ? this.transferState.recipient.name
+            : 'Rosa Pérez Sepúlveda';
+          window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
+        }
       });
     }
   }
@@ -963,11 +977,7 @@ class AppRouter {
     if (msgEl) {
       msgEl.innerHTML = `Listo haz enviado <strong>${amtStr}</strong> a <strong>${destName}</strong>`;
     }
-
-    if (window.puenteSpeech) {
-      const amtSpeech = this.formatCLPForSpeech(this.transferState.amount);
-      window.puenteSpeech.speak(`Listo, has enviado ${amtSpeech} a ${destName}.`);
-    }
+    // La pantalla NO se lee automáticamente; la lectura es opcional mediante el botón "Escuchar".
   }
 
   /* Paso 5: Comprobante */

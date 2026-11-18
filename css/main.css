@@ -1557,6 +1557,45 @@ button:disabled {
   color: #0F172A;
 }
 
+.btn-speak-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--indigo-soft, #E6F7F2);
+  color: var(--indigo, #0D8F72);
+  border: 1.5px solid var(--indigo, #0D8F72);
+  border-radius: 100px;
+  padding: 10px 22px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn-speak-pill:hover {
+  background: var(--indigo, #0D8F72);
+  color: #FFFFFF;
+  transform: translateY(-1px);
+}
+
+.btn-speak-pill:active {
+  transform: scale(0.97);
+}
+
+.btn-speak-pill.speaking {
+  background: var(--orange);
+  color: #FFFFFF;
+  border-color: var(--orange-dark);
+  animation: pulse-speaking 1s infinite alternate;
+}
+
+.btn-speak-pill.speaking svg {
+  stroke: #FFFFFF;
+}
+
 .success-screen-actions {
   width: 100%;
   max-width: 380px;

@@ -1011,7 +1011,7 @@ class InterfazPuente {
     // Escucha de estado de voz para animar botones de audio
     if (window.puenteSpeech) {
       window.puenteSpeech.onStatusChange = (speaking) => {
-        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section');
+        const triggers = document.querySelectorAll('.btn-speech-trigger, .btn-speak-section, .btn-speak-pill');
         triggers.forEach(t => t.classList.toggle('speaking', speaking));
       };
     }
