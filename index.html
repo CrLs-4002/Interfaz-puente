@@ -2920,7 +2920,7 @@ button.spotlight-active *,
                   <span class="term-technical">Monto</span>
                   <span class="term-simplified">Escribe el monto o elige un botón</span>
                 </span>
-                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo. El monto máximo permitido para transferir es de 200.000 pesos." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
+                <button type="button" class="btn-speak-section" data-speak="Monto a transferir. Puedes tocar la casilla con borde para escribir el monto exacto con los números de tu teléfono, o tocar uno de los montos sugeridos abajo. Solo puedes transferir un máximo de 200.000 pesos." aria-label="Escuchar explicación del monto" title="Escuchar qué rellenar">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                 </button>
               </label>
@@ -5694,16 +5694,17 @@ class AppRouter {
       inputAmount.addEventListener('input', (e) => {
         let val = this.parseCLP(e.target.value);
 
-        if (val > this.user.balance) {
+        if (val > MAX_AMOUNT) {
+          val = MAX_AMOUNT;
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.classList.add('show');
+          amountErrorBox.textContent = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
+        } else if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
           amountErrorBox.textContent = `El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
-        } else if (val > MAX_AMOUNT) {
-          inputAmount.classList.add('has-error');
-          amountErrorBox.classList.remove('hidden');
-          amountErrorBox.classList.add('show');
-          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
         } else {
           inputAmount.classList.remove('has-error');
           amountErrorBox.classList.add('hidden');
@@ -5776,7 +5777,7 @@ class AppRouter {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
-          const msg = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          const msg = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
           amountErrorBox.textContent = msg;
           if (window.puenteSpeech) {
             window.puenteSpeech.speak(msg);
@@ -5858,7 +5859,7 @@ class AppRouter {
         if (this.transferState.amount > this.user.balance) {
           warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
         } else {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> Solo puedes transferir un máximo de $200.000.`;
         }
       } else {
         warnBox.classList.add('hidden');

@@ -474,16 +474,17 @@ class AppRouter {
       inputAmount.addEventListener('input', (e) => {
         let val = this.parseCLP(e.target.value);
 
-        if (val > this.user.balance) {
+        if (val > MAX_AMOUNT) {
+          val = MAX_AMOUNT;
+          inputAmount.classList.add('has-error');
+          amountErrorBox.classList.remove('hidden');
+          amountErrorBox.classList.add('show');
+          amountErrorBox.textContent = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
+        } else if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
           amountErrorBox.textContent = `El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
-        } else if (val > MAX_AMOUNT) {
-          inputAmount.classList.add('has-error');
-          amountErrorBox.classList.remove('hidden');
-          amountErrorBox.classList.add('show');
-          amountErrorBox.textContent = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
         } else {
           inputAmount.classList.remove('has-error');
           amountErrorBox.classList.add('hidden');
@@ -556,7 +557,7 @@ class AppRouter {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
-          const msg = `El monto máximo permitido para transferir es de ${this.formatCLP(MAX_AMOUNT)}.`;
+          const msg = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
           amountErrorBox.textContent = msg;
           if (window.puenteSpeech) {
             window.puenteSpeech.speak(msg);
@@ -638,7 +639,7 @@ class AppRouter {
         if (this.transferState.amount > this.user.balance) {
           warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto es mayor a tu saldo disponible (Tienes ${this.formatCLP(this.user.balance)} en tu cuenta). Intenta con una cantidad menor.`;
         } else {
-          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> El monto (${amtStr}) supera el límite máximo permitido de $200.000.`;
+          warnBox.innerHTML = `⚠️ <strong>Atención:</strong> Solo puedes transferir un máximo de $200.000.`;
         }
       } else {
         warnBox.classList.add('hidden');
