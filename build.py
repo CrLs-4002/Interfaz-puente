@@ -75,10 +75,18 @@ window.PUENTE_TEST = {{
 window.puenteToast = function (msg, ms) {{
   const el = document.getElementById('puenteToast');
   if (!el) return;
-  el.textContent = msg;
+  const isUnavailable = !msg || msg.includes('disponible') || msg.includes('sección') || msg.includes('Sección') || msg.includes('Seccion');
+  const finalMsg = isUnavailable ? 'Seccion no disponible' : msg;
+  el.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" style="flex-shrink:0;">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+    </svg>
+    <span>${{finalMsg}}</span>
+  `;
   el.classList.add('show');
   clearTimeout(window.__puenteToastTimer);
-  window.__puenteToastTimer = setTimeout(() => el.classList.remove('show'), ms || 3500);
+  window.__puenteToastTimer = setTimeout(() => el.classList.remove('show'), ms || 3000);
 }};
 
 window.puenteShowError = function (id, msg) {{

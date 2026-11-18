@@ -1316,3 +1316,44 @@ input, select, textarea {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* ================= AVISO EN PANTALLA: RECUADRO ROJO "SECCIÓN NO DISPONIBLE" ================= */
+.puente-toast {
+  position: absolute;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-15px);
+  background: #FEF2F2;
+  border: 2px solid #DC2626;
+  color: #B91C1C;
+  border-radius: 12px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.25), 0 4px 10px rgba(0, 0, 0, 0.08);
+  z-index: 99999;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+  max-width: 90%;
+  cursor: pointer;
+  user-select: none;
+}
+
+.puente-toast.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.puente-toast svg {
+  color: #DC2626;
+  flex-shrink: 0;
+}
