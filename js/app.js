@@ -258,6 +258,9 @@ class AppRouter {
       });
       if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
 
+      if (window.interfazPuente && !window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.syncRutButtonLocation(false);
+      }
       updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
       if (stepDetails) stepDetails.classList.add('hidden');
@@ -270,6 +273,7 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -277,6 +281,7 @@ class AppRouter {
 
     if (btnCancelAddRecipientRut) {
       btnCancelAddRecipientRut.addEventListener('click', () => {
+        if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -371,6 +376,9 @@ class AppRouter {
         if (rutVal.length < 3) {
           alert('Por favor ingresa un RUT válido con los números o el micrófono.');
           return;
+        }
+        if (window.interfazPuente) {
+          window.interfazPuente.syncRutButtonLocation(false);
         }
         // Ocultar etapa RUT y mostrar formulario de datos
         if (stepRut) stepRut.classList.add('hidden');

@@ -565,8 +565,42 @@ class InterfazPuente {
     }
   }
 
+  /* Sincroniza la ubicación del botón Continuar: dentro del card del Paso 1 solo si el modo tutorial está activo */
+  syncRutButtonLocation(isRutTutorialStep) {
+    const btn = document.getElementById('btnConfirmRutNext');
+    const slot = document.getElementById('spotlightCardActionSlot');
+    const originalContainer = document.getElementById('rutBottomActionsContainer');
+    const cancelBtn = document.getElementById('btnCancelAddRecipientRut');
+    const newRecipientView = document.getElementById('view-new-recipient');
+
+    if (!btn || !slot || !originalContainer) return;
+
+    if (isRutTutorialStep) {
+      if (btn.parentElement !== slot) {
+        slot.appendChild(btn);
+      }
+      slot.style.display = 'block';
+      if (newRecipientView) {
+        newRecipientView.classList.add('tutorial-rut-card-action-active');
+      }
+    } else {
+      if (btn.parentElement !== originalContainer) {
+        if (cancelBtn && cancelBtn.parentElement === originalContainer) {
+          originalContainer.insertBefore(btn, cancelBtn);
+        } else {
+          originalContainer.appendChild(btn);
+        }
+      }
+      slot.style.display = 'none';
+      if (newRecipientView) {
+        newRecipientView.classList.remove('tutorial-rut-card-action-active');
+      }
+    }
+  }
+
   clearSpotlight() {
     this.isTutorialActive = false;
+    this.syncRutButtonLocation(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -612,6 +646,9 @@ class InterfazPuente {
 
   handleViewChange(viewName) {
     this.updateFabVisibility(viewName);
+    if (viewName !== 'new-recipient') {
+      this.syncRutButtonLocation(false);
+    }
     if (!this.isTutorialActive) return;
     this.currentStepIndex = 0;
     setTimeout(() => {
@@ -663,8 +700,8 @@ class InterfazPuente {
           {
             target: '#groupRecipientRut',
             title: 'Paso 1: RUT de la persona',
-            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz (no necesitas poner puntos ni guión). Después de colocar el RUT, toca el botón Continuar.',
-            speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números. Después de colocar el RUT, toca el botón Continuar.',
+            message: 'Escribe el RUT de la persona o toca el botón de al lado para dictar. Revisa que esté correcto y toca el botón Continuar.',
+            speech: 'Escribe el RUT de la persona o toca el botón de al lado para dictar. Revisa que esté correcto y toca el botón Continuar.',
             noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
@@ -815,6 +852,10 @@ class InterfazPuente {
 
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+    const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
+    this.syncRutButtonLocation(isRutTutorialStep);
+
     const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient';
 
     if (isNoBlur) {

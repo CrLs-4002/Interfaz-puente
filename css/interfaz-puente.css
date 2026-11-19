@@ -692,6 +692,51 @@ button.spotlight-active *,
   margin-bottom: 0;
 }
 
+/* Slot para botón de acción dentro de la tarjeta de guía (Modo Tutorial) */
+#spotlightCardActionSlot {
+  width: 100%;
+  margin-top: 14px;
+}
+
+#spotlightCardActionSlot .btn-cta-big {
+  min-height: 52px;
+  background: var(--teal) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: var(--radius-pill);
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+#spotlightCardActionSlot .btn-cta-big:active {
+  transform: scale(0.98);
+}
+
+#spotlightCardActionSlot .btn-cta-big:disabled {
+  background: #CBD5E1 !important;
+  color: #94A3B8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+}
+
+#spotlightCardActionSlot .btn-cta-big:disabled svg {
+  stroke: #94A3B8 !important;
+}
+
+#view-new-recipient.tutorial-rut-card-action-active .scroll-area {
+  padding-bottom: 260px !important;
+}
+
 /* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
   display: none !important;

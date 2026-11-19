@@ -2521,6 +2521,51 @@ button.spotlight-active *,
   margin-bottom: 0;
 }
 
+/* Slot para botón de acción dentro de la tarjeta de guía (Modo Tutorial) */
+#spotlightCardActionSlot {
+  width: 100%;
+  margin-top: 14px;
+}
+
+#spotlightCardActionSlot .btn-cta-big {
+  min-height: 52px;
+  background: var(--teal) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: var(--radius-pill);
+  font-size: 17px;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+#spotlightCardActionSlot .btn-cta-big:active {
+  transform: scale(0.98);
+}
+
+#spotlightCardActionSlot .btn-cta-big:disabled {
+  background: #CBD5E1 !important;
+  color: #94A3B8 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+  opacity: 0.65 !important;
+}
+
+#spotlightCardActionSlot .btn-cta-big:disabled svg {
+  stroke: #94A3B8 !important;
+}
+
+#view-new-recipient.tutorial-rut-card-action-active .scroll-area {
+  padding-bottom: 260px !important;
+}
+
 /* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
   display: none !important;
@@ -4104,7 +4149,7 @@ button.spotlight-active *,
                       <span class="term-technical">RUT</span>
                       <span class="term-simplified">Ingresa el RUT</span>
                     </span>
-                    <button type="button" class="btn-speak-section" data-speak="Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión. Puedes escribirlo con los números o tocar el micrófono para dictarlo. Después de colocar el RUT, toca el botón Continuar." aria-label="Escuchar explicación" title="Escuchar">
+                    <button type="button" class="btn-speak-section" data-speak="Escribe el RUT de la persona o toca el botón de al lado para dictar. Revisa que esté correcto y toca el botón Continuar." aria-label="Escuchar explicación" title="Escuchar">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
                     </button>
                   </span>
@@ -4141,7 +4186,7 @@ button.spotlight-active *,
 
               <div class="inline-error" id="rutErrorBox" role="alert"></div>
 
-              <div class="form-bottom-actions" style="margin-top:20px">
+              <div class="form-bottom-actions" id="rutBottomActionsContainer" style="margin-top:20px">
                 <button type="button" class="btn-cta-big btn-cta-full-width" id="btnConfirmRutNext" disabled>
                   <span>Continuar</span>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
@@ -4800,6 +4845,7 @@ button.spotlight-active *,
         </div>
         <h4 id="spotlightGuideTitle">Paso a completar</h4>
         <p id="spotlightGuideText">Aquí debes indicar a quién le vas a transferir.</p>
+        <div id="spotlightCardActionSlot" style="margin-top:14px;display:none"></div>
       </div>
 
       <!-- ================= PANEL DEL FACILITADOR (5 TOQUES) ================= -->
@@ -5895,8 +5941,42 @@ class InterfazPuente {
     }
   }
 
+  /* Sincroniza la ubicación del botón Continuar: dentro del card del Paso 1 solo si el modo tutorial está activo */
+  syncRutButtonLocation(isRutTutorialStep) {
+    const btn = document.getElementById('btnConfirmRutNext');
+    const slot = document.getElementById('spotlightCardActionSlot');
+    const originalContainer = document.getElementById('rutBottomActionsContainer');
+    const cancelBtn = document.getElementById('btnCancelAddRecipientRut');
+    const newRecipientView = document.getElementById('view-new-recipient');
+
+    if (!btn || !slot || !originalContainer) return;
+
+    if (isRutTutorialStep) {
+      if (btn.parentElement !== slot) {
+        slot.appendChild(btn);
+      }
+      slot.style.display = 'block';
+      if (newRecipientView) {
+        newRecipientView.classList.add('tutorial-rut-card-action-active');
+      }
+    } else {
+      if (btn.parentElement !== originalContainer) {
+        if (cancelBtn && cancelBtn.parentElement === originalContainer) {
+          originalContainer.insertBefore(btn, cancelBtn);
+        } else {
+          originalContainer.appendChild(btn);
+        }
+      }
+      slot.style.display = 'none';
+      if (newRecipientView) {
+        newRecipientView.classList.remove('tutorial-rut-card-action-active');
+      }
+    }
+  }
+
   clearSpotlight() {
     this.isTutorialActive = false;
+    this.syncRutButtonLocation(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -5942,6 +6022,9 @@ class InterfazPuente {
 
   handleViewChange(viewName) {
     this.updateFabVisibility(viewName);
+    if (viewName !== 'new-recipient') {
+      this.syncRutButtonLocation(false);
+    }
     if (!this.isTutorialActive) return;
     this.currentStepIndex = 0;
     setTimeout(() => {
@@ -5993,8 +6076,8 @@ class InterfazPuente {
           {
             target: '#groupRecipientRut',
             title: 'Paso 1: RUT de la persona',
-            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz (no necesitas poner puntos ni guión). Después de colocar el RUT, toca el botón Continuar.',
-            speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números. Después de colocar el RUT, toca el botón Continuar.',
+            message: 'Escribe el RUT de la persona o toca el botón de al lado para dictar. Revisa que esté correcto y toca el botón Continuar.',
+            speech: 'Escribe el RUT de la persona o toca el botón de al lado para dictar. Revisa que esté correcto y toca el botón Continuar.',
             noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
@@ -6145,6 +6228,10 @@ class InterfazPuente {
 
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+    const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
+    this.syncRutButtonLocation(isRutTutorialStep);
+
     const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient';
 
     if (isNoBlur) {
@@ -7719,6 +7806,9 @@ class AppRouter {
       });
       if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
 
+      if (window.interfazPuente && !window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.syncRutButtonLocation(false);
+      }
       updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
       if (stepDetails) stepDetails.classList.add('hidden');
@@ -7731,6 +7821,7 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -7738,6 +7829,7 @@ class AppRouter {
 
     if (btnCancelAddRecipientRut) {
       btnCancelAddRecipientRut.addEventListener('click', () => {
+        if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
       });
@@ -7832,6 +7924,9 @@ class AppRouter {
         if (rutVal.length < 3) {
           alert('Por favor ingresa un RUT válido con los números o el micrófono.');
           return;
+        }
+        if (window.interfazPuente) {
+          window.interfazPuente.syncRutButtonLocation(false);
         }
         // Ocultar etapa RUT y mostrar formulario de datos
         if (stepRut) stepRut.classList.add('hidden');
