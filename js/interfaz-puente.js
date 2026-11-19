@@ -663,16 +663,8 @@ class InterfazPuente {
           {
             target: '#groupRecipientRut',
             title: 'Paso 1: RUT de la persona',
-            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
-            speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números.',
-            noBlur: true,
-            autoAdvanceOnSpeechEnd: false
-          },
-          {
-            target: '#btnConfirmRutNext',
-            title: 'Paso 2: Continuar',
-            message: 'Una vez anotado el RUT, toca Continuar para completar el nombre y banco de la persona.',
-            speech: 'Paso 2: Toca el botón Continuar para avanzar.',
+            message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz (no necesitas poner puntos ni guión). Después de colocar el RUT, toca el botón Continuar.',
+            speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números. Después de colocar el RUT, toca el botón Continuar.',
             noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
@@ -1513,39 +1505,11 @@ class InterfazPuente {
       });
     }
 
-    // 2. RUT en Nuevo Destinatario (input manual, dictado por voz y teclado virtual en pantalla)
+    // 2. RUT en Nuevo Destinatario: el paso 1 indica ingresar el RUT y luego presionar el botón Continuar
+    // El avance a los siguientes datos (Etapa B) se realiza directamente al tocar Continuar (#btnConfirmRutNext)
     const rutInput = document.getElementById('newRecipientRut');
     if (rutInput) {
-      let rutDebounceTimer = null;
-      const checkRut = (delayMs = 1800) => {
-        if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientRut')) return;
-        const clean = rutInput.value.replace(/[^0-9kK]/g, '');
-        if (clean.length >= 7) {
-          if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
-          rutDebounceTimer = setTimeout(() => {
-            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
-              const c = rutInput.value.replace(/[^0-9kK]/g, '');
-              if (c.length >= 7) {
-                this.nextGuideStep();
-              }
-            }
-          }, delayMs);
-        }
-      };
-
-      rutInput.addEventListener('input', () => checkRut(1800));
-      rutInput.addEventListener('change', () => checkRut(1800));
-      rutInput.addEventListener('blur', () => checkRut(1800));
-
-      const virtualKeypad = document.getElementById('rutVirtualKeypad');
-      if (virtualKeypad) {
-        virtualKeypad.addEventListener('click', (e) => {
-          const btn = e.target.closest('.btn-keypad-digit');
-          if (btn) {
-            setTimeout(() => checkRut(1800), 80);
-          }
-        });
-      }
+      // El estado del botón Continuar se habilita según la longitud del RUT en app.js
     }
 
     // 3. Nombre y Apellido en Nuevo Destinatario
