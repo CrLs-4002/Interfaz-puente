@@ -311,13 +311,13 @@ class InterfazPuente {
 
     const steps = this.getGuideSteps();
     const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if (!targetEl || (currentStep && currentStep.noBlur)) {
+    if (!targetEl || (currentStep && currentStep.noBlur) || currentView === 'summary') {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
-      if (currentStep && currentStep.noBlur) {
-        this.updateSpotlightOverlay(null);
-      }
+      this.updateSpotlightOverlay(null);
       return;
     }
 
@@ -363,14 +363,16 @@ class InterfazPuente {
 
     const steps = this.getGuideSteps();
     const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur)) {
+    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur) || currentView === 'summary') {
       if (curtainTop) { curtainTop.style.height = '0px'; }
       if (curtainBottom) { curtainBottom.style.height = '0px'; }
       if (curtainLeft) { curtainLeft.style.width = '0px'; }
       if (curtainRight) { curtainRight.style.width = '0px'; }
       if (frameHighlight) { frameHighlight.style.display = 'none'; }
-      if (this.dynamicFocusOverlay && currentStep && currentStep.noBlur) {
+      if (this.dynamicFocusOverlay && ((currentStep && currentStep.noBlur) || currentView === 'summary')) {
         this.dynamicFocusOverlay.classList.remove('active');
         document.body.classList.remove('dynamic-focus-active');
       }
@@ -457,8 +459,10 @@ class InterfazPuente {
     if (!targetEl) return;
     const steps = this.getGuideSteps();
     const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if (currentStep && currentStep.noBlur) {
+    if ((currentStep && currentStep.noBlur) || currentView === 'summary') {
       const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
       if (scrollContainer && scrollContainer.scrollTop !== 0) {
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -515,12 +519,24 @@ class InterfazPuente {
     this.clearPreviousHighlight();
     this.activeSpotlightElement = targetEl;
     targetEl.classList.add('spotlight-active');
-    document.body.classList.add('dynamic-focus-active');
+
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isSummary = currentView === 'summary';
 
     this.isTutorialActive = true;
 
-    if (this.dynamicFocusOverlay) {
-      this.dynamicFocusOverlay.classList.add('active');
+    if (!isSummary) {
+      document.body.classList.add('dynamic-focus-active');
+      if (this.dynamicFocusOverlay) {
+        this.dynamicFocusOverlay.classList.add('active');
+      }
+    } else {
+      document.body.classList.remove('dynamic-focus-active');
+      if (this.dynamicFocusOverlay) {
+        this.dynamicFocusOverlay.classList.remove('active');
+      }
+      this.updateSpotlightOverlay(null);
     }
 
     if (this.spotlightCard) {
@@ -731,6 +747,7 @@ class InterfazPuente {
           title: 'Revisión tranquila de datos',
           message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
           speech: 'Revisa con calma el monto y el nombre de quien recibe. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -739,6 +756,7 @@ class InterfazPuente {
           title: 'Autorizar transferencia',
           message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
           speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -796,8 +814,15 @@ class InterfazPuente {
 
     this.clearPreviousHighlight();
 
-    if (step.noBlur) {
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isNoBlur = step.noBlur || currentView === 'summary';
+
+    if (isNoBlur) {
       this.activeSpotlightElement = targetEl;
+      if (step.target === '#btnConfirmSummary') {
+        targetEl.classList.add('spotlight-active');
+      }
       document.body.classList.remove('dynamic-focus-active');
       if (this.dynamicFocusOverlay) {
         this.dynamicFocusOverlay.classList.remove('active');
