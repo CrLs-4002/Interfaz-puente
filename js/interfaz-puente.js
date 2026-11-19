@@ -17,6 +17,7 @@ class InterfazPuente {
     this.glossary = [];
     this.activeSpotlightElement = null;
     this.isTutorialActive = false; // Solo se cierra con la 'x' o con 'Listo' al final
+    this.stepExecutionToken = 0; // Previene condiciones de carrera y avance fantasma entre vistas
 
     // Elementos DOM
     this.fabContainer = null;
@@ -599,6 +600,7 @@ class InterfazPuente {
   }
 
   clearSpotlight() {
+    this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.syncRutButtonLocation(false);
     document.body.classList.remove('dynamic-focus-active');
@@ -639,6 +641,18 @@ class InterfazPuente {
 
   /* Flujo interactivo paso a paso para completar la transferencia */
   startStepByStepGuide() {
+    this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
     this.isTutorialActive = true;
     this.currentStepIndex = 0;
     this.executeCurrentStep();
@@ -646,8 +660,23 @@ class InterfazPuente {
 
   handleViewChange(viewName) {
     this.updateFabVisibility(viewName);
+    this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
     if (viewName !== 'new-recipient') {
       this.syncRutButtonLocation(false);
+    } else {
+      const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+      this.syncRutButtonLocation(this.isTutorialActive && isStepRutVisible);
     }
     if (!this.isTutorialActive) return;
     this.currentStepIndex = 0;
@@ -907,24 +936,33 @@ class InterfazPuente {
       this.fallbackAdvanceTimer = null;
     }
 
+    const currentToken = ++this.stepExecutionToken;
+    const expectedView = currentView;
+    const expectedStepIndex = this.currentStepIndex;
+
     // La voz lee el paso automáticamente
     const textToSpeak = step.speech || (step.title ? (step.title + '. ' + step.message) : step.message);
-    const stepIndexAtStart = this.currentStepIndex;
 
     if (window.puenteSpeech && textToSpeak) {
       setTimeout(() => {
-        if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+        const screenNow = document.querySelector('.screen-view.is-active');
+        const viewNow = screenNow ? screenNow.id.replace('view-', '') : '';
+        if (this.isTutorialActive && this.stepExecutionToken === currentToken && this.currentStepIndex === expectedStepIndex && viewNow === expectedView) {
           window.puenteSpeech.speak(textToSpeak, () => {
-            if (this.fallbackAdvanceTimer) {
+            if (this.fallbackAdvanceTimer && this.stepExecutionToken === currentToken) {
               clearTimeout(this.fallbackAdvanceTimer);
               this.fallbackAdvanceTimer = null;
             }
-            // Si el paso actual es meramente informativo (revisar saldo, revisar resumen, etc.), avanza al paso de acción
-            if (step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+            const screenEnd = document.querySelector('.screen-view.is-active');
+            const viewEnd = screenEnd ? screenEnd.id.replace('view-', '') : '';
+            // Si el paso actual es meramente informativo, avanza al paso de acción
+            if (step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.stepExecutionToken === currentToken && this.currentStepIndex === expectedStepIndex && viewEnd === expectedView) {
               // Esperar hasta 2 segundos como máximo tras terminar de hablar para que el abuelito termine de asimilar la información
               const delay = (step.delayAfterSpeech !== undefined) ? step.delayAfterSpeech : 2000;
               this.autoAdvanceTimer = setTimeout(() => {
-                if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+                const screenDelay = document.querySelector('.screen-view.is-active');
+                const viewDelay = screenDelay ? screenDelay.id.replace('view-', '') : '';
+                if (this.isTutorialActive && this.stepExecutionToken === currentToken && this.currentStepIndex === expectedStepIndex && viewDelay === expectedView) {
                   this.nextGuideStep();
                 }
               }, delay);
@@ -937,7 +975,9 @@ class InterfazPuente {
     // Temporizador de resguardo largo (14 segundos) por si el audio no está disponible o no emite eventos
     if (step.autoAdvanceOnSpeechEnd) {
       this.fallbackAdvanceTimer = setTimeout(() => {
-        if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+        const screenFb = document.querySelector('.screen-view.is-active');
+        const viewFb = screenFb ? screenFb.id.replace('view-', '') : '';
+        if (this.isTutorialActive && this.stepExecutionToken === currentToken && this.currentStepIndex === expectedStepIndex && viewFb === expectedView) {
           this.nextGuideStep();
         }
       }, 14000);

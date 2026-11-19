@@ -258,8 +258,8 @@ class AppRouter {
       });
       if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
 
-      if (window.interfazPuente && !window.interfazPuente.isTutorialActive) {
-        window.interfazPuente.syncRutButtonLocation(false);
+      if (window.interfazPuente) {
+        window.interfazPuente.syncRutButtonLocation(window.interfazPuente.isTutorialActive);
       }
       updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
