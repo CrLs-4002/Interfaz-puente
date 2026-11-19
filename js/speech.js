@@ -109,6 +109,10 @@ class PuenteSpeech {
       this.isSpeaking = false;
       this.currentUtterance = null;
       if (this.onStatusChange) this.onStatusChange(false);
+      // Si el audio fue cancelado o interrumpido intencionalmente, NO disparar onEnd para evitar avances espurios
+      if (e && (e.error === 'canceled' || e.error === 'interrupted')) {
+        return;
+      }
       if (onEnd) onEnd();
     };
 

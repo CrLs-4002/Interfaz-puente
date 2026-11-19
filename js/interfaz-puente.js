@@ -546,6 +546,10 @@ class InterfazPuente {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
     }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.remove('active');
     }
@@ -602,7 +606,8 @@ class InterfazPuente {
           title: 'Revisar tu dinero disponible',
           message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
           speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnQuickTransfer',
@@ -828,6 +833,10 @@ class InterfazPuente {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
     }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
 
     // La voz lee el paso automáticamente
     const textToSpeak = step.speech || (step.title ? (step.title + '. ' + step.message) : step.message);
@@ -837,22 +846,32 @@ class InterfazPuente {
       setTimeout(() => {
         if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
           window.puenteSpeech.speak(textToSpeak, () => {
+            if (this.fallbackAdvanceTimer) {
+              clearTimeout(this.fallbackAdvanceTimer);
+              this.fallbackAdvanceTimer = null;
+            }
             // Si el paso actual es meramente informativo (revisar saldo, revisar resumen, etc.), avanza al paso de acción
             if (step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
-              this.nextGuideStep();
+              // Esperar hasta 2 segundos como máximo tras terminar de hablar para que el abuelito termine de asimilar la información
+              const delay = (step.delayAfterSpeech !== undefined) ? step.delayAfterSpeech : 2000;
+              this.autoAdvanceTimer = setTimeout(() => {
+                if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+                  this.nextGuideStep();
+                }
+              }, delay);
             }
           });
         }
       }, 350);
     }
 
-    // Temporizador de resguardo para pasos que auto-avanzan por si el audio no está soportado o se cancela
+    // Temporizador de resguardo largo (14 segundos) por si el audio no está disponible o no emite eventos
     if (step.autoAdvanceOnSpeechEnd) {
-      this.autoAdvanceTimer = setTimeout(() => {
+      this.fallbackAdvanceTimer = setTimeout(() => {
         if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
           this.nextGuideStep();
         }
-      }, 5500);
+      }, 14000);
     }
   }
 
@@ -860,6 +879,10 @@ class InterfazPuente {
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
     }
     const steps = this.getGuideSteps();
     if (this.currentStepIndex < steps.length - 1) {
@@ -874,6 +897,10 @@ class InterfazPuente {
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
     }
     if (this.currentStepIndex > 0) {
       this.currentStepIndex--;
@@ -1120,11 +1147,16 @@ class InterfazPuente {
       if (isTransfer) {
         showVoiceFeedback(`✓ Entendido: "${rawText}". Iniciando tutorial...`);
         if (window.puenteSpeech) {
-          window.puenteSpeech.speak('Entendido. Te guiaremos paso a paso para hacer tu transferencia.');
+          window.puenteSpeech.speak('Entendido. Te guiaremos paso a paso para hacer tu transferencia.', () => {
+            setTimeout(() => {
+              this.handleHomeHelpTransfer();
+            }, 300);
+          });
+        } else {
+          setTimeout(() => {
+            this.handleHomeHelpTransfer();
+          }, 850);
         }
-        setTimeout(() => {
-          this.handleHomeHelpTransfer();
-        }, 850);
       } else {
         showVoiceFeedback(`Detectamos: "${rawText}". Puedes decir "Quiero transferir" o tocar el botón arriba.`, true);
         if (window.puenteSpeech) {
@@ -1320,12 +1352,25 @@ class InterfazPuente {
             clearTimeout(this.autoAdvanceTimer);
             this.autoAdvanceTimer = null;
           }
+          if (this.fallbackAdvanceTimer) {
+            clearTimeout(this.fallbackAdvanceTimer);
+            this.fallbackAdvanceTimer = null;
+          }
           const steps = this.getGuideSteps();
           const step = steps[this.currentStepIndex];
           const stepIndexAtStart = this.currentStepIndex;
           window.puenteSpeech.speak(speechText, () => {
+            if (this.fallbackAdvanceTimer) {
+              clearTimeout(this.fallbackAdvanceTimer);
+              this.fallbackAdvanceTimer = null;
+            }
             if (step && step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
-              this.nextGuideStep();
+              const delay = (step.delayAfterSpeech !== undefined) ? step.delayAfterSpeech : 2000;
+              this.autoAdvanceTimer = setTimeout(() => {
+                if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+                  this.nextGuideStep();
+                }
+              }, delay);
             }
           });
         }
