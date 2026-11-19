@@ -625,7 +625,8 @@ class InterfazPuente {
           title: '¿Quieres agregar a alguien nuevo?',
           message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
           speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#paneRecipientSaved',
@@ -710,7 +711,8 @@ class InterfazPuente {
           title: 'Paso 2: Mensaje opcional',
           message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
           speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona, o continuar al botón Revisar datos.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnContinueAmount',
@@ -727,7 +729,8 @@ class InterfazPuente {
           title: 'Revisión final de seguridad',
           message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
           speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnConfirmSummary',
@@ -754,7 +757,8 @@ class InterfazPuente {
           title: '¡Transferencia Exitosa!',
           message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
           speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnExitToHome',
@@ -1462,12 +1466,17 @@ class InterfazPuente {
 
   /* Listeners para avanzar paso a paso exclusivamente al completar la acción o campo indicado */
   setupTutorialFieldListeners() {
-    // 1. Tarjeta de saldo en Inicio: clic directo opcional para avanzar antes del fin del audio
+    // 1. Tarjeta de saldo en Inicio: clic directo opcional para avanzar con pausa tranquila
     const cardRut = document.getElementById('cardCuentaRut');
     if (cardRut) {
       cardRut.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('#cardCuentaRut')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#cardCuentaRut')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }
@@ -1476,37 +1485,32 @@ class InterfazPuente {
     const rutInput = document.getElementById('newRecipientRut');
     if (rutInput) {
       let rutDebounceTimer = null;
-      const checkRut = (immediate = false) => {
+      const checkRut = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientRut')) return;
         const clean = rutInput.value.replace(/[^0-9kK]/g, '');
         if (clean.length >= 7) {
-          if (immediate) {
-            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
-            this.nextGuideStep();
-          } else {
-            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
-            rutDebounceTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
-                const c = rutInput.value.replace(/[^0-9kK]/g, '');
-                if (c.length >= 7) {
-                  this.nextGuideStep();
-                }
+          if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
+          rutDebounceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
+              const c = rutInput.value.replace(/[^0-9kK]/g, '');
+              if (c.length >= 7) {
+                this.nextGuideStep();
               }
-            }, 650);
-          }
+            }
+          }, delayMs);
         }
       };
 
-      rutInput.addEventListener('input', () => checkRut(false));
-      rutInput.addEventListener('change', () => checkRut(true));
-      rutInput.addEventListener('blur', () => checkRut(true));
+      rutInput.addEventListener('input', () => checkRut(1800));
+      rutInput.addEventListener('change', () => checkRut(1800));
+      rutInput.addEventListener('blur', () => checkRut(1800));
 
       const virtualKeypad = document.getElementById('rutVirtualKeypad');
       if (virtualKeypad) {
         virtualKeypad.addEventListener('click', (e) => {
           const btn = e.target.closest('.btn-keypad-digit');
           if (btn) {
-            setTimeout(() => checkRut(false), 80);
+            setTimeout(() => checkRut(1800), 80);
           }
         });
       }
@@ -1516,26 +1520,21 @@ class InterfazPuente {
     const nameInput = document.getElementById('newRecipientName');
     if (nameInput) {
       let nameTimer = null;
-      const checkName = (immediate = false) => {
+      const checkName = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientName')) return;
         const val = nameInput.value.trim();
         if (val.length >= 3) {
-          if (immediate) {
-            if (nameTimer) clearTimeout(nameTimer);
-            this.nextGuideStep();
-          } else {
-            if (nameTimer) clearTimeout(nameTimer);
-            nameTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientName') && nameInput.value.trim().length >= 3) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (nameTimer) clearTimeout(nameTimer);
+          nameTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientName') && nameInput.value.trim().length >= 3) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      nameInput.addEventListener('input', () => checkName(false));
-      nameInput.addEventListener('change', () => checkName(true));
-      nameInput.addEventListener('blur', () => checkName(true));
+      nameInput.addEventListener('input', () => checkName(1800));
+      nameInput.addEventListener('change', () => checkName(1800));
+      nameInput.addEventListener('blur', () => checkName(1800));
     }
 
     // 4. Banco en Nuevo Destinatario
@@ -1548,7 +1547,7 @@ class InterfazPuente {
               if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
                 this.nextGuideStep();
               }
-            }, 250);
+            }, 1800);
           }
         }
       });
@@ -1564,7 +1563,7 @@ class InterfazPuente {
             if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
               this.nextGuideStep();
             }
-          }, 250);
+          }, 1800);
         }
       });
     }
@@ -1573,54 +1572,44 @@ class InterfazPuente {
     const numInput = document.getElementById('newRecipientNum');
     if (numInput) {
       let numTimer = null;
-      const checkNum = (immediate = false) => {
+      const checkNum = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientNum')) return;
         const val = numInput.value.trim();
         if (val.length >= 4) {
-          if (immediate) {
-            if (numTimer) clearTimeout(numTimer);
-            this.nextGuideStep();
-          } else {
-            if (numTimer) clearTimeout(numTimer);
-            numTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientNum') && numInput.value.trim().length >= 4) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (numTimer) clearTimeout(numTimer);
+          numTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientNum') && numInput.value.trim().length >= 4) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      numInput.addEventListener('input', () => checkNum(false));
-      numInput.addEventListener('change', () => checkNum(true));
-      numInput.addEventListener('blur', () => checkNum(true));
+      numInput.addEventListener('input', () => checkNum(1800));
+      numInput.addEventListener('change', () => checkNum(1800));
+      numInput.addEventListener('blur', () => checkNum(1800));
     }
 
     // 7. Monto a transferir (input manual, dictado y montos sugeridos)
     const inputAmount = document.getElementById('inputAmount');
     if (inputAmount) {
       let amountTimer = null;
-      const checkAmount = (immediate = false) => {
+      const checkAmount = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#amountBox')) return;
         const raw = inputAmount.value.replace(/[^0-9]/g, '');
         const val = parseInt(raw, 10);
         if (!isNaN(val) && val > 0) {
-          if (immediate) {
-            if (amountTimer) clearTimeout(amountTimer);
-            this.nextGuideStep();
-          } else {
-            if (amountTimer) clearTimeout(amountTimer);
-            amountTimer = setTimeout(() => {
-              const r = inputAmount.value.replace(/[^0-9]/g, '');
-              if (this.isTutorialActive && this.isCurrentTarget('#amountBox') && parseInt(r, 10) > 0) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (amountTimer) clearTimeout(amountTimer);
+          amountTimer = setTimeout(() => {
+            const r = inputAmount.value.replace(/[^0-9]/g, '');
+            if (this.isTutorialActive && this.isCurrentTarget('#amountBox') && parseInt(r, 10) > 0) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      inputAmount.addEventListener('input', () => checkAmount(false));
-      inputAmount.addEventListener('change', () => checkAmount(true));
-      inputAmount.addEventListener('blur', () => checkAmount(true));
+      inputAmount.addEventListener('input', () => checkAmount(1800));
+      inputAmount.addEventListener('change', () => checkAmount(1800));
+      inputAmount.addEventListener('blur', () => checkAmount(1800));
     }
 
     const quickAmountContainer = document.querySelector('.quick-amounts');
@@ -1632,42 +1621,42 @@ class InterfazPuente {
             if (this.isTutorialActive && this.isCurrentTarget('#amountBox')) {
               this.nextGuideStep();
             }
-          }, 300);
+          }, 1800);
         }
       });
     }
 
-    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos)
+    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos tras 1.8s)
     const inputGlosa = document.getElementById('inputGlosa');
     if (inputGlosa) {
       let glosaTimer = null;
-      const checkGlosa = (immediate = false) => {
+      const checkGlosa = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupGlosa')) return;
         if (inputGlosa.value.trim().length >= 2) {
-          if (immediate) {
-            if (glosaTimer) clearTimeout(glosaTimer);
-            this.nextGuideStep();
-          } else {
-            if (glosaTimer) clearTimeout(glosaTimer);
-            glosaTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
-                this.nextGuideStep();
-              }
-            }, 900);
-          }
+          if (glosaTimer) clearTimeout(glosaTimer);
+          glosaTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      inputGlosa.addEventListener('input', () => checkGlosa(false));
-      inputGlosa.addEventListener('change', () => checkGlosa(true));
-      inputGlosa.addEventListener('blur', () => checkGlosa(true));
+      inputGlosa.addEventListener('input', () => checkGlosa(1800));
+      inputGlosa.addEventListener('change', () => checkGlosa(1800));
+      inputGlosa.addEventListener('blur', () => checkGlosa(1800));
     }
 
-    // 9. Clic en tarjeta de resumen de seguridad para avanzar antes del fin del audio
+    // 9. Clic en tarjeta de resumen de seguridad para avanzar con pausa
     const safeSummaryCard = document.getElementById('safeSummaryCard');
     if (safeSummaryCard) {
       safeSummaryCard.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }
@@ -1677,7 +1666,12 @@ class InterfazPuente {
     if (receiptCard) {
       receiptCard.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }

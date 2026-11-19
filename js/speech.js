@@ -72,64 +72,119 @@ class PuenteSpeech {
     return clean;
   }
 
+  getEstimatedDurationMs(text) {
+    const clean = this.prepareTextForSpeech(text);
+    if (!clean) return 0;
+    const words = clean.split(/\s+/).filter(Boolean).length;
+    // A velocidad 0.88 en español, cada palabra toma entre 440ms y 500ms
+    return Math.max(3000, Math.round((words * 460) / 0.88));
+  }
+
   speak(text, onEnd) {
-    if (!this.synth) {
-      console.warn('Síntesis de voz no soportada en este navegador.');
+    const cleanText = this.prepareTextForSpeech(text);
+    if (!cleanText) {
       if (onEnd) onEnd();
       return;
     }
 
-    // Si ya está hablando, detener para evitar solapamientos
-    this.stop();
+    const sessionId = (this.speechSessionId || 0) + 1;
+    this.speechSessionId = sessionId;
 
-    const cleanText = this.prepareTextForSpeech(text);
-    if (!cleanText) return;
+    const estDuration = this.getEstimatedDurationMs(cleanText);
+    const minExpectedDuration = Math.round(estDuration * 0.75);
+    const startTime = Date.now();
+    let hasEnded = false;
 
-    this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
-    this.currentUtterance.lang = this.voice ? this.voice.lang : 'es-CL';
-    if (this.voice) {
-      this.currentUtterance.voice = this.voice;
+    const triggerEnd = () => {
+      if (hasEnded || this.speechSessionId !== sessionId) return;
+      hasEnded = true;
+      this.isSpeaking = false;
+      this.currentUtterance = null;
+      if (this.onStatusChange) this.onStatusChange(false);
+      if (onEnd) onEnd();
+    };
+
+    if (!this.synth) {
+      console.warn('Síntesis de voz no soportada en este navegador.');
+      setTimeout(triggerEnd, estDuration);
+      return;
     }
-    // Velocidad pausada (0.88 - 0.90) para que Elena y personas mayores comprendan sin apuro
-    this.currentUtterance.rate = 0.88;
-    this.currentUtterance.pitch = 1.0;
 
+    // Si ya está hablando, detener para evitar solapamientos
+    if (this.synth.speaking || this.synth.pending) {
+      try { this.synth.cancel(); } catch (e) {}
+    }
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    if (this.onStatusChange) this.onStatusChange(false);
+
+    const utter = new SpeechSynthesisUtterance(cleanText);
+    utter.lang = this.voice ? this.voice.lang : 'es-CL';
+    if (this.voice) {
+      utter.voice = this.voice;
+    }
+    // Velocidad pausada (0.88) para que Elena y personas mayores comprendan sin apuro
+    utter.rate = 0.88;
+    utter.pitch = 1.0;
+
+    this.currentUtterance = utter;
     this.isSpeaking = true;
     if (this.onStatusChange) this.onStatusChange(true);
 
-    this.currentUtterance.onend = () => {
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (this.onStatusChange) this.onStatusChange(false);
-      if (onEnd) onEnd();
+    utter.onend = () => {
+      if (this.speechSessionId !== sessionId) return;
+      const elapsed = Date.now() - startTime;
+      // Si onend dispara antes del tiempo físico mínimo de locución (bug de cancelación en Chromium/WebKit),
+      // esperamos el remanente real para que jamás se corte la voz
+      if (elapsed < minExpectedDuration) {
+        const remaining = Math.max(0, estDuration - elapsed);
+        setTimeout(triggerEnd, remaining);
+      } else {
+        triggerEnd();
+      }
     };
 
-    this.currentUtterance.onerror = (e) => {
+    utter.onerror = (e) => {
+      if (this.speechSessionId !== sessionId) return;
       console.warn('Error en SpeechSynthesis:', e);
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (this.onStatusChange) this.onStatusChange(false);
-      // Si el audio fue cancelado o interrumpido intencionalmente, NO disparar onEnd para evitar avances espurios
       if (e && (e.error === 'canceled' || e.error === 'interrupted')) {
         return;
       }
-      if (onEnd) onEnd();
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, estDuration - elapsed);
+      setTimeout(triggerEnd, remaining);
     };
 
-    try {
-      this.synth.speak(this.currentUtterance);
-    } catch (err) {
-      console.error('Error al ejecutar speak():', err);
-      this.isSpeaking = false;
-      if (this.onStatusChange) this.onStatusChange(false);
-      if (onEnd) onEnd();
-    }
+    // Temporizador de resguardo máximo para asegurar finalización aunque el navegador no emita eventos
+    setTimeout(() => {
+      if (this.speechSessionId === sessionId && !hasEnded) {
+        triggerEnd();
+      }
+    }, estDuration + 3500);
+
+    // Timeout de resguardo para WebKit/Blink tras cancel()
+    setTimeout(() => {
+      if (this.speechSessionId === sessionId) {
+        try {
+          if (this.synth.paused) {
+            this.synth.resume();
+          }
+          this.synth.speak(utter);
+        } catch (err) {
+          console.error('Error al ejecutar speak():', err);
+          triggerEnd();
+        }
+      }
+    }, 60);
   }
 
   stop() {
+    this.speechSessionId = (this.speechSessionId || 0) + 1;
     if (this.synth) {
       try {
-        this.synth.cancel();
+        if (this.synth.speaking || this.synth.pending) {
+          this.synth.cancel();
+        }
       } catch (e) {}
     }
     this.isSpeaking = false;

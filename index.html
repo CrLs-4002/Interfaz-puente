@@ -5124,64 +5124,119 @@ class PuenteSpeech {
     return clean;
   }
 
+  getEstimatedDurationMs(text) {
+    const clean = this.prepareTextForSpeech(text);
+    if (!clean) return 0;
+    const words = clean.split(/\s+/).filter(Boolean).length;
+    // A velocidad 0.88 en español, cada palabra toma entre 440ms y 500ms
+    return Math.max(3000, Math.round((words * 460) / 0.88));
+  }
+
   speak(text, onEnd) {
-    if (!this.synth) {
-      console.warn('Síntesis de voz no soportada en este navegador.');
+    const cleanText = this.prepareTextForSpeech(text);
+    if (!cleanText) {
       if (onEnd) onEnd();
       return;
     }
 
-    // Si ya está hablando, detener para evitar solapamientos
-    this.stop();
+    const sessionId = (this.speechSessionId || 0) + 1;
+    this.speechSessionId = sessionId;
 
-    const cleanText = this.prepareTextForSpeech(text);
-    if (!cleanText) return;
+    const estDuration = this.getEstimatedDurationMs(cleanText);
+    const minExpectedDuration = Math.round(estDuration * 0.75);
+    const startTime = Date.now();
+    let hasEnded = false;
 
-    this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
-    this.currentUtterance.lang = this.voice ? this.voice.lang : 'es-CL';
-    if (this.voice) {
-      this.currentUtterance.voice = this.voice;
+    const triggerEnd = () => {
+      if (hasEnded || this.speechSessionId !== sessionId) return;
+      hasEnded = true;
+      this.isSpeaking = false;
+      this.currentUtterance = null;
+      if (this.onStatusChange) this.onStatusChange(false);
+      if (onEnd) onEnd();
+    };
+
+    if (!this.synth) {
+      console.warn('Síntesis de voz no soportada en este navegador.');
+      setTimeout(triggerEnd, estDuration);
+      return;
     }
-    // Velocidad pausada (0.88 - 0.90) para que Elena y personas mayores comprendan sin apuro
-    this.currentUtterance.rate = 0.88;
-    this.currentUtterance.pitch = 1.0;
 
+    // Si ya está hablando, detener para evitar solapamientos
+    if (this.synth.speaking || this.synth.pending) {
+      try { this.synth.cancel(); } catch (e) {}
+    }
+    this.isSpeaking = false;
+    this.currentUtterance = null;
+    if (this.onStatusChange) this.onStatusChange(false);
+
+    const utter = new SpeechSynthesisUtterance(cleanText);
+    utter.lang = this.voice ? this.voice.lang : 'es-CL';
+    if (this.voice) {
+      utter.voice = this.voice;
+    }
+    // Velocidad pausada (0.88) para que Elena y personas mayores comprendan sin apuro
+    utter.rate = 0.88;
+    utter.pitch = 1.0;
+
+    this.currentUtterance = utter;
     this.isSpeaking = true;
     if (this.onStatusChange) this.onStatusChange(true);
 
-    this.currentUtterance.onend = () => {
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (this.onStatusChange) this.onStatusChange(false);
-      if (onEnd) onEnd();
+    utter.onend = () => {
+      if (this.speechSessionId !== sessionId) return;
+      const elapsed = Date.now() - startTime;
+      // Si onend dispara antes del tiempo físico mínimo de locución (bug de cancelación en Chromium/WebKit),
+      // esperamos el remanente real para que jamás se corte la voz
+      if (elapsed < minExpectedDuration) {
+        const remaining = Math.max(0, estDuration - elapsed);
+        setTimeout(triggerEnd, remaining);
+      } else {
+        triggerEnd();
+      }
     };
 
-    this.currentUtterance.onerror = (e) => {
+    utter.onerror = (e) => {
+      if (this.speechSessionId !== sessionId) return;
       console.warn('Error en SpeechSynthesis:', e);
-      this.isSpeaking = false;
-      this.currentUtterance = null;
-      if (this.onStatusChange) this.onStatusChange(false);
-      // Si el audio fue cancelado o interrumpido intencionalmente, NO disparar onEnd para evitar avances espurios
       if (e && (e.error === 'canceled' || e.error === 'interrupted')) {
         return;
       }
-      if (onEnd) onEnd();
+      const elapsed = Date.now() - startTime;
+      const remaining = Math.max(0, estDuration - elapsed);
+      setTimeout(triggerEnd, remaining);
     };
 
-    try {
-      this.synth.speak(this.currentUtterance);
-    } catch (err) {
-      console.error('Error al ejecutar speak():', err);
-      this.isSpeaking = false;
-      if (this.onStatusChange) this.onStatusChange(false);
-      if (onEnd) onEnd();
-    }
+    // Temporizador de resguardo máximo para asegurar finalización aunque el navegador no emita eventos
+    setTimeout(() => {
+      if (this.speechSessionId === sessionId && !hasEnded) {
+        triggerEnd();
+      }
+    }, estDuration + 3500);
+
+    // Timeout de resguardo para WebKit/Blink tras cancel()
+    setTimeout(() => {
+      if (this.speechSessionId === sessionId) {
+        try {
+          if (this.synth.paused) {
+            this.synth.resume();
+          }
+          this.synth.speak(utter);
+        } catch (err) {
+          console.error('Error al ejecutar speak():', err);
+          triggerEnd();
+        }
+      }
+    }, 60);
   }
 
   stop() {
+    this.speechSessionId = (this.speechSessionId || 0) + 1;
     if (this.synth) {
       try {
-        this.synth.cancel();
+        if (this.synth.speaking || this.synth.pending) {
+          this.synth.cancel();
+        }
       } catch (e) {}
     }
     this.isSpeaking = false;
@@ -5824,7 +5879,8 @@ class InterfazPuente {
           title: '¿Quieres agregar a alguien nuevo?',
           message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
           speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#paneRecipientSaved',
@@ -5909,7 +5965,8 @@ class InterfazPuente {
           title: 'Paso 2: Mensaje opcional',
           message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
           speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona, o continuar al botón Revisar datos.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnContinueAmount',
@@ -5926,7 +5983,8 @@ class InterfazPuente {
           title: 'Revisión final de seguridad',
           message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
           speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnConfirmSummary',
@@ -5953,7 +6011,8 @@ class InterfazPuente {
           title: '¡Transferencia Exitosa!',
           message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
           speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.',
-          autoAdvanceOnSpeechEnd: true
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
         },
         {
           target: '#btnExitToHome',
@@ -6661,12 +6720,17 @@ class InterfazPuente {
 
   /* Listeners para avanzar paso a paso exclusivamente al completar la acción o campo indicado */
   setupTutorialFieldListeners() {
-    // 1. Tarjeta de saldo en Inicio: clic directo opcional para avanzar antes del fin del audio
+    // 1. Tarjeta de saldo en Inicio: clic directo opcional para avanzar con pausa tranquila
     const cardRut = document.getElementById('cardCuentaRut');
     if (cardRut) {
       cardRut.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('#cardCuentaRut')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#cardCuentaRut')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }
@@ -6675,37 +6739,32 @@ class InterfazPuente {
     const rutInput = document.getElementById('newRecipientRut');
     if (rutInput) {
       let rutDebounceTimer = null;
-      const checkRut = (immediate = false) => {
+      const checkRut = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientRut')) return;
         const clean = rutInput.value.replace(/[^0-9kK]/g, '');
         if (clean.length >= 7) {
-          if (immediate) {
-            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
-            this.nextGuideStep();
-          } else {
-            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
-            rutDebounceTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
-                const c = rutInput.value.replace(/[^0-9kK]/g, '');
-                if (c.length >= 7) {
-                  this.nextGuideStep();
-                }
+          if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
+          rutDebounceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
+              const c = rutInput.value.replace(/[^0-9kK]/g, '');
+              if (c.length >= 7) {
+                this.nextGuideStep();
               }
-            }, 650);
-          }
+            }
+          }, delayMs);
         }
       };
 
-      rutInput.addEventListener('input', () => checkRut(false));
-      rutInput.addEventListener('change', () => checkRut(true));
-      rutInput.addEventListener('blur', () => checkRut(true));
+      rutInput.addEventListener('input', () => checkRut(1800));
+      rutInput.addEventListener('change', () => checkRut(1800));
+      rutInput.addEventListener('blur', () => checkRut(1800));
 
       const virtualKeypad = document.getElementById('rutVirtualKeypad');
       if (virtualKeypad) {
         virtualKeypad.addEventListener('click', (e) => {
           const btn = e.target.closest('.btn-keypad-digit');
           if (btn) {
-            setTimeout(() => checkRut(false), 80);
+            setTimeout(() => checkRut(1800), 80);
           }
         });
       }
@@ -6715,26 +6774,21 @@ class InterfazPuente {
     const nameInput = document.getElementById('newRecipientName');
     if (nameInput) {
       let nameTimer = null;
-      const checkName = (immediate = false) => {
+      const checkName = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientName')) return;
         const val = nameInput.value.trim();
         if (val.length >= 3) {
-          if (immediate) {
-            if (nameTimer) clearTimeout(nameTimer);
-            this.nextGuideStep();
-          } else {
-            if (nameTimer) clearTimeout(nameTimer);
-            nameTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientName') && nameInput.value.trim().length >= 3) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (nameTimer) clearTimeout(nameTimer);
+          nameTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientName') && nameInput.value.trim().length >= 3) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      nameInput.addEventListener('input', () => checkName(false));
-      nameInput.addEventListener('change', () => checkName(true));
-      nameInput.addEventListener('blur', () => checkName(true));
+      nameInput.addEventListener('input', () => checkName(1800));
+      nameInput.addEventListener('change', () => checkName(1800));
+      nameInput.addEventListener('blur', () => checkName(1800));
     }
 
     // 4. Banco en Nuevo Destinatario
@@ -6747,7 +6801,7 @@ class InterfazPuente {
               if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
                 this.nextGuideStep();
               }
-            }, 250);
+            }, 1800);
           }
         }
       });
@@ -6763,7 +6817,7 @@ class InterfazPuente {
             if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
               this.nextGuideStep();
             }
-          }, 250);
+          }, 1800);
         }
       });
     }
@@ -6772,54 +6826,44 @@ class InterfazPuente {
     const numInput = document.getElementById('newRecipientNum');
     if (numInput) {
       let numTimer = null;
-      const checkNum = (immediate = false) => {
+      const checkNum = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientNum')) return;
         const val = numInput.value.trim();
         if (val.length >= 4) {
-          if (immediate) {
-            if (numTimer) clearTimeout(numTimer);
-            this.nextGuideStep();
-          } else {
-            if (numTimer) clearTimeout(numTimer);
-            numTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientNum') && numInput.value.trim().length >= 4) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (numTimer) clearTimeout(numTimer);
+          numTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientNum') && numInput.value.trim().length >= 4) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      numInput.addEventListener('input', () => checkNum(false));
-      numInput.addEventListener('change', () => checkNum(true));
-      numInput.addEventListener('blur', () => checkNum(true));
+      numInput.addEventListener('input', () => checkNum(1800));
+      numInput.addEventListener('change', () => checkNum(1800));
+      numInput.addEventListener('blur', () => checkNum(1800));
     }
 
     // 7. Monto a transferir (input manual, dictado y montos sugeridos)
     const inputAmount = document.getElementById('inputAmount');
     if (inputAmount) {
       let amountTimer = null;
-      const checkAmount = (immediate = false) => {
+      const checkAmount = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#amountBox')) return;
         const raw = inputAmount.value.replace(/[^0-9]/g, '');
         const val = parseInt(raw, 10);
         if (!isNaN(val) && val > 0) {
-          if (immediate) {
-            if (amountTimer) clearTimeout(amountTimer);
-            this.nextGuideStep();
-          } else {
-            if (amountTimer) clearTimeout(amountTimer);
-            amountTimer = setTimeout(() => {
-              const r = inputAmount.value.replace(/[^0-9]/g, '');
-              if (this.isTutorialActive && this.isCurrentTarget('#amountBox') && parseInt(r, 10) > 0) {
-                this.nextGuideStep();
-              }
-            }, 1000);
-          }
+          if (amountTimer) clearTimeout(amountTimer);
+          amountTimer = setTimeout(() => {
+            const r = inputAmount.value.replace(/[^0-9]/g, '');
+            if (this.isTutorialActive && this.isCurrentTarget('#amountBox') && parseInt(r, 10) > 0) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      inputAmount.addEventListener('input', () => checkAmount(false));
-      inputAmount.addEventListener('change', () => checkAmount(true));
-      inputAmount.addEventListener('blur', () => checkAmount(true));
+      inputAmount.addEventListener('input', () => checkAmount(1800));
+      inputAmount.addEventListener('change', () => checkAmount(1800));
+      inputAmount.addEventListener('blur', () => checkAmount(1800));
     }
 
     const quickAmountContainer = document.querySelector('.quick-amounts');
@@ -6831,42 +6875,42 @@ class InterfazPuente {
             if (this.isTutorialActive && this.isCurrentTarget('#amountBox')) {
               this.nextGuideStep();
             }
-          }, 300);
+          }, 1800);
         }
       });
     }
 
-    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos)
+    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos tras 1.8s)
     const inputGlosa = document.getElementById('inputGlosa');
     if (inputGlosa) {
       let glosaTimer = null;
-      const checkGlosa = (immediate = false) => {
+      const checkGlosa = (delayMs = 1800) => {
         if (!this.isTutorialActive || !this.isCurrentTarget('#groupGlosa')) return;
         if (inputGlosa.value.trim().length >= 2) {
-          if (immediate) {
-            if (glosaTimer) clearTimeout(glosaTimer);
-            this.nextGuideStep();
-          } else {
-            if (glosaTimer) clearTimeout(glosaTimer);
-            glosaTimer = setTimeout(() => {
-              if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
-                this.nextGuideStep();
-              }
-            }, 900);
-          }
+          if (glosaTimer) clearTimeout(glosaTimer);
+          glosaTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
+              this.nextGuideStep();
+            }
+          }, delayMs);
         }
       };
-      inputGlosa.addEventListener('input', () => checkGlosa(false));
-      inputGlosa.addEventListener('change', () => checkGlosa(true));
-      inputGlosa.addEventListener('blur', () => checkGlosa(true));
+      inputGlosa.addEventListener('input', () => checkGlosa(1800));
+      inputGlosa.addEventListener('change', () => checkGlosa(1800));
+      inputGlosa.addEventListener('blur', () => checkGlosa(1800));
     }
 
-    // 9. Clic en tarjeta de resumen de seguridad para avanzar antes del fin del audio
+    // 9. Clic en tarjeta de resumen de seguridad para avanzar con pausa
     const safeSummaryCard = document.getElementById('safeSummaryCard');
     if (safeSummaryCard) {
       safeSummaryCard.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }
@@ -6876,7 +6920,12 @@ class InterfazPuente {
     if (receiptCard) {
       receiptCard.addEventListener('click', () => {
         if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
-          this.nextGuideStep();
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
         }
       });
     }
