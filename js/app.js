@@ -69,6 +69,7 @@ class AppRouter {
 
     // Si el modo tutorial está activo, continuar en la nueva pantalla; de lo contrario limpiar spotlight
     if (window.interfazPuente) {
+      window.interfazPuente.updateFabVisibility(viewName);
       if (window.interfazPuente.isTutorialActive) {
         window.interfazPuente.handleViewChange(viewName);
       } else {
@@ -148,6 +149,10 @@ class AppRouter {
     const navTransfer = document.getElementById('navBtnTransfer');
 
     const startTransferFlow = () => {
+      // Activar modo tutorial para acompañar al usuario paso a paso
+      if (window.interfazPuente) {
+        window.interfazPuente.isTutorialActive = true;
+      }
       // Inyección de error si está activada
       this.transferState.amount = this.errorInjection ? 500000 : 0;
       const amountInput = document.getElementById('inputAmount');
@@ -220,10 +225,39 @@ class AppRouter {
       }
     };
 
-    // Botón Agregar Nuevo: Abre una nueva pantalla independiente (view-new-recipient)
+    // Declaración de campos del formulario nuevo destinatario
+    const bankPills = document.querySelectorAll('#bankPillGrid .btn-bank-option');
+    const otherBankWrap = document.getElementById('otherBankSelectWrap');
+    const bankSelect = document.getElementById('newRecipientBank');
+    const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
+    const hiddenAccountTypeInput = document.getElementById('newRecipientType');
+    const numInput = document.getElementById('newRecipientNum');
+
+    // Botón Otra Persona: Abre una nueva pantalla independiente (view-new-recipient)
     const openNewRecipientScreen = () => {
       this.transferState.isNewRecipient = true;
       if (newRecipientRutInput) newRecipientRutInput.value = '';
+      if (numInput) numInput.value = '';
+      const nameInput = document.getElementById('newRecipientName');
+      if (nameInput) nameInput.value = '';
+      const emailInput = document.getElementById('newRecipientEmail');
+      if (emailInput) emailInput.value = '';
+
+      // Reset Banco a BancoEstado
+      bankPills.forEach(p => {
+        if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
+        else p.classList.remove('selected');
+      });
+      if (bankSelect) bankSelect.value = 'BancoEstado';
+      if (otherBankWrap) otherBankWrap.classList.add('hidden');
+
+      // Reset Tipo a CuentaRUT
+      accountTypePills.forEach(p => {
+        if (p.getAttribute('data-type') === 'CuentaRUT') p.classList.add('selected');
+        else p.classList.remove('selected');
+      });
+      if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
+
       updateRutNextButtonState();
       if (stepRut) stepRut.classList.remove('hidden');
       if (stepDetails) stepDetails.classList.add('hidden');
@@ -345,6 +379,28 @@ class AppRouter {
           const nameInput = document.getElementById('newRecipientName');
           if (nameInput) nameInput.focus();
         }
+
+        // Punto 3: Rellenar número de cuenta automáticamente con el RUT menos el último dígito
+        const rawRut = rutVal.replace(/[^0-9kK]/g, '');
+        if (numInput && rawRut.length > 1) {
+          numInput.value = rawRut.slice(0, -1);
+        }
+
+        // BancoEstado predeterminado
+        bankPills.forEach(p => {
+          if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
+          else p.classList.remove('selected');
+        });
+        if (bankSelect) bankSelect.value = 'BancoEstado';
+        if (otherBankWrap) otherBankWrap.classList.add('hidden');
+
+        // CuentaRUT predeterminada
+        accountTypePills.forEach(p => {
+          if (p.getAttribute('data-type') === 'CuentaRUT') p.classList.add('selected');
+          else p.classList.remove('selected');
+        });
+        if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
+
         if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
           window.interfazPuente.handleViewChange('new-recipient');
         }
@@ -352,12 +408,47 @@ class AppRouter {
     }
     updateRutNextButtonState();
 
-    // Selección de Tipo de Cuenta con 4 Botones (Pills)
-    const accountTypePills = document.querySelectorAll('#accountTypePillGrid .btn-account-type-option');
-    const hiddenAccountTypeInput = document.getElementById('newRecipientType');
-    const bankSelect = document.getElementById('newRecipientBank');
-    const numInput = document.getElementById('newRecipientNum');
+    // 4 Botones de Banco con opción "Otro banco"
+    bankPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        bankPills.forEach(p => p.classList.remove('selected'));
+        pill.classList.add('selected');
+        const bVal = pill.getAttribute('data-bank');
+        if (bVal === 'otro') {
+          if (otherBankWrap) otherBankWrap.classList.remove('hidden');
+          if (bankSelect) {
+            bankSelect.focus();
+            if (bankSelect.value === 'BancoEstado') {
+              bankSelect.value = 'Banco de Chile';
+            }
+          }
+        } else {
+          if (otherBankWrap) otherBankWrap.classList.add('hidden');
+          if (bankSelect) bankSelect.value = bVal;
+        }
+      });
+    });
 
+    if (bankSelect) {
+      bankSelect.addEventListener('change', () => {
+        const val = bankSelect.value;
+        let matched = false;
+        bankPills.forEach(pill => {
+          if (pill.getAttribute('data-bank') === val) {
+            pill.classList.add('selected');
+            matched = true;
+          } else {
+            pill.classList.remove('selected');
+          }
+        });
+        if (!matched) {
+          const otherPill = document.getElementById('btnBankOtherOption');
+          if (otherPill) otherPill.classList.add('selected');
+        }
+      });
+    }
+
+    // Selección de Tipo de Cuenta con 4 Botones (Pills)
     accountTypePills.forEach(pill => {
       pill.addEventListener('click', () => {
         accountTypePills.forEach(p => p.classList.remove('selected'));
@@ -365,9 +456,15 @@ class AppRouter {
         const selectedType = pill.getAttribute('data-type');
         if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = selectedType;
 
-        // Si elige CuentaRUT: rellenar automáticamente el número de cuenta con el RUT menos el dígito verificador
+        // Si elige CuentaRUT: banco predeterminado BancoEstado y auto-relleno de número de cuenta con RUT sin DV
         if (selectedType === 'CuentaRUT') {
           if (bankSelect) bankSelect.value = 'BancoEstado';
+          bankPills.forEach(p => {
+            if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
+            else p.classList.remove('selected');
+          });
+          if (otherBankWrap) otherBankWrap.classList.add('hidden');
+
           if (newRecipientRutInput && numInput) {
             const rawRut = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
             if (rawRut.length > 1) {
@@ -670,7 +767,7 @@ class AppRouter {
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
-      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
       
       if (window.puenteSpeech) {
         window.puenteSpeech.speak(speechText);
@@ -701,14 +798,14 @@ class AppRouter {
     const textEl = document.getElementById('safeSummaryText');
     const warnBox = document.getElementById('summaryBalanceWarning');
 
-    // Microcopy determinista requerido por el enunciado:
-    // "Vas a enviar $50.000 a Rosa Pérez, a su cuenta en Banco de Chile. Una vez enviado, no se puede deshacer."
+    // Microcopy tranquilizador:
+    // "Vas a enviar $50.000 a Rosa Pérez Sepúlveda, a su cuenta en Banco de Chile. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites."
     const amtStr = this.formatCLP(this.transferState.amount);
     const destName = this.transferState.recipient.name;
     const destBank = this.transferState.recipient.bank;
 
     if (textEl) {
-      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Una vez enviado, <strong>no se puede deshacer</strong>.`;
+      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.`;
     }
 
     // Si el monto excede el saldo o el límite máximo de $200.000
@@ -917,13 +1014,16 @@ class AppRouter {
 
     if (btnShare) {
       btnShare.addEventListener('click', () => {
+        const shareText = `Comprobante de Transferencia BancoEstado: Se enviaron ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name} exitosamente.`;
         if (navigator.share) {
           navigator.share({
             title: 'Comprobante de Transferencia BancoEstado',
-            text: `Transferencia realizada por ${this.formatCLP(this.transferState.amount)} a ${this.transferState.recipient.name}.`
+            text: shareText
           }).catch(() => {});
         } else {
-          alert('Comprobante listo: puedes guardarlo o compartirlo con la otra persona.');
+          // Abrir WhatsApp para compartir
+          const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+          window.open(waUrl, '_blank');
         }
       });
     }
@@ -955,13 +1055,13 @@ class AppRouter {
   readCurrentScreenAloud() {
     if (!window.puenteSpeech) return;
     if (this.currentView === 'home') {
-      window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Transferir.`);
+      window.puenteSpeech.speak(`Estás en el inicio de tu CuentaRUT. Tienes un saldo disponible de ${this.formatCLPForSpeech(this.user.balance)}. Para transferir dinero, presiona el botón Quiero transferir dinero.`);
     } else if (this.currentView === 'recipient') {
-      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Agregar nuevo arriba.');
+      window.puenteSpeech.speak('¿A quién quieres transferir? Puedes buscar por nombre o RUT, elegir a Rosa Pérez en tu lista de contactos, o tocar el botón Otra persona arriba.');
     } else if (this.currentView === 'new-recipient') {
       const isStepRut = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       if (isStepRut) {
-        window.puenteSpeech.speak('Nuevo destinatario. Ingresa el RUT de quien recibe usando el teclado numérico en pantalla o tocando el micrófono para dictarlo.');
+        window.puenteSpeech.speak('Nuevo destinatario. Ingresa el RUT de quien recibe sin puntos ni guión usando el teclado numérico en pantalla o tocando el micrófono para dictarlo.');
       } else {
         window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
       }
@@ -971,9 +1071,9 @@ class AppRouter {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
-      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Una vez enviado, no se puede deshacer. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
     } else if (this.currentView === 'receipt') {
-      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado correctamente a ${this.transferState.recipient.name}.`);
+      window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.`);
     }
   }
 

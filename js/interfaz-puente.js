@@ -43,6 +43,17 @@ class InterfazPuente {
     this.toggleSemanticMode(this.semanticMode, false);
     this.updateLanguageWidgetBadge();
     this.setupScrollGuards();
+    this.updateFabVisibility('home');
+  }
+
+  updateFabVisibility(viewName) {
+    if (!this.fabContainer) return;
+    const activeView = viewName || (document.querySelector('.screen-view.is-active')?.id.replace('view-', '')) || (window.appRouter ? window.appRouter.currentView : 'home');
+    if (activeView === 'home' || !this.enabled) {
+      this.fabContainer.style.display = 'none';
+    } else {
+      this.fabContainer.style.display = 'flex';
+    }
   }
 
   cacheElements() {
@@ -583,8 +594,8 @@ class InterfazPuente {
     this.executeCurrentStep();
   }
 
-  /* Si el usuario cambia de pantalla en el flujo de transferencia, el tutorial continúa sin cerrarse */
   handleViewChange(viewName) {
+    this.updateFabVisibility(viewName);
     if (!this.isTutorialActive) return;
     this.currentStepIndex = 0;
     setTimeout(() => {
@@ -597,23 +608,14 @@ class InterfazPuente {
   getGuideSteps() {
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home');
-    const isNewRecipientTab = document.getElementById('tabRecipientNew') && document.getElementById('tabRecipientNew').classList.contains('active');
 
     if (currentView === 'home') {
       return [
         {
-          target: '#cardCuentaRut',
-          title: 'Revisar tu dinero disponible',
-          message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
-          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.',
-          autoAdvanceOnSpeechEnd: true,
-          delayAfterSpeech: 2000
-        },
-        {
           target: '#btnQuickTransfer',
-          title: 'Comenzar a transferir',
-          message: 'Toca este botón verde para iniciar el envío de dinero a otra persona.',
-          speech: 'Paso 2: Toca el botón verde Transferir dinero para comenzar.',
+          title: 'Quiero transferir dinero',
+          message: 'Toca este botón verde para comenzar a transferir dinero.',
+          speech: 'Toca el botón verde Quiero transferir dinero para comenzar.',
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -622,9 +624,9 @@ class InterfazPuente {
       return [
         {
           target: '#btnGoToNewRecipientScreen',
-          title: '¿Quieres agregar a alguien nuevo?',
-          message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
-          speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.',
+          title: '¿Quieres transferirle a otra persona?',
+          message: 'Toca este botón si deseas transferirle a una persona que no esté en tu lista.',
+          speech: 'Si deseas transferirle a otra persona, toca el botón Otra persona arriba.',
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -646,7 +648,7 @@ class InterfazPuente {
             target: '#groupRecipientRut',
             title: 'Paso 1: RUT de la persona',
             message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
-            speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.',
+            speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números.',
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -670,22 +672,22 @@ class InterfazPuente {
           {
             target: '#groupRecipientBank',
             title: 'Paso 2: Banco',
-            message: 'Elige el banco donde la persona tiene su cuenta.',
-            speech: 'Paso 2: Elige el banco de quien recibe.',
+            message: 'BancoEstado ya está seleccionado. Si es otro banco, toca Banco de Chile, Santander, Bci u Otro banco.',
+            speech: 'Paso 2: Banco. Dejamos BancoEstado seleccionado por ti, o toca otro si corresponde.',
             autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientType',
             title: 'Paso 3: Tipo de cuenta',
-            message: 'Toca una de las opciones: CuentaRut, Corriente, Vista o Ahorro.',
-            speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.',
+            message: 'CuentaRut ya está seleccionada. Si es otra, puedes elegir Corriente, Vista o Ahorro.',
+            speech: 'Paso 3: Tipo de cuenta. Dejamos CuentaRut seleccionada.',
             autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientNum',
             title: 'Paso 4: Número de cuenta',
-            message: 'Anota los números de la cuenta bancaria.',
-            speech: 'Paso 4: Anota el número de cuenta de la persona.',
+            message: 'El número de cuenta ya se completó automáticamente con el RUT.',
+            speech: 'Paso 4: El número de cuenta ya fue rellenado automáticamente con el RUT.',
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -708,9 +710,9 @@ class InterfazPuente {
         },
         {
           target: '#groupGlosa',
-          title: 'Paso 2: Mensaje opcional',
-          message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
-          speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona, o continuar al botón Revisar datos.',
+          title: '¿Quieres dejar una nota?',
+          message: '¿Quieres dejar una nota? (No es obligatorio, puedes dejarlo en blanco).',
+          speech: '¿Quieres dejar una nota? No es obligatorio, puedes dejarlo en blanco. Toca el botón verde Revisar datos para continuar.',
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -726,9 +728,9 @@ class InterfazPuente {
       return [
         {
           target: '#safeSummaryCard',
-          title: 'Revisión final de seguridad',
-          message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
-          speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.',
+          title: 'Revisión tranquila de datos',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
+          speech: 'Revisa con calma el monto y el nombre de quien recibe. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -753,10 +755,10 @@ class InterfazPuente {
     } else if (currentView === 'receipt') {
       return [
         {
-          target: '.receipt-card',
-          title: '¡Transferencia Exitosa!',
-          message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
-          speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.',
+          target: '#btnShareReceipt',
+          title: 'Compartir comprobante',
+          message: 'Para compartir el comprobante por WhatsApp, toca este botón.',
+          speech: '¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.',
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -764,7 +766,7 @@ class InterfazPuente {
           target: '#btnExitToHome',
           title: 'Volver al inicio',
           message: 'Toca este botón verde cuando hayas terminado para regresar a la pantalla principal de tu CuentaRUT.',
-          speech: 'Toca Volver al inicio para regresar a tu CuentaRUT.',
+          speech: 'Cuando hayas terminado, toca Volver al inicio para regresar a tu CuentaRUT.',
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -1661,14 +1663,28 @@ class InterfazPuente {
       });
     }
 
-    // 10. Clic en tarjeta de comprobante
+    // 10. Clic en botón compartir comprobante o en tarjeta de comprobante
+    const btnShareReceipt = document.getElementById('btnShareReceipt');
+    if (btnShareReceipt) {
+      btnShareReceipt.addEventListener('click', () => {
+        if (this.isTutorialActive && this.isCurrentTarget('#btnShareReceipt')) {
+          if (this.autoAdvanceTimer) return;
+          this.autoAdvanceTimer = setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#btnShareReceipt')) {
+              this.nextGuideStep();
+            }
+          }, 1800);
+        }
+      });
+    }
+
     const receiptCard = document.querySelector('.receipt-card');
     if (receiptCard) {
       receiptCard.addEventListener('click', () => {
-        if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
+        if (this.isTutorialActive && (this.isCurrentTarget('.receipt-card') || this.isCurrentTarget('#btnShareReceipt'))) {
           if (this.autoAdvanceTimer) return;
           this.autoAdvanceTimer = setTimeout(() => {
-            if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
+            if (this.isTutorialActive) {
               this.nextGuideStep();
             }
           }, 1800);
@@ -1701,12 +1717,9 @@ class InterfazPuente {
     }
   }
 
-  /* Activar o Desactivar completamente Interfaz Puente (para Grupo Control vs Experimental) */
   setBridgeEnabled(enabled) {
     this.enabled = enabled;
-    if (this.fabContainer) {
-      this.fabContainer.style.display = enabled ? 'flex' : 'none';
-    }
+    this.updateFabVisibility();
     if (!enabled) {
       this.clearSpotlight();
       this.closeSheet();
