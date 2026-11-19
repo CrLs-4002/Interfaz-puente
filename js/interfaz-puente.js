@@ -501,12 +501,26 @@ class InterfazPuente {
     setTimeout(() => {
       this.positionSpotlightCard(targetEl);
     }, 320);
+
+    // Lectura automática de voz al activar foco de ayuda
+    const textToSpeak = message ? ((title ? (title + '. ') : '') + message) : title;
+    if (window.puenteSpeech && textToSpeak) {
+      setTimeout(() => {
+        if (this.isTutorialActive) {
+          window.puenteSpeech.speak(textToSpeak);
+        }
+      }, 350);
+    }
   }
 
   clearSpotlight() {
     this.isTutorialActive = false;
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
     if (this.dynamicFocusOverlay) {
       this.dynamicFocusOverlay.classList.remove('active');
     }
@@ -562,13 +576,15 @@ class InterfazPuente {
           target: '#cardCuentaRut',
           title: 'Revisar tu dinero disponible',
           message: 'Aquí puedes ver el saldo de tu CuentaRUT. Tienes 350.000 pesos listos para usar.',
-          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.'
+          speech: 'Paso 1: Revisa tu dinero disponible. Tienes 350 mil pesos en tu CuentaRUT.',
+          autoAdvanceOnSpeechEnd: true
         },
         {
           target: '#btnQuickTransfer',
           title: 'Comenzar a transferir',
           message: 'Toca este botón verde para iniciar el envío de dinero a otra persona.',
-          speech: 'Paso 2: Toca el botón verde Transferir dinero para comenzar.'
+          speech: 'Paso 2: Toca el botón verde Transferir dinero para comenzar.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     } else if (currentView === 'recipient') {
@@ -578,13 +594,15 @@ class InterfazPuente {
           target: '#btnGoToNewRecipientScreen',
           title: '¿Quieres agregar a alguien nuevo?',
           message: 'Toca este botón si deseas inscribir a una nueva persona ingresando su RUT.',
-          speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.'
+          speech: 'Si deseas transferirle a alguien nuevo, toca el botón Agregar nuevo arriba.',
+          autoAdvanceOnSpeechEnd: true
         },
         {
           target: '#frequentContactRosa',
           title: 'O elige un contacto guardado',
           message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla y pasar directo a ingresar el monto.',
-          speech: 'O toca directamente a Rosa Pérez para seleccionarla y pasar al monto a enviar.'
+          speech: 'O toca directamente a Rosa Pérez para seleccionarla y pasar al monto a enviar.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     } else if (currentView === 'new-recipient') {
@@ -596,13 +614,15 @@ class InterfazPuente {
             target: '#groupRecipientRut',
             title: 'Paso 1: RUT de la persona',
             message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
-            speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.'
+            speech: 'Paso 1: Ingresa el RUT de quien recibe. Puedes dictarlo con el micrófono o tocar los números.',
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#btnConfirmRutNext',
             title: 'Paso 2: Continuar',
             message: 'Una vez anotado el RUT, toca Continuar para completar el nombre y banco de la persona.',
-            speech: 'Paso 2: Toca el botón Continuar para avanzar.'
+            speech: 'Paso 2: Toca el botón Continuar para avanzar.',
+            autoAdvanceOnSpeechEnd: false
           }
         ];
       } else {
@@ -612,31 +632,36 @@ class InterfazPuente {
             target: '#groupRecipientName',
             title: 'Paso 1: Nombre y Apellido',
             message: 'Anota el nombre y apellido de la persona a quien le enviarás dinero.',
-            speech: 'Paso 1: Escribe el nombre y apellido de la persona.'
+            speech: 'Paso 1: Escribe el nombre y apellido de la persona.',
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientBank',
             title: 'Paso 2: Banco',
             message: 'Elige el banco donde la persona tiene su cuenta.',
-            speech: 'Paso 2: Elige el banco de quien recibe.'
+            speech: 'Paso 2: Elige el banco de quien recibe.',
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientType',
             title: 'Paso 3: Tipo de cuenta',
             message: 'Toca una de las opciones: CuentaRut, Corriente, Vista o Ahorro.',
-            speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.'
+            speech: 'Paso 3: Selecciona si es CuentaRut, Corriente, Vista o Ahorro.',
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientNum',
             title: 'Paso 4: Número de cuenta',
             message: 'Anota los números de la cuenta bancaria.',
-            speech: 'Paso 4: Anota el número de cuenta de la persona.'
+            speech: 'Paso 4: Anota el número de cuenta de la persona.',
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#btnContinueRecipient',
             title: 'Paso 5: Continuar al monto',
             message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
-            speech: 'Paso 5: Toca Continuar al monto para avanzar.'
+            speech: 'Paso 5: Toca Continuar al monto para avanzar.',
+            autoAdvanceOnSpeechEnd: false
           }
         ];
       }
@@ -646,19 +671,22 @@ class InterfazPuente {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
           message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.'
+          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.',
+          autoAdvanceOnSpeechEnd: false
         },
         {
           target: '#groupGlosa',
           title: 'Paso 2: Mensaje opcional',
           message: 'Si quieres, deja un mensaje o recordatorio como "Pago almuerzo" o "Regalo".',
-          speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona.'
+          speech: 'Paso 2: Mensaje voluntario. Puedes escribir un recordatorio para la otra persona, o continuar al botón Revisar datos.',
+          autoAdvanceOnSpeechEnd: true
         },
         {
           target: '#btnContinueAmount',
           title: 'Paso 3: Revisar datos',
           message: 'Toca este botón para ver el resumen detallado antes de confirmar la transferencia.',
-          speech: 'Paso 3: Toca Revisar datos para verificar todo antes de autorizar.'
+          speech: 'Paso 3: Toca Revisar datos para verificar todo antes de autorizar.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     } else if (currentView === 'summary') {
@@ -667,13 +695,15 @@ class InterfazPuente {
           target: '#safeSummaryCard',
           title: 'Revisión final de seguridad',
           message: 'Lee atentamente el monto y el nombre de la persona. Una vez enviado no se puede deshacer.',
-          speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.'
+          speech: 'Revisa atentamente el monto y el nombre. Recuerda que una vez enviado no se puede deshacer.',
+          autoAdvanceOnSpeechEnd: true
         },
         {
           target: '#btnConfirmSummary',
           title: 'Autorizar transferencia',
           message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
-          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.'
+          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     } else if (currentView === 'success') {
@@ -682,7 +712,8 @@ class InterfazPuente {
           target: '#btnContinueFromSuccess',
           title: '¡Transferencia Exitosa!',
           message: 'Tu dinero ya fue enviado. Toca este botón para ver el comprobante detallado.',
-          speech: 'Tu dinero ya fue enviado. Toca Continuar para ver tu comprobante.'
+          speech: 'Tu dinero ya fue enviado. Toca Continuar para ver tu comprobante.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     } else if (currentView === 'receipt') {
@@ -691,19 +722,15 @@ class InterfazPuente {
           target: '.receipt-card',
           title: '¡Transferencia Exitosa!',
           message: 'Tu dinero fue enviado correctamente. Aquí puedes ver el comprobante con todos los datos de la transferencia.',
-          speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.'
-        },
-        {
-          target: '#btnShareReceipt',
-          title: 'Compartir comprobante',
-          message: 'Toca este botón para compartir el comprobante con la otra persona por WhatsApp o correo.',
-          speech: 'Toca Compartir comprobante para enviar una copia a la otra persona.'
+          speech: '¡Transferencia Exitosa! Tu dinero fue enviado correctamente. Aquí puedes revisar el comprobante.',
+          autoAdvanceOnSpeechEnd: true
         },
         {
           target: '#btnExitToHome',
           title: 'Volver al inicio',
           message: 'Toca este botón verde cuando hayas terminado para regresar a la pantalla principal de tu CuentaRUT.',
-          speech: 'Toca Volver al inicio para regresar a tu CuentaRUT.'
+          speech: 'Toca Volver al inicio para regresar a tu CuentaRUT.',
+          autoAdvanceOnSpeechEnd: false
         }
       ];
     }
@@ -743,21 +770,12 @@ class InterfazPuente {
       const badgeEl = document.getElementById('spotlightStepBadge');
       const titleEl = document.getElementById('spotlightGuideTitle');
       const textEl = document.getElementById('spotlightGuideText');
-      const prevBtn = document.getElementById('btnSpotlightPrev');
-      const nextBtn = document.getElementById('btnSpotlightNext');
       const voiceBtn = document.getElementById('btnSpotlightVoice');
 
       if (badgeEl) badgeEl.textContent = `PASO ${this.currentStepIndex + 1} DE ${steps.length}`;
       if (titleEl) titleEl.textContent = step.title;
       if (textEl) textEl.textContent = step.message;
       if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
-
-      if (prevBtn) {
-        prevBtn.style.display = this.currentStepIndex > 0 ? 'inline-flex' : 'none';
-      }
-      if (nextBtn) {
-        nextBtn.textContent = (this.currentStepIndex === steps.length - 1) ? 'Listo' : 'Siguiente';
-      }
 
       this.spotlightCard.classList.add('show');
       this.positionSpotlightCard(targetEl);
@@ -769,10 +787,44 @@ class InterfazPuente {
       this.positionSpotlightCard(targetEl);
     }, 320);
 
-    // Nota: La voz NO se activa automáticamente, solo si el usuario toca el botón de escuchar
+    // Cancelar cualquier temporizador de avance anterior
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+
+    // La voz lee el paso automáticamente
+    const textToSpeak = step.speech || (step.title ? (step.title + '. ' + step.message) : step.message);
+    const stepIndexAtStart = this.currentStepIndex;
+
+    if (window.puenteSpeech && textToSpeak) {
+      setTimeout(() => {
+        if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+          window.puenteSpeech.speak(textToSpeak, () => {
+            // Si el paso actual es meramente informativo (revisar saldo, revisar resumen, etc.), avanza al paso de acción
+            if (step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+              this.nextGuideStep();
+            }
+          });
+        }
+      }, 350);
+    }
+
+    // Temporizador de resguardo para pasos que auto-avanzan por si el audio no está soportado o se cancela
+    if (step.autoAdvanceOnSpeechEnd) {
+      this.autoAdvanceTimer = setTimeout(() => {
+        if (this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+          this.nextGuideStep();
+        }
+      }, 5500);
+    }
   }
 
   nextGuideStep() {
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
     const steps = this.getGuideSteps();
     if (this.currentStepIndex < steps.length - 1) {
       this.currentStepIndex++;
@@ -783,10 +835,32 @@ class InterfazPuente {
   }
 
   prevGuideStep() {
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
     if (this.currentStepIndex > 0) {
       this.currentStepIndex--;
       this.executeCurrentStep();
     }
+  }
+
+  onFieldCompleted(targetSelector) {
+    if (!this.isTutorialActive) return;
+    const steps = this.getGuideSteps();
+    if (!steps || !steps.length) return;
+    const currentStep = steps[this.currentStepIndex];
+    if (currentStep && (currentStep.target === targetSelector || (targetSelector && targetSelector.includes(currentStep.target)))) {
+      this.nextGuideStep();
+    }
+  }
+
+  isCurrentTarget(selector) {
+    if (!this.isTutorialActive) return false;
+    const steps = this.getGuideSteps();
+    if (!steps || !steps.length) return false;
+    const current = steps[this.currentStepIndex];
+    return current && current.target === selector;
   }
 
   /* Activa la guía paso a paso al tocar el botón */
@@ -1189,29 +1263,8 @@ class InterfazPuente {
       });
     }
 
-    const btnSpotlightNext = document.getElementById('btnSpotlightNext');
-    if (btnSpotlightNext) {
-      btnSpotlightNext.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.nextGuideStep();
-      });
-    }
-
-    const btnSpotlightPrev = document.getElementById('btnSpotlightPrev');
-    if (btnSpotlightPrev) {
-      btnSpotlightPrev.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.prevGuideStep();
-      });
-    }
-
-    const btnSpotlightDone = document.getElementById('btnSpotlightDone');
-    if (btnSpotlightDone) {
-      btnSpotlightDone.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.clearSpotlight();
-      });
-    }
+    // Avance automático en el tutorial al completar campos y acciones
+    this.setupTutorialFieldListeners();
 
     const btnSpotlightCloseX = document.getElementById('btnSpotlightCloseX');
     if (btnSpotlightCloseX) {
@@ -1227,7 +1280,18 @@ class InterfazPuente {
         e.stopPropagation();
         const speechText = btnSpotlightVoice.getAttribute('data-speech') || document.getElementById('spotlightGuideText').textContent;
         if (speechText && window.puenteSpeech) {
-          window.puenteSpeech.speak(speechText);
+          if (this.autoAdvanceTimer) {
+            clearTimeout(this.autoAdvanceTimer);
+            this.autoAdvanceTimer = null;
+          }
+          const steps = this.getGuideSteps();
+          const step = steps[this.currentStepIndex];
+          const stepIndexAtStart = this.currentStepIndex;
+          window.puenteSpeech.speak(speechText, () => {
+            if (step && step.autoAdvanceOnSpeechEnd && this.isTutorialActive && this.currentStepIndex === stepIndexAtStart) {
+              this.nextGuideStep();
+            }
+          });
         }
       });
     }
@@ -1313,6 +1377,239 @@ class InterfazPuente {
         }, 80);
       }
     }, { passive: true, capture: true });
+  }
+
+  /* Listeners para avanzar paso a paso exclusivamente al completar la acción o campo indicado */
+  setupTutorialFieldListeners() {
+    // 1. Tarjeta de saldo en Inicio: clic directo opcional para avanzar antes del fin del audio
+    const cardRut = document.getElementById('cardCuentaRut');
+    if (cardRut) {
+      cardRut.addEventListener('click', () => {
+        if (this.isTutorialActive && this.isCurrentTarget('#cardCuentaRut')) {
+          this.nextGuideStep();
+        }
+      });
+    }
+
+    // 2. RUT en Nuevo Destinatario (input manual, dictado por voz y teclado virtual en pantalla)
+    const rutInput = document.getElementById('newRecipientRut');
+    if (rutInput) {
+      let rutDebounceTimer = null;
+      const checkRut = (immediate = false) => {
+        if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientRut')) return;
+        const clean = rutInput.value.replace(/[^0-9kK]/g, '');
+        if (clean.length >= 7) {
+          if (immediate) {
+            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
+            this.nextGuideStep();
+          } else {
+            if (rutDebounceTimer) clearTimeout(rutDebounceTimer);
+            rutDebounceTimer = setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientRut')) {
+                const c = rutInput.value.replace(/[^0-9kK]/g, '');
+                if (c.length >= 7) {
+                  this.nextGuideStep();
+                }
+              }
+            }, 650);
+          }
+        }
+      };
+
+      rutInput.addEventListener('input', () => checkRut(false));
+      rutInput.addEventListener('change', () => checkRut(true));
+      rutInput.addEventListener('blur', () => checkRut(true));
+
+      const virtualKeypad = document.getElementById('rutVirtualKeypad');
+      if (virtualKeypad) {
+        virtualKeypad.addEventListener('click', (e) => {
+          const btn = e.target.closest('.btn-keypad-digit');
+          if (btn) {
+            setTimeout(() => checkRut(false), 80);
+          }
+        });
+      }
+    }
+
+    // 3. Nombre y Apellido en Nuevo Destinatario
+    const nameInput = document.getElementById('newRecipientName');
+    if (nameInput) {
+      let nameTimer = null;
+      const checkName = (immediate = false) => {
+        if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientName')) return;
+        const val = nameInput.value.trim();
+        if (val.length >= 3) {
+          if (immediate) {
+            if (nameTimer) clearTimeout(nameTimer);
+            this.nextGuideStep();
+          } else {
+            if (nameTimer) clearTimeout(nameTimer);
+            nameTimer = setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientName') && nameInput.value.trim().length >= 3) {
+                this.nextGuideStep();
+              }
+            }, 1000);
+          }
+        }
+      };
+      nameInput.addEventListener('input', () => checkName(false));
+      nameInput.addEventListener('change', () => checkName(true));
+      nameInput.addEventListener('blur', () => checkName(true));
+    }
+
+    // 4. Banco en Nuevo Destinatario
+    const bankSelect = document.getElementById('newRecipientBank');
+    if (bankSelect) {
+      bankSelect.addEventListener('change', () => {
+        if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
+          if (bankSelect.value) {
+            setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
+                this.nextGuideStep();
+              }
+            }, 250);
+          }
+        }
+      });
+    }
+
+    // 5. Tipo de cuenta (Píldoras interactivas CuentaRut, Corriente, Vista, Ahorro)
+    const typeGrid = document.getElementById('accountTypePillGrid');
+    if (typeGrid) {
+      typeGrid.addEventListener('click', (e) => {
+        const pill = e.target.closest('.btn-account-type-option');
+        if (pill && this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
+          setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
+              this.nextGuideStep();
+            }
+          }, 250);
+        }
+      });
+    }
+
+    // 6. Número de cuenta en Nuevo Destinatario
+    const numInput = document.getElementById('newRecipientNum');
+    if (numInput) {
+      let numTimer = null;
+      const checkNum = (immediate = false) => {
+        if (!this.isTutorialActive || !this.isCurrentTarget('#groupRecipientNum')) return;
+        const val = numInput.value.trim();
+        if (val.length >= 4) {
+          if (immediate) {
+            if (numTimer) clearTimeout(numTimer);
+            this.nextGuideStep();
+          } else {
+            if (numTimer) clearTimeout(numTimer);
+            numTimer = setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientNum') && numInput.value.trim().length >= 4) {
+                this.nextGuideStep();
+              }
+            }, 1000);
+          }
+        }
+      };
+      numInput.addEventListener('input', () => checkNum(false));
+      numInput.addEventListener('change', () => checkNum(true));
+      numInput.addEventListener('blur', () => checkNum(true));
+    }
+
+    // 7. Monto a transferir (input manual, dictado y montos sugeridos)
+    const inputAmount = document.getElementById('inputAmount');
+    if (inputAmount) {
+      let amountTimer = null;
+      const checkAmount = (immediate = false) => {
+        if (!this.isTutorialActive || !this.isCurrentTarget('#amountBox')) return;
+        const raw = inputAmount.value.replace(/[^0-9]/g, '');
+        const val = parseInt(raw, 10);
+        if (!isNaN(val) && val > 0) {
+          if (immediate) {
+            if (amountTimer) clearTimeout(amountTimer);
+            this.nextGuideStep();
+          } else {
+            if (amountTimer) clearTimeout(amountTimer);
+            amountTimer = setTimeout(() => {
+              const r = inputAmount.value.replace(/[^0-9]/g, '');
+              if (this.isTutorialActive && this.isCurrentTarget('#amountBox') && parseInt(r, 10) > 0) {
+                this.nextGuideStep();
+              }
+            }, 1000);
+          }
+        }
+      };
+      inputAmount.addEventListener('input', () => checkAmount(false));
+      inputAmount.addEventListener('change', () => checkAmount(true));
+      inputAmount.addEventListener('blur', () => checkAmount(true));
+    }
+
+    const quickAmountContainer = document.querySelector('.quick-amounts');
+    if (quickAmountContainer) {
+      quickAmountContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-quick-amount');
+        if (btn && this.isTutorialActive && this.isCurrentTarget('#amountBox')) {
+          setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#amountBox')) {
+              this.nextGuideStep();
+            }
+          }, 300);
+        }
+      });
+    }
+
+    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos)
+    const inputGlosa = document.getElementById('inputGlosa');
+    if (inputGlosa) {
+      let glosaTimer = null;
+      const checkGlosa = (immediate = false) => {
+        if (!this.isTutorialActive || !this.isCurrentTarget('#groupGlosa')) return;
+        if (inputGlosa.value.trim().length >= 2) {
+          if (immediate) {
+            if (glosaTimer) clearTimeout(glosaTimer);
+            this.nextGuideStep();
+          } else {
+            if (glosaTimer) clearTimeout(glosaTimer);
+            glosaTimer = setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
+                this.nextGuideStep();
+              }
+            }, 900);
+          }
+        }
+      };
+      inputGlosa.addEventListener('input', () => checkGlosa(false));
+      inputGlosa.addEventListener('change', () => checkGlosa(true));
+      inputGlosa.addEventListener('blur', () => checkGlosa(true));
+    }
+
+    // 9. Clic en tarjeta de resumen de seguridad para avanzar antes del fin del audio
+    const safeSummaryCard = document.getElementById('safeSummaryCard');
+    if (safeSummaryCard) {
+      safeSummaryCard.addEventListener('click', () => {
+        if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
+          this.nextGuideStep();
+        }
+      });
+    }
+
+    // 10. Clic en tarjeta de comprobante
+    const receiptCard = document.querySelector('.receipt-card');
+    if (receiptCard) {
+      receiptCard.addEventListener('click', () => {
+        if (this.isTutorialActive && this.isCurrentTarget('.receipt-card')) {
+          this.nextGuideStep();
+        }
+      });
+    }
+
+    // 11. Finalizar tutorial al tocar Volver al inicio en el comprobante
+    const btnExit = document.getElementById('btnExitToHome');
+    if (btnExit) {
+      btnExit.addEventListener('click', () => {
+        if (this.isTutorialActive) {
+          this.clearSpotlight();
+        }
+      });
+    }
   }
 
   /* Resaltado suave de casilla activa al interactuar normalmente (sin difuminar la pantalla entera) */

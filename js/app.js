@@ -1179,6 +1179,7 @@ class AppRouter {
                 const query = transcript.trim();
                 targetInput.value = query;
                 targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                 showFeedback(feedbackEl, `✓ Buscando: "${query}"`);
               } else if (fieldType === 'rut') {
                 const digits = parseSpokenDigits(transcript, true);
@@ -1186,6 +1187,7 @@ class AppRouter {
                   const formatted = formatRut(digits);
                   targetInput.value = formatted;
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                   showFeedback(feedbackEl, `✓ RUT entendido: ${formatted}`);
                 } else {
                   showFeedback(feedbackEl, 'No se detectaron números. Intenta de nuevo o usa el teclado.', true);
@@ -1195,6 +1197,7 @@ class AppRouter {
                 if (name) {
                   targetInput.value = name;
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                   showFeedback(feedbackEl, `✓ Nombre: ${name}`);
                 }
               } else if (fieldType === 'number') {
@@ -1202,6 +1205,7 @@ class AppRouter {
                 if (digits) {
                   targetInput.value = digits;
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                   showFeedback(feedbackEl, `✓ Número: ${digits}`);
                 }
               } else if (fieldType === 'email') {
@@ -1209,6 +1213,7 @@ class AppRouter {
                 if (email) {
                   targetInput.value = email;
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                   showFeedback(feedbackEl, `✓ Correo: ${email}`);
                 }
               } else if (fieldType === 'amount') {
@@ -1218,6 +1223,7 @@ class AppRouter {
                   this.transferState.amount = amount;
                   targetInput.value = this.formatCLP(amount);
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                  targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                   showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
                 } else {
                   showFeedback(feedbackEl, 'No detectamos una cantidad clara. Ej: "quince mil pesos".', true);
@@ -1227,6 +1233,7 @@ class AppRouter {
                 const text = transcript.charAt(0).toUpperCase() + transcript.slice(1);
                 targetInput.value = text;
                 targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+                targetInput.dispatchEvent(new Event('change', { bubbles: true }));
                 showFeedback(feedbackEl, `✓ Mensaje: "${text}"`);
               }
             };

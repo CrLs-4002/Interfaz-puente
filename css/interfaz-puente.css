@@ -676,13 +676,12 @@ button.spotlight-active *,
   font-size: 16px;
   color: var(--ink);
   line-height: 1.4;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
+/* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+  display: none !important;
 }
 
 .btn-spotlight-voice {
