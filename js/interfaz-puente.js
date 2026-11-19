@@ -311,11 +311,19 @@ class InterfazPuente {
     if (!this.spotlightCard) return;
 
     const steps = this.getGuideSteps();
-    const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
 
-    if (!targetEl || (currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
+    // En Etapa A de RUT, el botón Continuar se aloja dentro del card al pie
+    if (currentView === 'new-recipient' && isStepRutVisible) {
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+      this.updateSpotlightOverlay(null);
+      return;
+    }
+
+    if (!targetEl) {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
       this.updateSpotlightOverlay(null);
@@ -463,7 +471,9 @@ class InterfazPuente {
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if ((currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
+    const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
+
+    if ((currentStep && currentStep.noBlur && currentView !== 'new-recipient') || (currentView === 'new-recipient' && isStepRutVisible) || currentView === 'summary') {
       const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
       if (scrollContainer && scrollContainer.scrollTop !== 0) {
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -752,7 +762,8 @@ class InterfazPuente {
             message: 'BancoEstado ya está seleccionado. Si es otro banco, toca Banco de Chile, Santander, Bci u Otro banco.',
             speech: 'Paso 2: Banco. Dejamos BancoEstado seleccionado por ti, o toca otro si corresponde.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: false
+            autoAdvanceOnSpeechEnd: true,
+            delayAfterSpeech: 2000
           },
           {
             target: '#groupRecipientType',
@@ -760,7 +771,8 @@ class InterfazPuente {
             message: 'CuentaRut ya está seleccionada. Si es otra, puedes elegir Corriente, Vista o Ahorro.',
             speech: 'Paso 3: Tipo de cuenta. Dejamos CuentaRut seleccionada.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: false
+            autoAdvanceOnSpeechEnd: true,
+            delayAfterSpeech: 2000
           },
           {
             target: '#groupRecipientNum',
@@ -768,7 +780,8 @@ class InterfazPuente {
             message: 'El número de cuenta ya se completó automáticamente con el RUT.',
             speech: 'Paso 4: El número de cuenta ya fue rellenado automáticamente con el RUT.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: false
+            autoAdvanceOnSpeechEnd: true,
+            delayAfterSpeech: 2000
           },
           {
             target: '#btnContinueRecipient',
@@ -1614,7 +1627,7 @@ class InterfazPuente {
       nameInput.addEventListener('blur', () => checkName(1800));
     }
 
-    // 4. Banco en Nuevo Destinatario
+    // 4. Banco en Nuevo Destinatario (Selector y Píldoras de Banco)
     const bankSelect = document.getElementById('newRecipientBank');
     if (bankSelect) {
       bankSelect.addEventListener('change', () => {
@@ -1624,8 +1637,22 @@ class InterfazPuente {
               if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
                 this.nextGuideStep();
               }
-            }, 1800);
+            }, 1000);
           }
+        }
+      });
+    }
+
+    const bankPillGrid = document.getElementById('bankPillGrid');
+    if (bankPillGrid) {
+      bankPillGrid.addEventListener('click', (e) => {
+        const pill = e.target.closest('.btn-bank-option');
+        if (pill && this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
+          setTimeout(() => {
+            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
+              this.nextGuideStep();
+            }
+          }, 1000);
         }
       });
     }

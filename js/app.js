@@ -946,6 +946,11 @@ class AppRouter {
       if (this.updatePinDisplay) {
         this.updatePinDisplay();
       }
+      if (window.interfazPuente && window.interfazPuente.isTutorialActive && window.puenteSpeech) {
+        setTimeout(() => {
+          window.puenteSpeech.speak('Ingresa tu clave de 6 números tocando los números en pantalla para autorizar.');
+        }, 300);
+      }
     }
   }
 
