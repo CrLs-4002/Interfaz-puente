@@ -314,7 +314,7 @@ class InterfazPuente {
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if (!targetEl || (currentStep && currentStep.noBlur) || currentView === 'summary') {
+    if (!targetEl || (currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
       this.updateSpotlightOverlay(null);
@@ -366,13 +366,13 @@ class InterfazPuente {
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur) || currentView === 'summary') {
+    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
       if (curtainTop) { curtainTop.style.height = '0px'; }
       if (curtainBottom) { curtainBottom.style.height = '0px'; }
       if (curtainLeft) { curtainLeft.style.width = '0px'; }
       if (curtainRight) { curtainRight.style.width = '0px'; }
       if (frameHighlight) { frameHighlight.style.display = 'none'; }
-      if (this.dynamicFocusOverlay && ((currentStep && currentStep.noBlur) || currentView === 'summary')) {
+      if (this.dynamicFocusOverlay && ((currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient')) {
         this.dynamicFocusOverlay.classList.remove('active');
         document.body.classList.remove('dynamic-focus-active');
       }
@@ -462,7 +462,7 @@ class InterfazPuente {
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
 
-    if ((currentStep && currentStep.noBlur) || currentView === 'summary') {
+    if ((currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
       const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
       if (scrollContainer && scrollContainer.scrollTop !== 0) {
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -522,11 +522,11 @@ class InterfazPuente {
 
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
-    const isSummary = currentView === 'summary';
+    const isNoBlurScreen = currentView === 'summary' || currentView === 'new-recipient';
 
     this.isTutorialActive = true;
 
-    if (!isSummary) {
+    if (!isNoBlurScreen) {
       document.body.classList.add('dynamic-focus-active');
       if (this.dynamicFocusOverlay) {
         this.dynamicFocusOverlay.classList.add('active');
@@ -665,6 +665,7 @@ class InterfazPuente {
             title: 'Paso 1: RUT de la persona',
             message: 'Escribe el RUT usando el teclado numérico de abajo o toca el micrófono para dictarlo por voz. No necesitas poner puntos ni guión.',
             speech: 'Paso 1: Ingresa el RUT de quien recibe. No es necesario poner puntos ni guión, puedes dictarlo con el micrófono o tocar los números.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -672,6 +673,7 @@ class InterfazPuente {
             title: 'Paso 2: Continuar',
             message: 'Una vez anotado el RUT, toca Continuar para completar el nombre y banco de la persona.',
             speech: 'Paso 2: Toca el botón Continuar para avanzar.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
         ];
@@ -683,6 +685,7 @@ class InterfazPuente {
             title: 'Paso 1: Nombre y Apellido',
             message: 'Anota el nombre y apellido de la persona a quien le enviarás dinero.',
             speech: 'Paso 1: Escribe el nombre y apellido de la persona.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -690,6 +693,7 @@ class InterfazPuente {
             title: 'Paso 2: Banco',
             message: 'BancoEstado ya está seleccionado. Si es otro banco, toca Banco de Chile, Santander, Bci u Otro banco.',
             speech: 'Paso 2: Banco. Dejamos BancoEstado seleccionado por ti, o toca otro si corresponde.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -697,6 +701,7 @@ class InterfazPuente {
             title: 'Paso 3: Tipo de cuenta',
             message: 'CuentaRut ya está seleccionada. Si es otra, puedes elegir Corriente, Vista o Ahorro.',
             speech: 'Paso 3: Tipo de cuenta. Dejamos CuentaRut seleccionada.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -704,6 +709,7 @@ class InterfazPuente {
             title: 'Paso 4: Número de cuenta',
             message: 'El número de cuenta ya se completó automáticamente con el RUT.',
             speech: 'Paso 4: El número de cuenta ya fue rellenado automáticamente con el RUT.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           },
           {
@@ -711,6 +717,7 @@ class InterfazPuente {
             title: 'Paso 5: Continuar al monto',
             message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
             speech: 'Paso 5: Toca Continuar al monto para avanzar.',
+            noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
         ];
@@ -816,13 +823,11 @@ class InterfazPuente {
 
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
-    const isNoBlur = step.noBlur || currentView === 'summary';
+    const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient';
 
     if (isNoBlur) {
       this.activeSpotlightElement = targetEl;
-      if (step.target === '#btnConfirmSummary') {
-        targetEl.classList.add('spotlight-active');
-      }
+      targetEl.classList.add('spotlight-active');
       document.body.classList.remove('dynamic-focus-active');
       if (this.dynamicFocusOverlay) {
         this.dynamicFocusOverlay.classList.remove('active');

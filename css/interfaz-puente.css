@@ -510,9 +510,11 @@ input:checked + .switch-slider:before {
   display: block !important;
 }
 
-/* En la pantalla de Resumen seguro nunca difuminar nada */
+/* En la pantalla de Resumen seguro y en la de Anotar datos de quien recibe nunca difuminar nada */
 body:has(#view-summary.is-active) .dynamic-focus-overlay,
-body.dynamic-focus-active:has(#view-summary.is-active) .spotlight-curtain {
+body.dynamic-focus-active:has(#view-summary.is-active) .spotlight-curtain,
+body:has(#view-new-recipient.is-active) .dynamic-focus-overlay,
+body.dynamic-focus-active:has(#view-new-recipient.is-active) .spotlight-curtain {
   display: none !important;
   opacity: 0 !important;
   visibility: hidden !important;
