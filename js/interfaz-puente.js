@@ -298,9 +298,15 @@ class InterfazPuente {
   positionSpotlightCard(targetEl) {
     if (!this.spotlightCard) return;
 
-    if (!targetEl) {
+    const steps = this.getGuideSteps();
+    const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+
+    if (!targetEl || (currentStep && currentStep.noBlur)) {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
+      if (currentStep && currentStep.noBlur) {
+        this.updateSpotlightOverlay(null);
+      }
       return;
     }
 
@@ -344,12 +350,19 @@ class InterfazPuente {
     const curtainRight = this.curtainRight || document.getElementById('spotlightCurtainRight');
     const frameHighlight = this.frameHighlight || document.getElementById('spotlightFrameHighlight');
 
-    if (!targetEl || !this.isTutorialActive) {
+    const steps = this.getGuideSteps();
+    const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+
+    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur)) {
       if (curtainTop) { curtainTop.style.height = '0px'; }
       if (curtainBottom) { curtainBottom.style.height = '0px'; }
       if (curtainLeft) { curtainLeft.style.width = '0px'; }
       if (curtainRight) { curtainRight.style.width = '0px'; }
       if (frameHighlight) { frameHighlight.style.display = 'none'; }
+      if (this.dynamicFocusOverlay && currentStep && currentStep.noBlur) {
+        this.dynamicFocusOverlay.classList.remove('active');
+        document.body.classList.remove('dynamic-focus-active');
+      }
       return;
     }
 
@@ -431,6 +444,18 @@ class InterfazPuente {
 
   scrollToElement(targetEl) {
     if (!targetEl) return;
+    const steps = this.getGuideSteps();
+    const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
+
+    if (currentStep && currentStep.noBlur) {
+      const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
+      if (scrollContainer && scrollContainer.scrollTop !== 0) {
+        scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      this.resetFrameScroll();
+      return;
+    }
+
     const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
     if (scrollContainer) {
       const containerRect = scrollContainer.getBoundingClientRect();
@@ -598,10 +623,11 @@ class InterfazPuente {
           autoAdvanceOnSpeechEnd: true
         },
         {
-          target: '#frequentContactRosa',
-          title: 'O elige un contacto guardado',
-          message: 'Toca la tarjeta de Rosa Pérez Sepúlveda para seleccionarla y pasar directo a ingresar el monto.',
-          speech: 'O toca directamente a Rosa Pérez para seleccionarla y pasar al monto a enviar.',
+          target: '#paneRecipientSaved',
+          title: 'O elige una persona guardada',
+          message: 'Toca a alguna persona que ya tengas guardada aquí, o usa el buscador para encontrarla.',
+          speech: '... o toca a alguna persona que ya tengas guardada aquí.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -758,12 +784,22 @@ class InterfazPuente {
     }
 
     this.clearPreviousHighlight();
-    this.activeSpotlightElement = targetEl;
-    targetEl.classList.add('spotlight-active');
-    document.body.classList.add('dynamic-focus-active');
 
-    if (this.dynamicFocusOverlay) {
-      this.dynamicFocusOverlay.classList.add('active');
+    if (step.noBlur) {
+      this.activeSpotlightElement = targetEl;
+      document.body.classList.remove('dynamic-focus-active');
+      if (this.dynamicFocusOverlay) {
+        this.dynamicFocusOverlay.classList.remove('active');
+      }
+      this.updateSpotlightOverlay(null);
+    } else {
+      this.activeSpotlightElement = targetEl;
+      targetEl.classList.add('spotlight-active');
+      document.body.classList.add('dynamic-focus-active');
+
+      if (this.dynamicFocusOverlay) {
+        this.dynamicFocusOverlay.classList.add('active');
+      }
     }
 
     if (this.spotlightCard) {

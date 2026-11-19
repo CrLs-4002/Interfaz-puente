@@ -45,7 +45,8 @@ class PuenteSpeech {
     if (!text) return '';
     let clean = text.replace(/[*_#]/g, '').trim();
 
-    // 1. Quitar prefijos técnicos de moneda (CLP, CLP$)
+    // 1. Quitar prefijos técnicos de moneda (CLP, CLP$) y puntos suspensivos iniciales
+    clean = clean.replace(/^\s*\.{2,}\s*/, '');
     clean = clean.replace(/\bCLP\s*\$?/gi, '');
 
     // 2. Reemplazar $ seguido de cifras por su valor numérico acompañado exclusivamente de la palabra "pesos" (o "peso" si es 1)
