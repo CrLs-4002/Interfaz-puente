@@ -689,6 +689,10 @@ class InterfazPuente {
       this.syncRutButtonLocation(this.isTutorialActive && isStepRutVisible);
     }
     if (!this.isTutorialActive) return;
+    if (viewName === 'home') {
+      this.clearSpotlight();
+      return;
+    }
     this.currentStepIndex = 0;
     setTimeout(() => {
       if (this.isTutorialActive) {
@@ -759,35 +763,32 @@ class InterfazPuente {
           {
             target: '#groupRecipientBank',
             title: 'Paso 2: Banco',
-            message: 'BancoEstado ya está seleccionado. Si es otro banco, toca Banco de Chile, Santander, Bci u Otro banco.',
-            speech: 'Paso 2: Banco. Dejamos BancoEstado seleccionado por ti, o toca otro si corresponde.',
+            message: 'Toca el banco de la persona: BancoEstado, Banco de Chile, Santander, Bci u Otro banco.',
+            speech: 'Paso 2: Banco. Elige el banco de la persona.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: true,
-            delayAfterSpeech: 2000
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientType',
             title: 'Paso 3: Tipo de cuenta',
-            message: 'CuentaRut ya está seleccionada. Si es otra, puedes elegir Corriente, Vista o Ahorro.',
-            speech: 'Paso 3: Tipo de cuenta. Dejamos CuentaRut seleccionada.',
+            message: 'Elige el tipo de cuenta: CuentaRut, Corriente, Vista o Ahorro.',
+            speech: 'Paso 3: Tipo de cuenta. Elige el tipo de cuenta.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: true,
-            delayAfterSpeech: 2000
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#groupRecipientNum',
             title: 'Paso 4: Número de cuenta',
-            message: 'El número de cuenta ya se completó automáticamente con el RUT.',
-            speech: 'Paso 4: El número de cuenta ya fue rellenado automáticamente con el RUT.',
+            message: 'Anota o dicta el número de cuenta de la persona.',
+            speech: 'Paso 4: Anota o dicta el número de cuenta.',
             noBlur: true,
-            autoAdvanceOnSpeechEnd: true,
-            delayAfterSpeech: 2000
+            autoAdvanceOnSpeechEnd: false
           },
           {
             target: '#btnContinueRecipient',
-            title: 'Paso 5: Continuar al monto',
-            message: 'Toca Continuar al monto para indicar la cantidad de dinero a transferir.',
-            speech: 'Paso 5: Toca Continuar al monto para avanzar.',
+            title: 'Toca el botón Listo',
+            message: 'Toca el botón Listo para continuar al monto.',
+            speech: 'Toca el botón Listo para avanzar.',
             noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
@@ -1026,6 +1027,24 @@ class InterfazPuente {
     }
     if (this.currentStepIndex > 0) {
       this.currentStepIndex--;
+      this.executeCurrentStep();
+    }
+  }
+
+  goToStepByTarget(targetSelector) {
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
+    const steps = this.getGuideSteps();
+    if (!steps || !steps.length) return;
+    const targetIdx = steps.findIndex(s => s.target === targetSelector);
+    if (targetIdx !== -1) {
+      this.currentStepIndex = targetIdx;
       this.executeCurrentStep();
     }
   }
@@ -1637,7 +1656,7 @@ class InterfazPuente {
               if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
                 this.nextGuideStep();
               }
-            }, 1000);
+            }, 600);
           }
         }
       });
@@ -1648,11 +1667,13 @@ class InterfazPuente {
       bankPillGrid.addEventListener('click', (e) => {
         const pill = e.target.closest('.btn-bank-option');
         if (pill && this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
+          const bVal = pill.getAttribute('data-bank');
+          if (bVal === 'otro') return; // Espera a que elija en el select
           setTimeout(() => {
             if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientBank')) {
               this.nextGuideStep();
             }
-          }, 1000);
+          }, 600);
         }
       });
     }
@@ -1662,12 +1683,45 @@ class InterfazPuente {
     if (typeGrid) {
       typeGrid.addEventListener('click', (e) => {
         const pill = e.target.closest('.btn-account-type-option');
-        if (pill && this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
-          setTimeout(() => {
-            if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
-              this.nextGuideStep();
+        if (!pill || !this.isTutorialActive) return;
+        const selectedType = pill.getAttribute('data-type');
+
+        if (this.isCurrentTarget('#groupRecipientType')) {
+          if (selectedType === 'CuentaRUT') {
+            if (this.autoAdvanceTimer) clearTimeout(this.autoAdvanceTimer);
+            if (this.fallbackAdvanceTimer) clearTimeout(this.fallbackAdvanceTimer);
+
+            // Resaltar visualmente el campo de número de cuenta completado
+            const numGroup = document.getElementById('groupRecipientNum');
+            if (numGroup) {
+              this.positionSpotlightCard(numGroup);
             }
-          }, 1800);
+            if (this.spotlightTitle) this.spotlightTitle.textContent = 'Número de cuenta completado';
+            if (this.spotlightText) this.spotlightText.textContent = 'El número de cuenta ya se rellenó automáticamente con el RUT.';
+
+            const advanceToListo = () => {
+              setTimeout(() => {
+                if (this.isTutorialActive) {
+                  this.goToStepByTarget('#btnContinueRecipient');
+                }
+              }, 1000);
+            };
+
+            if (window.puenteSpeech) {
+              window.puenteSpeech.speak('El número de cuenta ya se rellenó automáticamente con el RUT.', () => {
+                advanceToListo();
+              });
+            } else {
+              advanceToListo();
+            }
+          } else {
+            // Si elige otro tipo de cuenta, avanza al paso de ingresar el número de cuenta
+            setTimeout(() => {
+              if (this.isTutorialActive && this.isCurrentTarget('#groupRecipientType')) {
+                this.goToStepByTarget('#groupRecipientNum');
+              }
+            }, 600);
+          }
         }
       });
     }

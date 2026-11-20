@@ -94,6 +94,9 @@ class AppRouter {
     if (amountInput) {
       amountInput.value = this.formatCLP(this.transferState.amount);
     }
+    if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
+      window.interfazPuente.clearSpotlight();
+    }
     this.goTo('home');
   }
 
@@ -243,20 +246,14 @@ class AppRouter {
       const emailInput = document.getElementById('newRecipientEmail');
       if (emailInput) emailInput.value = '';
 
-      // Reset Banco a BancoEstado
-      bankPills.forEach(p => {
-        if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
-        else p.classList.remove('selected');
-      });
-      if (bankSelect) bankSelect.value = 'BancoEstado';
+      // Sin selección predeterminada de Banco
+      bankPills.forEach(p => p.classList.remove('selected'));
+      if (bankSelect) bankSelect.value = '';
       if (otherBankWrap) otherBankWrap.classList.add('hidden');
 
-      // Reset Tipo a CuentaRUT
-      accountTypePills.forEach(p => {
-        if (p.getAttribute('data-type') === 'CuentaRUT') p.classList.add('selected');
-        else p.classList.remove('selected');
-      });
-      if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
+      // Sin selección predeterminada de Tipo de Cuenta
+      accountTypePills.forEach(p => p.classList.remove('selected'));
+      if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = '';
 
       if (window.interfazPuente) {
         window.interfazPuente.syncRutButtonLocation(window.interfazPuente.isTutorialActive);
@@ -388,26 +385,17 @@ class AppRouter {
           if (nameInput) nameInput.focus();
         }
 
-        // Punto 3: Rellenar número de cuenta automáticamente con el RUT menos el último dígito
-        const rawRut = rutVal.replace(/[^0-9kK]/g, '');
-        if (numInput && rawRut.length > 1) {
-          numInput.value = rawRut.slice(0, -1);
-        }
+        // El usuario elige banco y tipo de cuenta; número se autocompleta solo si elige CuentaRut
+        if (numInput) numInput.value = '';
 
-        // BancoEstado predeterminado
-        bankPills.forEach(p => {
-          if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
-          else p.classList.remove('selected');
-        });
-        if (bankSelect) bankSelect.value = 'BancoEstado';
+        // Sin banco predeterminado
+        bankPills.forEach(p => p.classList.remove('selected'));
+        if (bankSelect) bankSelect.value = '';
         if (otherBankWrap) otherBankWrap.classList.add('hidden');
 
-        // CuentaRUT predeterminada
-        accountTypePills.forEach(p => {
-          if (p.getAttribute('data-type') === 'CuentaRUT') p.classList.add('selected');
-          else p.classList.remove('selected');
-        });
-        if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = 'CuentaRUT';
+        // Sin tipo de cuenta predeterminado
+        accountTypePills.forEach(p => p.classList.remove('selected'));
+        if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = '';
 
         if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
           window.interfazPuente.handleViewChange('new-recipient');
@@ -464,20 +452,30 @@ class AppRouter {
         const selectedType = pill.getAttribute('data-type');
         if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = selectedType;
 
-        // Si elige CuentaRUT: banco predeterminado BancoEstado y auto-relleno de número de cuenta con RUT sin DV
+        // Si elige CuentaRUT: banco predeterminado BancoEstado (si no había banco) y auto-relleno de número de cuenta con RUT sin DV
         if (selectedType === 'CuentaRUT') {
-          if (bankSelect) bankSelect.value = 'BancoEstado';
-          bankPills.forEach(p => {
-            if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
-            else p.classList.remove('selected');
-          });
-          if (otherBankWrap) otherBankWrap.classList.add('hidden');
+          if (bankSelect && !bankSelect.value) {
+            bankSelect.value = 'BancoEstado';
+            bankPills.forEach(p => {
+              if (p.getAttribute('data-bank') === 'BancoEstado') p.classList.add('selected');
+              else p.classList.remove('selected');
+            });
+            if (otherBankWrap) otherBankWrap.classList.add('hidden');
+          }
 
           if (newRecipientRutInput && numInput) {
             const rawRut = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
             if (rawRut.length > 1) {
               const rutSinDv = rawRut.slice(0, -1);
               numInput.value = rutSinDv;
+            }
+          }
+        } else {
+          // Si cambia a otro tipo de cuenta y el número era el rut, limpiarlo
+          if (newRecipientRutInput && numInput) {
+            const rawRut = newRecipientRutInput.value.replace(/[^0-9kK]/g, '');
+            if (rawRut.length > 1 && numInput.value === rawRut.slice(0, -1)) {
+              numInput.value = '';
             }
           }
         }
@@ -606,12 +604,24 @@ class AppRouter {
           return;
         }
 
+        if (!bankSelect || !bankSelect.value) {
+          alert('Por favor selecciona el banco de la persona.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
+        if (!typeSelect || !typeSelect.value) {
+          alert('Por favor selecciona el tipo de cuenta.');
+          if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
+          return;
+        }
+
         this.transferState.recipient = {
           id: 'nuevo_' + Date.now(),
           name: nameInput.value.trim(),
           rut: rutInput.value.trim(),
-          bank: bankSelect ? bankSelect.value : 'BancoEstado',
-          accountType: typeSelect ? typeSelect.value : 'Cuenta Corriente',
+          bank: bankSelect.value,
+          accountType: typeSelect.value,
           accountNum: numInput.value.trim(),
           email: emailInput ? emailInput.value.trim() : ''
         };
