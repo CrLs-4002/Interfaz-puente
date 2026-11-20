@@ -737,6 +737,135 @@ button.spotlight-active *,
   padding-bottom: 260px !important;
 }
 
+/* ================= BANNER SUPERIOR COMPACTO EN DESTINATARIO (PASO 2) ================= */
+.recipient-tutorial-banner {
+  background: #F0FDF4;
+  border: 2px solid var(--teal);
+  border-radius: 16px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.14);
+  animation: bannerFadeIn 0.25s ease-out;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipient-tutorial-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.recipient-tutorial-banner-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipient-tutorial-banner-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+  flex-wrap: wrap;
+}
+
+.recipient-tutorial-banner-badge {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--mint);
+  background: var(--navy);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.recipient-tutorial-banner-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.2;
+}
+
+.recipient-tutorial-banner-desc {
+  font-size: 13px;
+  color: #334155;
+  margin: 0;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.recipient-tutorial-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-recipient-banner-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #E0E7FF;
+  border: 1.5px solid #C7D2FE;
+  color: #3730A3;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-recipient-banner-voice:hover,
+.btn-recipient-banner-voice:focus-visible {
+  background: #C7D2FE;
+  color: #1E1B4B;
+  transform: scale(1.03);
+}
+
+.btn-recipient-banner-voice:active {
+  transform: scale(0.96);
+}
+
+.btn-recipient-banner-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-recipient-banner-close:hover,
+.btn-recipient-banner-close:focus-visible {
+  background: #F1F5F9;
+  color: var(--navy);
+  border-color: #94A3B8;
+}
+
+.btn-recipient-banner-close:active {
+  transform: scale(0.92);
+}
+
 /* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
   display: none !important;

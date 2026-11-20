@@ -36,7 +36,6 @@ class InterfazPuente {
 
   async init() {
     this.cacheElements();
-    await this.loadGlossary();
     this.setupDraggable();
     this.setupEventListeners();
     this.setupInactivityWatchdog();
@@ -45,6 +44,7 @@ class InterfazPuente {
     this.updateLanguageWidgetBadge();
     this.setupScrollGuards();
     this.updateFabVisibility('home');
+    await this.loadGlossary();
   }
 
   updateFabVisibility(viewName) {
@@ -651,11 +651,26 @@ class InterfazPuente {
     }
   }
 
+  /* Sincroniza el banner superior compacto de la pantalla de destinatario (Paso 2) */
+  syncRecipientTutorialBanner(isStep2) {
+    const banner = document.getElementById('recipientTutorialBanner');
+    if (!banner) return;
+    if (isStep2) {
+      banner.style.display = 'block';
+      if (this.spotlightCard) {
+        this.spotlightCard.classList.remove('show');
+      }
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
   clearSpotlight() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
+    this.syncRecipientTutorialBanner(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -730,6 +745,9 @@ class InterfazPuente {
     } else {
       const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       this.syncRutButtonLocation(this.isTutorialActive && isStepRutVisible);
+    }
+    if (viewName !== 'recipient') {
+      this.syncRecipientTutorialBanner(false);
     }
     if (!this.isTutorialActive) return;
     if (viewName === 'home') {
@@ -941,6 +959,9 @@ class InterfazPuente {
     const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
     this.syncSummaryCorrectoButton(isSummaryStep1);
 
+    const isRecipientStep2 = (this.isTutorialActive && currentView === 'recipient' && this.currentStepIndex === 1);
+    this.syncRecipientTutorialBanner(isRecipientStep2);
+
     const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
     if (isNoBlur) {
@@ -972,15 +993,21 @@ class InterfazPuente {
       if (textEl) textEl.textContent = step.message;
       if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
 
-      this.spotlightCard.classList.add('show');
-      this.positionSpotlightCard(targetEl);
+      if (!isRecipientStep2) {
+        this.spotlightCard.classList.add('show');
+        this.positionSpotlightCard(targetEl);
+      } else {
+        this.spotlightCard.classList.remove('show');
+      }
     }
 
     this.scrollToElement(targetEl);
 
-    setTimeout(() => {
-      this.positionSpotlightCard(targetEl);
-    }, 320);
+    if (!isRecipientStep2) {
+      setTimeout(() => {
+        this.positionSpotlightCard(targetEl);
+      }, 320);
+    }
 
     // Cancelar cualquier temporizador de avance anterior
     if (this.autoAdvanceTimer) {
@@ -1556,6 +1583,31 @@ class InterfazPuente {
               }, delay);
             }
           });
+        }
+      });
+    }
+
+    // Botones del banner superior compacto de destinatario (Paso 2)
+    const btnRecipientBannerVoice = document.getElementById('btnRecipientBannerVoice');
+    if (btnRecipientBannerVoice) {
+      btnRecipientBannerVoice.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const steps = this.getGuideSteps();
+        const step = (steps && steps.length > 1) ? steps[1] : null;
+        const speechText = (step && step.speech) ? step.speech : '... o toca a alguna persona que ya tengas guardada aquí.';
+        if (speechText && window.puenteSpeech) {
+          window.puenteSpeech.speak(speechText);
+        }
+      });
+    }
+
+    const btnRecipientBannerClose = document.getElementById('btnRecipientBannerClose');
+    if (btnRecipientBannerClose) {
+      btnRecipientBannerClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const banner = document.getElementById('recipientTutorialBanner');
+        if (banner) {
+          banner.style.display = 'none';
         }
       });
     }

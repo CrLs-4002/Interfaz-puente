@@ -2566,6 +2566,135 @@ button.spotlight-active *,
   padding-bottom: 260px !important;
 }
 
+/* ================= BANNER SUPERIOR COMPACTO EN DESTINATARIO (PASO 2) ================= */
+.recipient-tutorial-banner {
+  background: #F0FDF4;
+  border: 2px solid var(--teal);
+  border-radius: 16px;
+  padding: 10px 14px;
+  margin-top: 10px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.14);
+  animation: bannerFadeIn 0.25s ease-out;
+}
+
+@keyframes bannerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.recipient-tutorial-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.recipient-tutorial-banner-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.recipient-tutorial-banner-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 3px;
+  flex-wrap: wrap;
+}
+
+.recipient-tutorial-banner-badge {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--mint);
+  background: var(--navy);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.recipient-tutorial-banner-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.2;
+}
+
+.recipient-tutorial-banner-desc {
+  font-size: 13px;
+  color: #334155;
+  margin: 0;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.recipient-tutorial-banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.btn-recipient-banner-voice {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #E0E7FF;
+  border: 1.5px solid #C7D2FE;
+  color: #3730A3;
+  padding: 6px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-recipient-banner-voice:hover,
+.btn-recipient-banner-voice:focus-visible {
+  background: #C7D2FE;
+  color: #1E1B4B;
+  transform: scale(1.03);
+}
+
+.btn-recipient-banner-voice:active {
+  transform: scale(0.96);
+}
+
+.btn-recipient-banner-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1.5px solid #CBD5E1;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.btn-recipient-banner-close:hover,
+.btn-recipient-banner-close:focus-visible {
+  background: #F1F5F9;
+  color: var(--navy);
+  border-color: #94A3B8;
+}
+
+.btn-recipient-banner-close:active {
+  transform: scale(0.92);
+}
+
 /* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
   display: none !important;
@@ -3848,6 +3977,28 @@ button.spotlight-active *,
                 </button>
               </div>
               <div class="voice-dictate-feedback" id="feedbackVoiceSearch" style="display:none"></div>
+            </div>
+
+            <!-- Banner Superior Compacto de Guía Tutorial (Paso 2) -->
+            <div class="recipient-tutorial-banner" id="recipientTutorialBanner" style="display:none" role="region" aria-label="Guía tutorial paso 2">
+              <div class="recipient-tutorial-banner-content">
+                <div class="recipient-tutorial-banner-main">
+                  <div class="recipient-tutorial-banner-badge-row">
+                    <span class="recipient-tutorial-banner-badge">PASO 2 DE 2</span>
+                    <strong class="recipient-tutorial-banner-title">O elige una persona guardada</strong>
+                  </div>
+                  <p class="recipient-tutorial-banner-desc">Toca a alguna persona de tu lista aquí abajo o búscala.</p>
+                </div>
+                <div class="recipient-tutorial-banner-actions">
+                  <button type="button" class="btn-recipient-banner-voice" id="btnRecipientBannerVoice" aria-label="Escuchar explicación de este paso" title="Escuchar paso">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    <span>Escuchar</span>
+                  </button>
+                  <button type="button" class="btn-recipient-banner-close" id="btnRecipientBannerClose" aria-label="Cerrar aviso" title="Cerrar aviso">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <!-- Pestañas de contactos (Guardados y Favoritos) -->
@@ -5415,7 +5566,6 @@ class InterfazPuente {
 
   async init() {
     this.cacheElements();
-    await this.loadGlossary();
     this.setupDraggable();
     this.setupEventListeners();
     this.setupInactivityWatchdog();
@@ -5424,6 +5574,7 @@ class InterfazPuente {
     this.updateLanguageWidgetBadge();
     this.setupScrollGuards();
     this.updateFabVisibility('home');
+    await this.loadGlossary();
   }
 
   updateFabVisibility(viewName) {
@@ -6030,11 +6181,26 @@ class InterfazPuente {
     }
   }
 
+  /* Sincroniza el banner superior compacto de la pantalla de destinatario (Paso 2) */
+  syncRecipientTutorialBanner(isStep2) {
+    const banner = document.getElementById('recipientTutorialBanner');
+    if (!banner) return;
+    if (isStep2) {
+      banner.style.display = 'block';
+      if (this.spotlightCard) {
+        this.spotlightCard.classList.remove('show');
+      }
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
   clearSpotlight() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
+    this.syncRecipientTutorialBanner(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -6109,6 +6275,9 @@ class InterfazPuente {
     } else {
       const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       this.syncRutButtonLocation(this.isTutorialActive && isStepRutVisible);
+    }
+    if (viewName !== 'recipient') {
+      this.syncRecipientTutorialBanner(false);
     }
     if (!this.isTutorialActive) return;
     if (viewName === 'home') {
@@ -6320,6 +6489,9 @@ class InterfazPuente {
     const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
     this.syncSummaryCorrectoButton(isSummaryStep1);
 
+    const isRecipientStep2 = (this.isTutorialActive && currentView === 'recipient' && this.currentStepIndex === 1);
+    this.syncRecipientTutorialBanner(isRecipientStep2);
+
     const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
     if (isNoBlur) {
@@ -6351,15 +6523,21 @@ class InterfazPuente {
       if (textEl) textEl.textContent = step.message;
       if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
 
-      this.spotlightCard.classList.add('show');
-      this.positionSpotlightCard(targetEl);
+      if (!isRecipientStep2) {
+        this.spotlightCard.classList.add('show');
+        this.positionSpotlightCard(targetEl);
+      } else {
+        this.spotlightCard.classList.remove('show');
+      }
     }
 
     this.scrollToElement(targetEl);
 
-    setTimeout(() => {
-      this.positionSpotlightCard(targetEl);
-    }, 320);
+    if (!isRecipientStep2) {
+      setTimeout(() => {
+        this.positionSpotlightCard(targetEl);
+      }, 320);
+    }
 
     // Cancelar cualquier temporizador de avance anterior
     if (this.autoAdvanceTimer) {
@@ -6935,6 +7113,31 @@ class InterfazPuente {
               }, delay);
             }
           });
+        }
+      });
+    }
+
+    // Botones del banner superior compacto de destinatario (Paso 2)
+    const btnRecipientBannerVoice = document.getElementById('btnRecipientBannerVoice');
+    if (btnRecipientBannerVoice) {
+      btnRecipientBannerVoice.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const steps = this.getGuideSteps();
+        const step = (steps && steps.length > 1) ? steps[1] : null;
+        const speechText = (step && step.speech) ? step.speech : '... o toca a alguna persona que ya tengas guardada aquí.';
+        if (speechText && window.puenteSpeech) {
+          window.puenteSpeech.speak(speechText);
+        }
+      });
+    }
+
+    const btnRecipientBannerClose = document.getElementById('btnRecipientBannerClose');
+    if (btnRecipientBannerClose) {
+      btnRecipientBannerClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const banner = document.getElementById('recipientTutorialBanner');
+        if (banner) {
+          banner.style.display = 'none';
         }
       });
     }
