@@ -60,13 +60,11 @@ class InterfazPuente {
     }
 
     // El botón "Ayuda" que flota debe desaparecer mientras el modo tutorial está activo.
-    // Solo debe aparecer cuando el usuario cierre algún paso del tutorial para que pueda abrirlo nuevamente si lo necesita.
-    if (this.isTutorialActive && !this.stepWasDismissed) {
+    // Debe estar presente cuando no está el modo tutorial activado.
+    if (this.isTutorialActive) {
       this.fabContainer.style.display = 'none';
-    } else if (this.stepWasDismissed) {
-      this.fabContainer.style.display = 'flex';
     } else {
-      this.fabContainer.style.display = 'none';
+      this.fabContainer.style.display = 'flex';
     }
   }
 
@@ -222,10 +220,8 @@ class InterfazPuente {
 
       if (isHome) {
         this.openHomeHelpModal();
-      } else if (this.stepWasDismissed || this.isTutorialActive) {
-        this.reopenTutorialStep();
       } else {
-        this.toggleWidgetMenu();
+        this.reopenTutorialStep();
       }
     });
   }
@@ -695,6 +691,7 @@ class InterfazPuente {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.stepWasDismissed = false;
+    this.currentStepIndex = 0;
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
     this.syncRecipientTutorialBanner(false);
@@ -1006,12 +1003,8 @@ class InterfazPuente {
     const steps = this.getGuideSteps();
     if (!steps || !steps.length) return;
 
-    if (typeof this.currentStepIndex !== 'number' || isNaN(this.currentStepIndex) || this.currentStepIndex < 0) {
+    if (typeof this.currentStepIndex !== 'number' || isNaN(this.currentStepIndex) || this.currentStepIndex < 0 || this.currentStepIndex >= steps.length) {
       this.currentStepIndex = 0;
-    }
-    if (this.currentStepIndex >= steps.length) {
-      this.clearSpotlight();
-      return;
     }
 
     const step = steps[this.currentStepIndex];
