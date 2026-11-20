@@ -323,6 +323,14 @@ class InterfazPuente {
       return;
     }
 
+    // En la pantalla recipient (elegir persona), la tarjeta debe mantenerse siempre abajo para no tapar el botón "Otra persona"
+    if (currentView === 'recipient') {
+      this.spotlightCard.style.transform = 'translateY(0)';
+      this.spotlightCard.classList.remove('is-docked-top');
+      this.updateSpotlightOverlay(targetEl);
+      return;
+    }
+
     if (!targetEl) {
       this.spotlightCard.style.transform = 'translateY(0)';
       this.spotlightCard.classList.remove('is-docked-top');
@@ -758,6 +766,7 @@ class InterfazPuente {
           title: '¿Quieres transferirle a otra persona?',
           message: 'Toca este botón si deseas transferirle a una persona que no esté en tu lista.',
           speech: 'Si deseas transferirle a otra persona, toca el botón Otra persona arriba.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
