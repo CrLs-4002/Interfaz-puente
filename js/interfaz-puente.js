@@ -17,6 +17,8 @@ class InterfazPuente {
     this.glossary = [];
     this.activeSpotlightElement = null;
     this.isTutorialActive = false; // Solo se cierra con la 'x' o con 'Listo' al final
+    this.stepWasDismissed = false; // Indica si el usuario cerró el paso actual con la 'x'
+    this.currentStepIndex = 0;
     this.stepExecutionToken = 0; // Previene condiciones de carrera y avance fantasma entre vistas
 
     // Elementos DOM
@@ -49,11 +51,22 @@ class InterfazPuente {
 
   updateFabVisibility(viewName) {
     if (!this.fabContainer) return;
-    const activeView = viewName || (document.querySelector('.screen-view.is-active')?.id.replace('view-', '')) || (window.appRouter ? window.appRouter.currentView : 'home');
+    const activeScreen = document.querySelector('.screen-view.is-active');
+    const activeView = viewName || (activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home'));
+
     if (activeView === 'home' || !this.enabled) {
       this.fabContainer.style.display = 'none';
-    } else {
+      return;
+    }
+
+    // El botón "Ayuda" que flota debe desaparecer mientras el modo tutorial está activo.
+    // Solo debe aparecer cuando el usuario cierre algún paso del tutorial para que pueda abrirlo nuevamente si lo necesita.
+    if (this.isTutorialActive && !this.stepWasDismissed) {
+      this.fabContainer.style.display = 'none';
+    } else if (this.stepWasDismissed) {
       this.fabContainer.style.display = 'flex';
+    } else {
+      this.fabContainer.style.display = 'none';
     }
   }
 
@@ -209,6 +222,8 @@ class InterfazPuente {
 
       if (isHome) {
         this.openHomeHelpModal();
+      } else if (this.stepWasDismissed || this.isTutorialActive) {
+        this.reopenTutorialStep();
       } else {
         this.toggleWidgetMenu();
       }
@@ -249,6 +264,7 @@ class InterfazPuente {
 
   triggerInactivityOffer() {
     if (!this.inactivityBubble) return;
+    if (this.isTutorialActive && !this.stepWasDismissed) return;
     this.inactivityBubble.classList.add('show');
   }
 
@@ -668,6 +684,7 @@ class InterfazPuente {
   clearSpotlight() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
+    this.stepWasDismissed = false;
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
     this.syncRecipientTutorialBanner(false);
@@ -705,11 +722,51 @@ class InterfazPuente {
 
     // Asegurar que el marco y el viewport no queden desplazados
     this.resetFrameScroll();
+    this.updateFabVisibility();
+  }
+
+  /* Cierra el paso actual del tutorial a petición del usuario y muestra el botón flotante "Ayuda" */
+  dismissCurrentTutorialStep() {
+    this.stepWasDismissed = true;
+    if (this.autoAdvanceTimer) {
+      clearTimeout(this.autoAdvanceTimer);
+      this.autoAdvanceTimer = null;
+    }
+    if (this.fallbackAdvanceTimer) {
+      clearTimeout(this.fallbackAdvanceTimer);
+      this.fallbackAdvanceTimer = null;
+    }
+    if (window.puenteSpeech) {
+      window.puenteSpeech.stop();
+    }
+    if (this.spotlightCard) {
+      this.spotlightCard.classList.remove('show');
+    }
+    const banner = document.getElementById('recipientTutorialBanner');
+    if (banner) {
+      banner.style.display = 'none';
+    }
+    this.clearPreviousHighlight();
+    document.body.classList.remove('dynamic-focus-active');
+    if (this.dynamicFocusOverlay) {
+      this.dynamicFocusOverlay.classList.remove('active');
+    }
+    this.updateSpotlightOverlay(null);
+    this.updateFabVisibility();
+  }
+
+  /* Reabre el paso del tutorial que fue cerrado */
+  reopenTutorialStep() {
+    this.stepWasDismissed = false;
+    this.isTutorialActive = true;
+    this.updateFabVisibility();
+    this.executeCurrentStep();
   }
 
   /* Flujo interactivo paso a paso para completar la transferencia */
   startStepByStepGuide() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
+    this.stepWasDismissed = false;
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
@@ -723,12 +780,14 @@ class InterfazPuente {
     }
     this.isTutorialActive = true;
     this.currentStepIndex = 0;
+    this.updateFabVisibility();
     this.executeCurrentStep();
   }
 
   handleViewChange(viewName) {
-    this.updateFabVisibility(viewName);
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
+    this.stepWasDismissed = false;
+    this.updateFabVisibility(viewName);
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
@@ -930,17 +989,21 @@ class InterfazPuente {
 
   executeCurrentStep() {
     const steps = this.getGuideSteps();
-    if (!steps.length) return;
+    if (!steps || !steps.length) return;
 
+    if (typeof this.currentStepIndex !== 'number' || isNaN(this.currentStepIndex) || this.currentStepIndex < 0) {
+      this.currentStepIndex = 0;
+    }
     if (this.currentStepIndex >= steps.length) {
       this.clearSpotlight();
       return;
     }
-    if (this.currentStepIndex < 0) {
-      this.currentStepIndex = 0;
-    }
 
     const step = steps[this.currentStepIndex];
+    if (!step || !step.target) {
+      this.clearSpotlight();
+      return;
+    }
     const targetEl = document.querySelector(step.target);
     if (!targetEl) {
       this.currentStepIndex++;
@@ -961,6 +1024,9 @@ class InterfazPuente {
 
     const isRecipientStep2 = (this.isTutorialActive && currentView === 'recipient' && this.currentStepIndex === 1);
     this.syncRecipientTutorialBanner(isRecipientStep2);
+
+    this.stepWasDismissed = false;
+    this.updateFabVisibility(currentView);
 
     const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
@@ -1548,7 +1614,7 @@ class InterfazPuente {
     if (btnSpotlightCloseX) {
       btnSpotlightCloseX.addEventListener('click', (e) => {
         e.stopPropagation();
-        this.clearSpotlight();
+        this.dismissCurrentTutorialStep();
       });
     }
 
@@ -1605,10 +1671,7 @@ class InterfazPuente {
     if (btnRecipientBannerClose) {
       btnRecipientBannerClose.addEventListener('click', (e) => {
         e.stopPropagation();
-        const banner = document.getElementById('recipientTutorialBanner');
-        if (banner) {
-          banner.style.display = 'none';
-        }
+        this.dismissCurrentTutorialStep();
       });
     }
 
