@@ -55,6 +55,9 @@ class InterfazPuente {
     const activeView = viewName || (activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home'));
 
     if (activeView === 'home' || !this.enabled) {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'none', 'important');
+      }
       this.fabContainer.style.display = 'none';
       return;
     }
@@ -62,9 +65,21 @@ class InterfazPuente {
     // El botón "Ayuda" que flota debe desaparecer mientras el modo tutorial está activo.
     // Debe estar presente cuando no está el modo tutorial activado.
     if (this.isTutorialActive) {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'none', 'important');
+      }
       this.fabContainer.style.display = 'none';
     } else {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'flex', 'important');
+        this.fabContainer.style.setProperty('opacity', '1', 'important');
+        this.fabContainer.style.setProperty('visibility', 'visible', 'important');
+        this.fabContainer.style.setProperty('pointer-events', 'auto', 'important');
+      }
       this.fabContainer.style.display = 'flex';
+      this.fabContainer.style.opacity = '1';
+      this.fabContainer.style.visibility = 'visible';
+      this.fabContainer.style.pointerEvents = 'auto';
     }
   }
 
@@ -687,7 +702,7 @@ class InterfazPuente {
     }
   }
 
-  clearSpotlight() {
+  clearSpotlight(viewName) {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.stepWasDismissed = false;
@@ -719,9 +734,9 @@ class InterfazPuente {
     }
 
     // Regresar el área de scroll al inicio suavemente al cerrar el tutorial si estaba desplazada
-    const activeView = document.querySelector('.screen-view.is-active');
-    if (activeView) {
-      const scrollArea = activeView.querySelector('.scroll-area');
+    const activeViewEl = document.querySelector('.screen-view.is-active');
+    if (activeViewEl) {
+      const scrollArea = activeViewEl.querySelector('.scroll-area');
       if (scrollArea && scrollArea.scrollTop !== 0) {
         scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -729,7 +744,7 @@ class InterfazPuente {
 
     // Asegurar que el marco y el viewport no queden desplazados
     this.resetFrameScroll();
-    this.updateFabVisibility();
+    this.updateFabVisibility(viewName);
   }
 
   /* Cierra el paso actual del tutorial a petición del usuario y muestra el botón flotante "Ayuda" */

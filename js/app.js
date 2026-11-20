@@ -69,11 +69,11 @@ class AppRouter {
 
     // Si el modo tutorial está activo, continuar en la nueva pantalla; de lo contrario limpiar spotlight
     if (window.interfazPuente) {
-      window.interfazPuente.updateFabVisibility(viewName);
       if (window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.updateFabVisibility(viewName);
         window.interfazPuente.handleViewChange(viewName);
       } else {
-        window.interfazPuente.clearSpotlight();
+        window.interfazPuente.clearSpotlight(viewName);
       }
     }
 
@@ -172,7 +172,15 @@ class AppRouter {
     if (backToHome) backToHome.addEventListener('click', () => this.goTo('home'));
 
     const backToRecipient = document.getElementById('btnBackFromAmount');
-    if (backToRecipient) backToRecipient.addEventListener('click', () => this.goTo('recipient'));
+    if (backToRecipient) {
+      backToRecipient.addEventListener('click', () => {
+        if (this.transferState.isNewRecipient) {
+          this.goTo('new-recipient');
+        } else {
+          this.goTo('recipient');
+        }
+      });
+    }
 
     const navHome = document.getElementById('navBtnHome');
     if (navHome) navHome.addEventListener('click', () => this.goTo('home'));
@@ -270,6 +278,15 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        if (stepDetails && !stepDetails.classList.contains('hidden')) {
+          stepDetails.classList.add('hidden');
+          if (stepRut) stepRut.classList.remove('hidden');
+          if (window.interfazPuente) {
+            window.interfazPuente.syncRutButtonLocation(window.interfazPuente.isTutorialActive);
+            window.interfazPuente.updateFabVisibility('new-recipient');
+          }
+          return;
+        }
         if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
@@ -397,8 +414,12 @@ class AppRouter {
         accountTypePills.forEach(p => p.classList.remove('selected'));
         if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = '';
 
-        if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
-          window.interfazPuente.handleViewChange('new-recipient');
+        if (window.interfazPuente) {
+          if (window.interfazPuente.isTutorialActive) {
+            window.interfazPuente.handleViewChange('new-recipient');
+          } else {
+            window.interfazPuente.updateFabVisibility('new-recipient');
+          }
         }
       });
     }

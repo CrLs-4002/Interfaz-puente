@@ -1852,13 +1852,6 @@ button:disabled {
   cursor: grabbing;
 }
 
-/* Ocultar el botón flotante mientras la tarjeta de guía paso a paso esté activa para que no la tape */
-body.dynamic-focus-active .puente-fab-container {
-  opacity: 0;
-  pointer-events: none;
-  visibility: hidden;
-}
-
 .puente-fab-btn {
   display: inline-flex;
   align-items: center;
@@ -5586,6 +5579,9 @@ class InterfazPuente {
     const activeView = viewName || (activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : 'home'));
 
     if (activeView === 'home' || !this.enabled) {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'none', 'important');
+      }
       this.fabContainer.style.display = 'none';
       return;
     }
@@ -5593,9 +5589,21 @@ class InterfazPuente {
     // El botón "Ayuda" que flota debe desaparecer mientras el modo tutorial está activo.
     // Debe estar presente cuando no está el modo tutorial activado.
     if (this.isTutorialActive) {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'none', 'important');
+      }
       this.fabContainer.style.display = 'none';
     } else {
+      if (this.fabContainer.style.setProperty) {
+        this.fabContainer.style.setProperty('display', 'flex', 'important');
+        this.fabContainer.style.setProperty('opacity', '1', 'important');
+        this.fabContainer.style.setProperty('visibility', 'visible', 'important');
+        this.fabContainer.style.setProperty('pointer-events', 'auto', 'important');
+      }
       this.fabContainer.style.display = 'flex';
+      this.fabContainer.style.opacity = '1';
+      this.fabContainer.style.visibility = 'visible';
+      this.fabContainer.style.pointerEvents = 'auto';
     }
   }
 
@@ -6218,7 +6226,7 @@ class InterfazPuente {
     }
   }
 
-  clearSpotlight() {
+  clearSpotlight(viewName) {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.stepWasDismissed = false;
@@ -6250,9 +6258,9 @@ class InterfazPuente {
     }
 
     // Regresar el área de scroll al inicio suavemente al cerrar el tutorial si estaba desplazada
-    const activeView = document.querySelector('.screen-view.is-active');
-    if (activeView) {
-      const scrollArea = activeView.querySelector('.scroll-area');
+    const activeViewEl = document.querySelector('.screen-view.is-active');
+    if (activeViewEl) {
+      const scrollArea = activeViewEl.querySelector('.scroll-area');
       if (scrollArea && scrollArea.scrollTop !== 0) {
         scrollArea.scrollTo({ top: 0, behavior: 'smooth' });
       }
@@ -6260,7 +6268,7 @@ class InterfazPuente {
 
     // Asegurar que el marco y el viewport no queden desplazados
     this.resetFrameScroll();
-    this.updateFabVisibility();
+    this.updateFabVisibility(viewName);
   }
 
   /* Cierra el paso actual del tutorial a petición del usuario y muestra el botón flotante "Ayuda" */
@@ -8026,11 +8034,11 @@ class AppRouter {
 
     // Si el modo tutorial está activo, continuar en la nueva pantalla; de lo contrario limpiar spotlight
     if (window.interfazPuente) {
-      window.interfazPuente.updateFabVisibility(viewName);
       if (window.interfazPuente.isTutorialActive) {
+        window.interfazPuente.updateFabVisibility(viewName);
         window.interfazPuente.handleViewChange(viewName);
       } else {
-        window.interfazPuente.clearSpotlight();
+        window.interfazPuente.clearSpotlight(viewName);
       }
     }
 
@@ -8129,7 +8137,15 @@ class AppRouter {
     if (backToHome) backToHome.addEventListener('click', () => this.goTo('home'));
 
     const backToRecipient = document.getElementById('btnBackFromAmount');
-    if (backToRecipient) backToRecipient.addEventListener('click', () => this.goTo('recipient'));
+    if (backToRecipient) {
+      backToRecipient.addEventListener('click', () => {
+        if (this.transferState.isNewRecipient) {
+          this.goTo('new-recipient');
+        } else {
+          this.goTo('recipient');
+        }
+      });
+    }
 
     const navHome = document.getElementById('navBtnHome');
     if (navHome) navHome.addEventListener('click', () => this.goTo('home'));
@@ -8227,6 +8243,15 @@ class AppRouter {
 
     if (btnBackFromNewRecipient) {
       btnBackFromNewRecipient.addEventListener('click', () => {
+        if (stepDetails && !stepDetails.classList.contains('hidden')) {
+          stepDetails.classList.add('hidden');
+          if (stepRut) stepRut.classList.remove('hidden');
+          if (window.interfazPuente) {
+            window.interfazPuente.syncRutButtonLocation(window.interfazPuente.isTutorialActive);
+            window.interfazPuente.updateFabVisibility('new-recipient');
+          }
+          return;
+        }
         if (window.interfazPuente) window.interfazPuente.syncRutButtonLocation(false);
         this.transferState.isNewRecipient = false;
         this.goTo('recipient');
@@ -8354,8 +8379,12 @@ class AppRouter {
         accountTypePills.forEach(p => p.classList.remove('selected'));
         if (hiddenAccountTypeInput) hiddenAccountTypeInput.value = '';
 
-        if (window.interfazPuente && window.interfazPuente.isTutorialActive) {
-          window.interfazPuente.handleViewChange('new-recipient');
+        if (window.interfazPuente) {
+          if (window.interfazPuente.isTutorialActive) {
+            window.interfazPuente.handleViewChange('new-recipient');
+          } else {
+            window.interfazPuente.updateFabVisibility('new-recipient');
+          }
         }
       });
     }
