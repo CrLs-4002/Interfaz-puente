@@ -737,6 +737,10 @@ button.spotlight-active *,
   padding-bottom: 260px !important;
 }
 
+#view-recipient .scroll-area {
+  padding-bottom: 250px !important;
+}
+
 /* Ocultar botones de navegación manual (Siguiente/Anterior): el tutorial avanza automáticamente al completar cada campo */
 .spotlight-guide-btns {
   display: none !important;
