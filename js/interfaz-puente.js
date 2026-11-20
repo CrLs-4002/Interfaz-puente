@@ -374,14 +374,15 @@ class InterfazPuente {
     const currentStep = (steps && steps.length > this.currentStepIndex) ? steps[this.currentStepIndex] : null;
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
+    const isNoBlurView = (currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
-    if (!targetEl || !this.isTutorialActive || (currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient') {
+    if (!targetEl || !this.isTutorialActive || isNoBlurView) {
       if (curtainTop) { curtainTop.style.height = '0px'; }
       if (curtainBottom) { curtainBottom.style.height = '0px'; }
       if (curtainLeft) { curtainLeft.style.width = '0px'; }
       if (curtainRight) { curtainRight.style.width = '0px'; }
       if (frameHighlight) { frameHighlight.style.display = 'none'; }
-      if (this.dynamicFocusOverlay && ((currentStep && currentStep.noBlur) || currentView === 'summary' || currentView === 'new-recipient')) {
+      if (this.dynamicFocusOverlay && isNoBlurView) {
         this.dynamicFocusOverlay.classList.remove('active');
         document.body.classList.remove('dynamic-focus-active');
       }
@@ -473,7 +474,7 @@ class InterfazPuente {
 
     const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
 
-    if ((currentStep && currentStep.noBlur && currentView !== 'new-recipient') || (currentView === 'new-recipient' && isStepRutVisible) || currentView === 'summary') {
+    if ((currentStep && currentStep.noBlur && currentView !== 'new-recipient') || (currentView === 'new-recipient' && isStepRutVisible) || currentView === 'summary' || currentView === 'success' || currentView === 'receipt') {
       const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
       if (scrollContainer && scrollContainer.scrollTop !== 0) {
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
@@ -533,7 +534,7 @@ class InterfazPuente {
 
     const activeScreen = document.querySelector('.screen-view.is-active');
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
-    const isNoBlurScreen = currentView === 'summary' || currentView === 'new-recipient';
+    const isNoBlurScreen = currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
     this.isTutorialActive = true;
 
@@ -609,10 +610,44 @@ class InterfazPuente {
     }
   }
 
+  /* Inserta el botón "Correcto" en el Paso 1 de Resumen Seguro para que el usuario avance cuando esté listo */
+  syncSummaryCorrectoButton(isSummaryStep1) {
+    const slot = document.getElementById('spotlightCardActionSlot');
+    if (!slot) return;
+
+    // Si el botón de RUT está adentro, no tocar el slot
+    const btnRut = document.getElementById('btnConfirmRutNext');
+    if (btnRut && btnRut.parentElement === slot) return;
+
+    if (isSummaryStep1) {
+      slot.innerHTML = `
+        <button type="button" class="btn-cta-big" id="btnSummaryCorrecto" style="min-height:52px;background:var(--teal)!important;color:#FFFFFF!important;border:none!important;border-radius:var(--radius-pill);font-size:18px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(13,143,114,0.3);width:100%;cursor:pointer;">
+          <span>Correcto</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+      `;
+      slot.style.display = 'block';
+      const btn = document.getElementById('btnSummaryCorrecto');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.nextGuideStep();
+        });
+      }
+    } else {
+      const existingBtn = document.getElementById('btnSummaryCorrecto');
+      if (existingBtn) {
+        slot.innerHTML = '';
+        slot.style.display = 'none';
+      }
+    }
+  }
+
   clearSpotlight() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.syncRutButtonLocation(false);
+    this.syncSummaryCorrectoButton(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -804,18 +839,11 @@ class InterfazPuente {
           autoAdvanceOnSpeechEnd: false
         },
         {
-          target: '#groupGlosa',
-          title: '¿Quieres dejar una nota?',
-          message: '¿Quieres dejar una nota? (No es obligatorio, puedes dejarlo en blanco).',
-          speech: '¿Quieres dejar una nota? No es obligatorio, puedes dejarlo en blanco. Toca el botón verde Revisar datos para continuar.',
-          autoAdvanceOnSpeechEnd: true,
-          delayAfterSpeech: 2000
-        },
-        {
-          target: '#btnContinueAmount',
-          title: 'Paso 3: Revisar datos',
-          message: 'Toca este botón para ver el resumen detallado antes de confirmar la transferencia.',
-          speech: 'Paso 3: Toca Revisar datos para verificar todo antes de autorizar.',
+          target: '#groupGlosaAndContinue',
+          title: 'Paso 2: Nota opcional y Revisar datos',
+          message: '¿Quieres dejar una nota? (No es obligatorio, puedes dejarlo en blanco). Cuando estés listo, toca Revisar datos.',
+          speech: '¿Quieres dejar una nota? No es obligatorio, puedes dejarlo en blanco. Cuando estés listo, toca el botón verde Revisar datos para continuar.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -824,11 +852,10 @@ class InterfazPuente {
         {
           target: '#safeSummaryCard',
           title: 'Revisión tranquila de datos',
-          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
-          speech: 'Revisa con calma el monto y el nombre de quien recibe. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
+          speech: 'Revisa con calma el monto y el nombre de quien recibe. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
           noBlur: true,
-          autoAdvanceOnSpeechEnd: true,
-          delayAfterSpeech: 2000
+          autoAdvanceOnSpeechEnd: false
         },
         {
           target: '#btnConfirmSummary',
@@ -846,6 +873,7 @@ class InterfazPuente {
           title: '¡Transferencia Exitosa!',
           message: 'Tu dinero ya fue enviado. Toca este botón para ver el comprobante detallado.',
           speech: 'Tu dinero ya fue enviado. Toca Continuar para ver tu comprobante.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -856,6 +884,7 @@ class InterfazPuente {
           title: 'Compartir comprobante',
           message: 'Para compartir el comprobante por WhatsApp, toca este botón.',
           speech: '¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: true,
           delayAfterSpeech: 2000
         },
@@ -864,6 +893,7 @@ class InterfazPuente {
           title: 'Volver al inicio',
           message: 'Toca este botón verde cuando hayas terminado para regresar a la pantalla principal de tu CuentaRUT.',
           speech: 'Cuando hayas terminado, toca Volver al inicio para regresar a tu CuentaRUT.',
+          noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
       ];
@@ -899,7 +929,10 @@ class InterfazPuente {
     const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
     this.syncRutButtonLocation(isRutTutorialStep);
 
-    const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient';
+    const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
+    this.syncSummaryCorrectoButton(isSummaryStep1);
+
+    const isNoBlur = step.noBlur || currentView === 'summary' || currentView === 'new-recipient' || currentView === 'success' || currentView === 'receipt';
 
     if (isNoBlur) {
       this.activeSpotlightElement = targetEl;
@@ -1784,40 +1817,8 @@ class InterfazPuente {
       });
     }
 
-    // 8. Mensaje / Glosa opcional (si escribe avanza al botón Revisar datos tras 1.8s)
-    const inputGlosa = document.getElementById('inputGlosa');
-    if (inputGlosa) {
-      let glosaTimer = null;
-      const checkGlosa = (delayMs = 1800) => {
-        if (!this.isTutorialActive || !this.isCurrentTarget('#groupGlosa')) return;
-        if (inputGlosa.value.trim().length >= 2) {
-          if (glosaTimer) clearTimeout(glosaTimer);
-          glosaTimer = setTimeout(() => {
-            if (this.isTutorialActive && this.isCurrentTarget('#groupGlosa') && inputGlosa.value.trim().length >= 2) {
-              this.nextGuideStep();
-            }
-          }, delayMs);
-        }
-      };
-      inputGlosa.addEventListener('input', () => checkGlosa(1800));
-      inputGlosa.addEventListener('change', () => checkGlosa(1800));
-      inputGlosa.addEventListener('blur', () => checkGlosa(1800));
-    }
-
-    // 9. Clic en tarjeta de resumen de seguridad para avanzar con pausa
-    const safeSummaryCard = document.getElementById('safeSummaryCard');
-    if (safeSummaryCard) {
-      safeSummaryCard.addEventListener('click', () => {
-        if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
-          if (this.autoAdvanceTimer) return;
-          this.autoAdvanceTimer = setTimeout(() => {
-            if (this.isTutorialActive && this.isCurrentTarget('#safeSummaryCard')) {
-              this.nextGuideStep();
-            }
-          }, 1800);
-        }
-      });
-    }
+    // 8. Mensaje / Glosa opcional y Botón Revisar datos están juntos en el Paso 2
+    // El usuario puede escribir la nota opcionalmente y presionar Revisar datos a su propio ritmo.
 
     // 10. Clic en botón compartir comprobante o en tarjeta de comprobante
     const btnShareReceipt = document.getElementById('btnShareReceipt');
