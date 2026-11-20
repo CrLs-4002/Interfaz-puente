@@ -601,7 +601,8 @@ class InterfazPuente {
     }
   }
 
-  /* Sincroniza la ubicación del botón Continuar: dentro del card del Paso 1 solo si el modo tutorial está activo */
+  /* Sincroniza la ubicación y texto del botón: dentro del card del Paso 1 (diciendo Continuar) solo si el modo tutorial está activo;
+     y debajo en la página diciendo "Listo" cuando el modo tutorial está apagado */
   syncRutButtonLocation(isRutTutorialStep) {
     const btn = document.getElementById('btnConfirmRutNext');
     const slot = document.getElementById('spotlightCardActionSlot');
@@ -615,6 +616,10 @@ class InterfazPuente {
       if (btn.parentElement !== slot) {
         slot.appendChild(btn);
       }
+      btn.innerHTML = `
+        <span>Continuar</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      `;
       slot.style.display = 'block';
       if (newRecipientView) {
         newRecipientView.classList.add('tutorial-rut-card-action-active');
@@ -627,6 +632,11 @@ class InterfazPuente {
           originalContainer.appendChild(btn);
         }
       }
+      btn.innerHTML = `
+        <span class="term-technical">Listo</span>
+        <span class="term-simplified">Listo</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      `;
       slot.style.display = 'none';
       if (newRecipientView) {
         newRecipientView.classList.remove('tutorial-rut-card-action-active');
@@ -727,7 +737,12 @@ class InterfazPuente {
 
   /* Cierra el paso actual del tutorial a petición del usuario y muestra el botón flotante "Ayuda" */
   dismissCurrentTutorialStep() {
+    this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.stepWasDismissed = true;
+    this.isTutorialActive = false;
+    this.syncRutButtonLocation(false);
+    this.syncSummaryCorrectoButton(false);
+    this.syncRecipientTutorialBanner(false);
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
