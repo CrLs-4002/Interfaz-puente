@@ -651,48 +651,10 @@ class InterfazPuente {
     }
   }
 
-  /* Inserta el botón "Entendido" en la pantalla de destinatario para que el usuario pueda ocultar la tarjeta y explorar libremente */
-  syncRecipientEntendidoButton(isRecipientStep) {
-    const slot = document.getElementById('spotlightCardActionSlot');
-    if (!slot) return;
-
-    // Si el botón de RUT está adentro, no tocar el slot
-    const btnRut = document.getElementById('btnConfirmRutNext');
-    if (btnRut && btnRut.parentElement === slot) return;
-
-    if (isRecipientStep) {
-      slot.innerHTML = `
-        <button type="button" class="btn-cta-big" id="btnRecipientEntendido" style="min-height:48px;background:var(--teal)!important;color:#FFFFFF!important;border:none!important;border-radius:var(--radius-pill);font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(13,143,114,0.3);width:100%;cursor:pointer;">
-          <span>Entendido</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        </button>
-      `;
-      slot.style.display = 'block';
-      const btn = document.getElementById('btnRecipientEntendido');
-      if (btn) {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          if (this.spotlightCard) {
-            this.spotlightCard.classList.remove('show');
-          }
-          slot.innerHTML = '';
-          slot.style.display = 'none';
-        });
-      }
-    } else {
-      const existingBtn = document.getElementById('btnRecipientEntendido');
-      if (existingBtn) {
-        slot.innerHTML = '';
-        slot.style.display = 'none';
-      }
-    }
-  }
-
   clearSpotlight() {
     this.stepExecutionToken = (this.stepExecutionToken || 0) + 1;
     this.isTutorialActive = false;
     this.syncRutButtonLocation(false);
-    this.syncRecipientEntendidoButton(false);
     this.syncSummaryCorrectoButton(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
@@ -797,12 +759,22 @@ class InterfazPuente {
         }
       ];
     } else if (currentView === 'recipient') {
+      // Paso a paso en pantalla de contactos guardados / favoritos
       return [
         {
+          target: '#btnGoToNewRecipientScreen',
+          title: '¿Quieres transferirle a otra persona?',
+          message: 'Toca este botón si deseas transferirle a una persona que no esté en tu lista.',
+          speech: 'Si deseas transferirle a otra persona, toca el botón Otra persona arriba.',
+          noBlur: true,
+          autoAdvanceOnSpeechEnd: true,
+          delayAfterSpeech: 2000
+        },
+        {
           target: '#paneRecipientSaved',
-          title: '¿A quién le quieres transferir?',
-          message: 'Toca "Otra persona" arriba para un destinatario nuevo, o elige a alguien de tu lista.',
-          speech: 'Elige a quién transferir: toca el botón Otra persona arriba si es alguien nuevo, o toca a quien corresponda en tu lista.',
+          title: 'O elige una persona guardada',
+          message: 'Toca a alguna persona que ya tengas guardada aquí, o usa el buscador para encontrarla.',
+          speech: '... o toca a alguna persona que ya tengas guardada aquí.',
           noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
@@ -965,9 +937,6 @@ class InterfazPuente {
     const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
     const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
     this.syncRutButtonLocation(isRutTutorialStep);
-
-    const isRecipientStep = (this.isTutorialActive && currentView === 'recipient');
-    this.syncRecipientEntendidoButton(isRecipientStep);
 
     const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
     this.syncSummaryCorrectoButton(isSummaryStep1);
