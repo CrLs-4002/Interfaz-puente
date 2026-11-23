@@ -806,7 +806,7 @@ class AppRouter {
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
-      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`;
       
       if (window.puenteSpeech) {
         window.puenteSpeech.speak(speechText);
@@ -838,13 +838,12 @@ class AppRouter {
     const warnBox = document.getElementById('summaryBalanceWarning');
 
     // Microcopy tranquilizador:
-    // "Vas a enviar $50.000 a Rosa Pérez Sepúlveda, a su cuenta en Banco de Chile. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites."
     const amtStr = this.formatCLP(this.transferState.amount);
     const destName = this.transferState.recipient.name;
     const destBank = this.transferState.recipient.bank;
 
     if (textEl) {
-      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.`;
+      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.`;
     }
 
     // Si el monto excede el saldo o el límite máximo de $200.000
@@ -977,9 +976,9 @@ class AppRouter {
       if (this.updatePinDisplay) {
         this.updatePinDisplay();
       }
-      if (window.interfazPuente && window.interfazPuente.isTutorialActive && window.puenteSpeech) {
+      if (window.puenteSpeech) {
         setTimeout(() => {
-          window.puenteSpeech.speak('Ingresa tu clave de 6 números tocando los números en pantalla para autorizar.');
+          window.puenteSpeech.speak('Anota tu clave de 6 números y luego al botón de Listo para enviar el dinero.');
         }, 300);
       }
     }
@@ -1110,12 +1109,12 @@ class AppRouter {
         window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
       }
     } else if (this.currentView === 'amount') {
-      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
+      window.puenteSpeech.speak(`Toca donde está el 0 y escribe cuánto dinero quieres dar, también puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta 200 mil pesos.`);
     } else if (this.currentView === 'summary') {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
-      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`);
     } else if (this.currentView === 'receipt') {
       window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.`);
     }

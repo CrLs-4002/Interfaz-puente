@@ -551,6 +551,25 @@ input, select, textarea {
   background: var(--orange-dark);
 }
 
+#btnContinueAmount,
+#btnAuthorizeTransfer {
+  background: linear-gradient(135deg, #0D8F72 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35) !important;
+}
+
+#btnContinueAmount:active,
+#btnAuthorizeTransfer:active {
+  background: #0B7A61 !important;
+  transform: scale(0.98);
+}
+
+#btnContinueAmount *,
+#btnAuthorizeTransfer * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
 .btn-cta-big:disabled,
 .btn-cta-full-width:disabled,
 button:disabled {
@@ -2407,7 +2426,8 @@ button.spotlight-active,
 .btn-cta-big.spotlight-active,
 .btn-confirm-send.spotlight-active,
 .btn-add-new-recipient-top.spotlight-active,
-#btnQuickTransfer.spotlight-active {
+#btnQuickTransfer.spotlight-active,
+#groupGlosaAndContinue.spotlight-active #btnContinueAmount {
   background: var(--teal) !important;
   color: #FFFFFF !important;
   border-color: var(--teal) !important;
@@ -2417,7 +2437,8 @@ button.spotlight-active,
 button.spotlight-active *,
 .btn-cta-big.spotlight-active *,
 .btn-confirm-send.spotlight-active *,
-#btnQuickTransfer.spotlight-active * {
+#btnQuickTransfer.spotlight-active *,
+#groupGlosaAndContinue.spotlight-active #btnContinueAmount * {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
 }
@@ -4640,8 +4661,7 @@ button.spotlight-active *,
 
               <!-- Microcopy tranquilizador requerido por el enunciado -->
               <div class="safe-summary-body" id="safeSummaryText">
-                Vas a enviar <strong>$50.000</strong> a <strong>Rosa Pérez Sepúlveda</strong>, a su cuenta en <strong>Banco de Chile</strong>.<br><br>
-                Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.
+                Vas a enviar <strong>$50.000</strong> a <strong>Rosa Pérez Sepúlveda</strong>, a su cuenta en <strong>Banco de Chile</strong>.
               </div>
 
               <div class="safe-summary-account" id="safeSummaryAccount"></div>
@@ -4784,14 +4804,14 @@ button.spotlight-active *,
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
             <h2 style="font-size:20px;font-weight:900;color:var(--navy);display:flex;align-items:center;gap:10px;margin:0">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>Ingresa tu clave de 6 números</span>
+              <span>Anota tu clave de 6 números</span>
             </h2>
-            <button type="button" class="btn-speak-section" data-speak="Ingresa tu clave de 6 números usando los números en pantalla. Puedes ingresar cualquier clave de 6 números para autorizar." aria-label="Escuchar instrucciones de clave" title="Escuchar">
+            <button type="button" class="btn-speak-section" data-speak="Anota tu clave de 6 números y luego al botón de Listo para enviar el dinero." aria-label="Escuchar instrucciones de clave" title="Escuchar">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
             </button>
           </div>
           <p style="font-size:16px;color:var(--muted);margin-bottom:10px">
-            Toca los números abajo para ingresar los 6 dígitos.
+            Anota tu clave de 6 números y luego al botón de "Listo" para enviar el dinero.
           </p>
 
           <!-- Aviso pedagógico -->
@@ -4830,7 +4850,8 @@ button.spotlight-active *,
 
           <div style="display:flex;flex-direction:column;gap:8px">
             <button type="button" class="btn-cta-big btn-cta-full-width" id="btnAuthorizeTransfer">
-              Autorizar y transferir
+              <span class="term-technical">Listo</span>
+              <span class="term-simplified">Listo</span>
             </button>
             <button type="button" class="btn-cancel-full-width" id="btnCancelAuth">
               Cancelar
@@ -6471,8 +6492,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.',
+          message: 'Toca donde está el 0 y escribe cuanto dinero quieres dar, tambien puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta $200.000.',
+          speech: 'Toca donde está el 0 y escribe cuánto dinero quieres dar, también puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta 200 mil pesos.',
           autoAdvanceOnSpeechEnd: false
         },
         {
@@ -6487,18 +6508,11 @@ class InterfazPuente {
     } else if (currentView === 'summary') {
       return [
         {
-          target: '#safeSummaryCard',
-          title: 'Revisión tranquila de datos',
-          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
-          speech: 'Revisa con calma el monto y el nombre de quien recibe. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
-          noBlur: true,
-          autoAdvanceOnSpeechEnd: false
-        },
-        {
           target: '#btnConfirmSummary',
-          title: 'Autorizar transferencia',
-          message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
-          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.',
+          title: 'Revisión tranquila de datos',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          hideCard: true,
           noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
@@ -6566,8 +6580,7 @@ class InterfazPuente {
     const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
     this.syncRutButtonLocation(isRutTutorialStep);
 
-    const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
-    this.syncSummaryCorrectoButton(isSummaryStep1);
+    this.syncSummaryCorrectoButton(false);
 
     const isRecipientStep2 = (this.isTutorialActive && currentView === 'recipient' && this.currentStepIndex === 1);
     this.syncRecipientTutorialBanner(isRecipientStep2);
@@ -6595,6 +6608,8 @@ class InterfazPuente {
       }
     }
 
+    const shouldShowCard = !isRecipientStep2 && !step.hideCard && currentView !== 'summary';
+
     if (this.spotlightCard) {
       const badgeEl = document.getElementById('spotlightStepBadge');
       const titleEl = document.getElementById('spotlightGuideTitle');
@@ -6606,7 +6621,7 @@ class InterfazPuente {
       if (textEl) textEl.textContent = step.message;
       if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
 
-      if (!isRecipientStep2) {
+      if (shouldShowCard) {
         this.spotlightCard.classList.add('show');
         this.positionSpotlightCard(targetEl);
       } else {
@@ -6616,7 +6631,7 @@ class InterfazPuente {
 
     this.scrollToElement(targetEl);
 
-    if (!isRecipientStep2) {
+    if (shouldShowCard) {
       setTimeout(() => {
         this.positionSpotlightCard(targetEl);
       }, 320);
@@ -8771,7 +8786,7 @@ class AppRouter {
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
-      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`;
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`;
       
       if (window.puenteSpeech) {
         window.puenteSpeech.speak(speechText);
@@ -8803,13 +8818,12 @@ class AppRouter {
     const warnBox = document.getElementById('summaryBalanceWarning');
 
     // Microcopy tranquilizador:
-    // "Vas a enviar $50.000 a Rosa Pérez Sepúlveda, a su cuenta en Banco de Chile. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites."
     const amtStr = this.formatCLP(this.transferState.amount);
     const destName = this.transferState.recipient.name;
     const destBank = this.transferState.recipient.bank;
 
     if (textEl) {
-      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.<br><br>Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites.`;
+      textEl.innerHTML = `Vas a enviar <strong>${amtStr}</strong> a <strong>${destName}</strong>, a su cuenta en <strong>${destBank}</strong>.`;
     }
 
     // Si el monto excede el saldo o el límite máximo de $200.000
@@ -8942,9 +8956,9 @@ class AppRouter {
       if (this.updatePinDisplay) {
         this.updatePinDisplay();
       }
-      if (window.interfazPuente && window.interfazPuente.isTutorialActive && window.puenteSpeech) {
+      if (window.puenteSpeech) {
         setTimeout(() => {
-          window.puenteSpeech.speak('Ingresa tu clave de 6 números tocando los números en pantalla para autorizar.');
+          window.puenteSpeech.speak('Anota tu clave de 6 números y luego al botón de Listo para enviar el dinero.');
         }, 300);
       }
     }
@@ -9075,12 +9089,12 @@ class AppRouter {
         window.puenteSpeech.speak('Completa los datos de la persona: nombre y apellido, banco, tipo de cuenta y número de cuenta.');
       }
     } else if (this.currentView === 'amount') {
-      window.puenteSpeech.speak(`Ingresar monto. Escribe la cantidad de dinero que deseas enviar o elige uno de los montos sugeridos. Tu saldo disponible es de ${this.formatCLPForSpeech(this.user.balance)}.`);
+      window.puenteSpeech.speak(`Toca donde está el 0 y escribe cuánto dinero quieres dar, también puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta 200 mil pesos.`);
     } else if (this.currentView === 'summary') {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
-      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.`);
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`);
     } else if (this.currentView === 'receipt') {
       window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.`);
     }

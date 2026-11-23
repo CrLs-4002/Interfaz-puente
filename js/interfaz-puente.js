@@ -947,8 +947,8 @@ class InterfazPuente {
         {
           target: '#amountBox',
           title: 'Paso 1: Ingresar el monto',
-          message: 'Escribe la cantidad exacta de dinero a enviar tocando la casilla enmarcada (máximo 200.000 pesos), o elige uno de los montos sugeridos abajo (10.000 pesos, 30.000 pesos, 50.000 pesos o 100.000 pesos).',
-          speech: 'Paso 1: Ingresa el monto. Toca la casilla enmarcada para escribir cuánto dinero quieres transferir, hasta un máximo de 200 mil pesos, o elige una de las opciones sugeridas.',
+          message: 'Toca donde está el 0 y escribe cuanto dinero quieres dar, tambien puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta $200.000.',
+          speech: 'Toca donde está el 0 y escribe cuánto dinero quieres dar, también puedes dictar por voz tocando el botón verde a la derecha o elegir uno de los montos que aparecen abajo, recuerda que solo puedes transferir hasta 200 mil pesos.',
           autoAdvanceOnSpeechEnd: false
         },
         {
@@ -963,18 +963,11 @@ class InterfazPuente {
     } else if (currentView === 'summary') {
       return [
         {
-          target: '#safeSummaryCard',
-          title: 'Revisión tranquila de datos',
-          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
-          speech: 'Revisa con calma el monto y el nombre de quien recibe. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón Correcto.',
-          noBlur: true,
-          autoAdvanceOnSpeechEnd: false
-        },
-        {
           target: '#btnConfirmSummary',
-          title: 'Autorizar transferencia',
-          message: 'Si todos los datos están correctos, toca este botón verde para escribir tu clave de 6 números.',
-          speech: 'Si está todo bien haz click en el botón verde para escribir tu clave de 6 números.',
+          title: 'Revisión tranquila de datos',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          hideCard: true,
           noBlur: true,
           autoAdvanceOnSpeechEnd: false
         }
@@ -1042,8 +1035,7 @@ class InterfazPuente {
     const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
     this.syncRutButtonLocation(isRutTutorialStep);
 
-    const isSummaryStep1 = (this.isTutorialActive && currentView === 'summary' && this.currentStepIndex === 0);
-    this.syncSummaryCorrectoButton(isSummaryStep1);
+    this.syncSummaryCorrectoButton(false);
 
     const isRecipientStep2 = (this.isTutorialActive && currentView === 'recipient' && this.currentStepIndex === 1);
     this.syncRecipientTutorialBanner(isRecipientStep2);
@@ -1071,6 +1063,8 @@ class InterfazPuente {
       }
     }
 
+    const shouldShowCard = !isRecipientStep2 && !step.hideCard && currentView !== 'summary';
+
     if (this.spotlightCard) {
       const badgeEl = document.getElementById('spotlightStepBadge');
       const titleEl = document.getElementById('spotlightGuideTitle');
@@ -1082,7 +1076,7 @@ class InterfazPuente {
       if (textEl) textEl.textContent = step.message;
       if (voiceBtn) voiceBtn.setAttribute('data-speech', step.speech || step.message);
 
-      if (!isRecipientStep2) {
+      if (shouldShowCard) {
         this.spotlightCard.classList.add('show');
         this.positionSpotlightCard(targetEl);
       } else {
@@ -1092,7 +1086,7 @@ class InterfazPuente {
 
     this.scrollToElement(targetEl);
 
-    if (!isRecipientStep2) {
+    if (shouldShowCard) {
       setTimeout(() => {
         this.positionSpotlightCard(targetEl);
       }, 320);

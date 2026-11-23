@@ -530,6 +530,25 @@ input, select, textarea {
   background: var(--orange-dark);
 }
 
+#btnContinueAmount,
+#btnAuthorizeTransfer {
+  background: linear-gradient(135deg, #0D8F72 0%, #059669 100%) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 14px rgba(13, 143, 114, 0.35) !important;
+}
+
+#btnContinueAmount:active,
+#btnAuthorizeTransfer:active {
+  background: #0B7A61 !important;
+  transform: scale(0.98);
+}
+
+#btnContinueAmount *,
+#btnAuthorizeTransfer * {
+  color: #FFFFFF !important;
+  stroke: #FFFFFF !important;
+}
+
 .btn-cta-big:disabled,
 .btn-cta-full-width:disabled,
 button:disabled {

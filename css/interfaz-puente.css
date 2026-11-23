@@ -578,7 +578,8 @@ button.spotlight-active,
 .btn-cta-big.spotlight-active,
 .btn-confirm-send.spotlight-active,
 .btn-add-new-recipient-top.spotlight-active,
-#btnQuickTransfer.spotlight-active {
+#btnQuickTransfer.spotlight-active,
+#groupGlosaAndContinue.spotlight-active #btnContinueAmount {
   background: var(--teal) !important;
   color: #FFFFFF !important;
   border-color: var(--teal) !important;
@@ -588,7 +589,8 @@ button.spotlight-active,
 button.spotlight-active *,
 .btn-cta-big.spotlight-active *,
 .btn-confirm-send.spotlight-active *,
-#btnQuickTransfer.spotlight-active * {
+#btnQuickTransfer.spotlight-active *,
+#groupGlosaAndContinue.spotlight-active #btnContinueAmount * {
   color: #FFFFFF !important;
   stroke: #FFFFFF !important;
 }
