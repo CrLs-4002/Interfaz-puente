@@ -695,11 +695,6 @@ class AppRouter {
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
           amountErrorBox.textContent = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
-          if (window.puenteSpeech && !this._amountExceededVoiceDebounce) {
-            this._amountExceededVoiceDebounce = true;
-            window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
-            setTimeout(() => { this._amountExceededVoiceDebounce = false; }, 4000);
-          }
         } else if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
@@ -780,7 +775,7 @@ class AppRouter {
           const msg = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
           amountErrorBox.textContent = msg;
           if (window.puenteSpeech) {
-            window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
+            window.puenteSpeech.speak(msg);
           }
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
@@ -1402,19 +1397,12 @@ class AppRouter {
               } else if (fieldType === 'amount') {
                 let amount = parseSpokenAmount(transcript);
                 if (amount > 0) {
-                  if (amount > 200000) {
-                    amount = 200000;
-                    showFeedback(feedbackEl, '⚠️ Recuerda que el tope máximo es de $200.000');
-                    if (window.puenteSpeech) {
-                      window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
-                    }
-                  } else {
-                    showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
-                  }
+                  if (amount > 200000) amount = 200000;
                   this.transferState.amount = amount;
                   targetInput.value = this.formatCLP(amount);
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
                   targetInput.dispatchEvent(new Event('change', { bubbles: true }));
+                  showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
                 } else {
                   showFeedback(feedbackEl, 'No detectamos una cantidad clara. Ej: "quince mil pesos".', true);
                 }
