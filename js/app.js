@@ -695,6 +695,11 @@ class AppRouter {
           amountErrorBox.classList.remove('hidden');
           amountErrorBox.classList.add('show');
           amountErrorBox.textContent = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
+          if (window.puenteSpeech && !this._amountExceededVoiceDebounce) {
+            this._amountExceededVoiceDebounce = true;
+            window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
+            setTimeout(() => { this._amountExceededVoiceDebounce = false; }, 4000);
+          }
         } else if (val > this.user.balance) {
           inputAmount.classList.add('has-error');
           amountErrorBox.classList.remove('hidden');
@@ -775,7 +780,7 @@ class AppRouter {
           const msg = `Solo puedes transferir un máximo de ${this.formatCLP(MAX_AMOUNT)}`;
           amountErrorBox.textContent = msg;
           if (window.puenteSpeech) {
-            window.puenteSpeech.speak(msg);
+            window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
           }
           if (window.facilitatorPanel) window.facilitatorPanel.recordMetric('error');
           return;
@@ -836,6 +841,10 @@ class AppRouter {
     const titleEl = document.getElementById('safeSummaryTitle');
     const textEl = document.getElementById('safeSummaryText');
     const warnBox = document.getElementById('summaryBalanceWarning');
+
+    if (titleEl) {
+      titleEl.innerHTML = `<span class="term-technical">Confirmar transferencia</span><span class="term-simplified">Revisar antes de enviar</span>`;
+    }
 
     // Microcopy tranquilizador:
     const amtStr = this.formatCLP(this.transferState.amount);
@@ -1287,6 +1296,35 @@ class AppRouter {
       return formatted + '-' + dv;
     };
 
+    // Helper: Mostrar y ocultar aviso claro "Te estoy escuchando"
+    const showListeningNotice = () => {
+      let notice = document.getElementById('puenteListeningNotice');
+      if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'puenteListeningNotice';
+        notice.className = 'puente-listening-notice';
+        notice.setAttribute('role', 'status');
+        notice.setAttribute('aria-live', 'polite');
+        notice.innerHTML = `
+          <span class="listening-pulse-dot"></span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          <span>Te estoy escuchando...</span>
+        `;
+        const frame = document.getElementById('appMainContainer') || document.body;
+        frame.appendChild(notice);
+      }
+      notice.style.display = 'flex';
+    };
+
+    const hideListeningNotice = () => {
+      const notice = document.getElementById('puenteListeningNotice');
+      if (notice) {
+        notice.style.display = 'none';
+      }
+    };
+
+    window.puenteListening = { show: showListeningNotice, hide: hideListeningNotice };
+
     // Asociar a todos los botones de dictado por voz de campos de texto (.btn-voice-dictate)
     const voiceButtons = document.querySelectorAll('.btn-voice-dictate');
     voiceButtons.forEach(btn => {
@@ -1313,9 +1351,11 @@ class AppRouter {
             recognition.maxAlternatives = 1;
 
             btn.classList.add('listening');
-            showFeedback(feedbackEl, '🎙️ Escuchando... habla ahora');
+            showFeedback(feedbackEl, '🎙️ Te estoy escuchando... habla ahora');
+            showListeningNotice();
 
             recognition.onresult = (event) => {
+              hideListeningNotice();
               const transcript = event.results[0][0].transcript;
 
               if (fieldType === 'search') {
@@ -1362,12 +1402,19 @@ class AppRouter {
               } else if (fieldType === 'amount') {
                 let amount = parseSpokenAmount(transcript);
                 if (amount > 0) {
-                  if (amount > 200000) amount = 200000;
+                  if (amount > 200000) {
+                    amount = 200000;
+                    showFeedback(feedbackEl, '⚠️ Recuerda que el tope máximo es de $200.000');
+                    if (window.puenteSpeech) {
+                      window.puenteSpeech.speak('Recuerda que el tope máximo permitido para transferir es de 200 mil pesos.');
+                    }
+                  } else {
+                    showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
+                  }
                   this.transferState.amount = amount;
                   targetInput.value = this.formatCLP(amount);
                   targetInput.dispatchEvent(new Event('input', { bubbles: true }));
                   targetInput.dispatchEvent(new Event('change', { bubbles: true }));
-                  showFeedback(feedbackEl, `✓ Monto entendido: ${this.formatCLP(amount)}`);
                 } else {
                   showFeedback(feedbackEl, 'No detectamos una cantidad clara. Ej: "quince mil pesos".', true);
                 }
@@ -1382,10 +1429,12 @@ class AppRouter {
             };
 
             recognition.onerror = () => {
+              hideListeningNotice();
               showFeedback(feedbackEl, 'No pudimos escuchar con claridad. Puedes intentar de nuevo o usar el teclado.', true);
             };
 
             recognition.onend = () => {
+              hideListeningNotice();
               btn.classList.remove('listening');
               hideFeedback(feedbackEl, 4000);
             };
@@ -1393,29 +1442,38 @@ class AppRouter {
             recognition.start();
           } catch (err) {
             console.warn('SpeechRecognition error:', err);
+            hideListeningNotice();
             btn.classList.remove('listening');
           }
         } else {
           // Fallback pedagógico simulado
-          const simulatedValues = {
-            search: 'Rosa Pérez',
-            rut: '15.678.910-K',
-            name: 'Carmen Gloria Morales',
-            number: '00-128-45920-01',
-            email: 'carmen.morales@correo.cl',
-            amount: '$15.000',
-            text: 'Regalo de cumpleaños'
-          };
-          const simVal = simulatedValues[fieldType] || 'Texto dictado';
-          if (fieldType === 'amount') {
-            this.transferState.amount = 15000;
-            targetInput.value = '$15.000';
-          } else {
-            targetInput.value = simVal;
-          }
-          targetInput.dispatchEvent(new Event('input', { bubbles: true }));
-          showFeedback(feedbackEl, `✓ Dictado (simulado): ${targetInput.value}`);
-          hideFeedback(feedbackEl, 3000);
+          btn.classList.add('listening');
+          showFeedback(feedbackEl, '🎙️ Te estoy escuchando... habla ahora');
+          showListeningNotice();
+
+          setTimeout(() => {
+            hideListeningNotice();
+            btn.classList.remove('listening');
+            const simulatedValues = {
+              search: 'Rosa Pérez',
+              rut: '15.678.910-K',
+              name: 'Carmen Gloria Morales',
+              number: '00-128-45920-01',
+              email: 'carmen.morales@correo.cl',
+              amount: '$15.000',
+              text: 'Regalo de cumpleaños'
+            };
+            const simVal = simulatedValues[fieldType] || 'Texto dictado';
+            if (fieldType === 'amount') {
+              this.transferState.amount = 15000;
+              targetInput.value = '$15.000';
+            } else {
+              targetInput.value = simVal;
+            }
+            targetInput.dispatchEvent(new Event('input', { bubbles: true }));
+            showFeedback(feedbackEl, `✓ Dictado: ${targetInput.value}`);
+            hideFeedback(feedbackEl, 3000);
+          }, 1000);
         }
       });
     });

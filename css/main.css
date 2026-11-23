@@ -324,18 +324,29 @@ input, select, textarea {
 }
 
 .btn-back {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  min-height: 42px;
+  height: 42px;
+  width: auto;
+  min-width: 44px;
+  padding: 0 14px 0 8px;
+  border-radius: var(--radius-pill);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 4px;
   color: var(--ink);
   background: var(--bg);
+  border: 1.5px solid var(--line);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  text-decoration: none;
 }
 
 .btn-back:active {
   background: var(--line);
+  transform: scale(0.96);
 }
 
 /* ================= TARJETAS Y CUENTAS ================= */
@@ -858,6 +869,18 @@ button:disabled {
   align-items: center;
   gap: 8px;
   margin-bottom: 20px;
+}
+
+.step-indicator-text {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--navy);
+  background: #E8EEF8;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  display: inline-block;
+  margin-bottom: 16px;
+  letter-spacing: 0.2px;
 }
 
 .step-bullet {
@@ -1736,7 +1759,7 @@ button:disabled {
 
 .input-with-voice-wrap input,
 .input-with-voice-wrap .form-input {
-  padding-right: 52px !important;
+  padding-right: 96px !important;
   box-sizing: border-box;
 }
 
@@ -1746,31 +1769,44 @@ button:disabled {
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: 290px;
+  max-width: 320px;
   margin: 0 auto;
+}
+
+.amount-voice-input-wrap input {
+  padding-right: 96px !important;
 }
 
 .btn-voice-dictate {
   position: absolute;
-  right: 12px;
+  right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: var(--radius-pill);
   background: #F0FDF4;
   border: 1.5px solid #0D8F72;
   color: #0D8F72;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 5px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 3;
-  padding: 0;
+  padding: 0 10px;
   margin: 0;
   box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
   flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.btn-voice-dictate span {
+  font-size: 13px;
+  font-weight: 800;
+  color: inherit;
 }
 
 .btn-voice-dictate:hover {
@@ -1789,6 +1825,49 @@ button:disabled {
   border-color: #DC2626 !important;
   color: #FFFFFF !important;
   animation: pulse-mic-active 1.2s infinite ease-in-out !important;
+}
+
+/* Aviso claro en pantalla: Te estoy escuchando */
+.puente-listening-notice {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999999;
+  background: #064E3B;
+  color: #FFFFFF;
+  border: 2px solid #34D399;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  box-shadow: 0 8px 32px rgba(6, 78, 59, 0.45);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  animation: listening-banner-pop 0.25s ease-out;
+  pointer-events: none;
+}
+
+.listening-pulse-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #EF4444;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  animation: pulse-red-dot 1s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes listening-banner-pop {
+  from { opacity: 0; transform: translate(-50%, -12px) scale(0.95); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+@keyframes pulse-red-dot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 @keyframes pulse-mic-active {

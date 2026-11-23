@@ -1460,8 +1460,10 @@ class InterfazPuente {
 
     const runSimulatedVoice = () => {
       btnVoice.classList.add('listening');
-      showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+      showVoiceFeedback('🎙️ Te estoy escuchando... Di lo que quieres hacer');
+      if (window.puenteListening && window.puenteListening.show) window.puenteListening.show();
       setTimeout(() => {
+        if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
         btnVoice.classList.remove('listening');
         processTranscript('Quiero hacer una transferencia');
       }, 1100);
@@ -1475,6 +1477,7 @@ class InterfazPuente {
           try { this.homeRecognition.stop(); } catch(err) {}
         }
         btnVoice.classList.remove('listening');
+        if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
         return;
       }
 
@@ -1488,25 +1491,30 @@ class InterfazPuente {
           this.homeRecognition = recognition;
 
           btnVoice.classList.add('listening');
-          showVoiceFeedback('🎙️ Escuchando... Di lo que quieres hacer');
+          showVoiceFeedback('🎙️ Te estoy escuchando... Di lo que quieres hacer');
+          if (window.puenteListening && window.puenteListening.show) window.puenteListening.show();
 
           recognition.onresult = (event) => {
+            if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
             const transcript = event.results[0][0].transcript;
             processTranscript(transcript);
           };
 
           recognition.onerror = (err) => {
+            if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
             console.warn('SpeechRecognition error:', err);
             showVoiceFeedback('No pudimos escuchar con claridad. Toca el botón "Transferir dinero" o intenta de nuevo.', true);
           };
 
           recognition.onend = () => {
+            if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
             btnVoice.classList.remove('listening');
           };
 
           recognition.start();
         } catch (err) {
           console.warn('Recognition start failed:', err);
+          if (window.puenteListening && window.puenteListening.hide) window.puenteListening.hide();
           btnVoice.classList.remove('listening');
           runSimulatedVoice();
         }
