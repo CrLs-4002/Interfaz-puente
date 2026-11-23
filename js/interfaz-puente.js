@@ -368,6 +368,15 @@ class InterfazPuente {
     const frame = document.getElementById('appMainContainer') || document.querySelector('.device-frame') || document.body;
     const frameRect = frame.getBoundingClientRect();
     const cardHeight = this.spotlightCard.offsetHeight || 165;
+
+    // En la pantalla amount paso 2 (nota opcional y botón Revisar datos), la tarjeta se acopla arriba para dejar libre el área de scroll y el botón
+    if (currentView === 'amount' && this.currentStepIndex === 1) {
+      const distanceToTop = Math.max(80, frameRect.height - cardHeight - 40);
+      this.spotlightCard.style.transform = `translateY(-${distanceToTop}px)`;
+      this.spotlightCard.classList.add('is-docked-top');
+      this.updateSpotlightOverlay(targetEl);
+      return;
+    }
     const targetRect = targetEl.getBoundingClientRect();
 
     // La tarjeta al pie descansa a 20px del fondo del teléfono (device-frame).
@@ -509,10 +518,34 @@ class InterfazPuente {
 
     const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
 
-    if ((currentStep && currentStep.noBlur && currentView !== 'new-recipient') || (currentView === 'new-recipient' && isStepRutVisible) || currentView === 'summary' || currentView === 'success' || currentView === 'receipt') {
+    if ((currentStep && currentStep.noBlur && currentView !== 'new-recipient' && currentView !== 'amount') || (currentView === 'new-recipient' && isStepRutVisible) || currentView === 'summary' || currentView === 'success' || currentView === 'receipt') {
       const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
       if (scrollContainer && scrollContainer.scrollTop !== 0) {
         scrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      this.resetFrameScroll();
+      return;
+    }
+
+    // Scroll especial automático para Pantalla Monto Paso 2 (desplaza hacia abajo para dirigir al usuario al botón Revisar datos y la nota)
+    if (currentView === 'amount' && this.currentStepIndex === 1) {
+      const scrollContainer = targetEl.closest('.scroll-area') || targetEl.closest('.screen-view');
+      if (scrollContainer) {
+        const glosaGroup = document.getElementById('groupGlosaAndContinue') || targetEl;
+        const cardHeight = this.spotlightCard ? (this.spotlightCard.offsetHeight || 165) : 165;
+        const containerRect = scrollContainer.getBoundingClientRect();
+        
+        // Ubicación relativa del grupo y del botón dentro de la zona scrolleable
+        const groupRect = glosaGroup.getBoundingClientRect();
+        const relativeTop = groupRect.top - containerRect.top + scrollContainer.scrollTop;
+        
+        // Desplazamos suavemente para que la nota quede debajo de la tarjeta superior y el botón verde "Revisar datos" quede plenamente visible en pantalla
+        const targetScroll = Math.max(0, relativeTop - cardHeight - 20);
+
+        scrollContainer.scrollTo({
+          top: targetScroll,
+          behavior: 'smooth'
+        });
       }
       this.resetFrameScroll();
       return;
