@@ -34,6 +34,7 @@ class AppRouter {
       isNewRecipient: false
     };
 
+    this._recipientConfirmed = false;
     this.isBalanceHidden = false;
 
     this.init();
@@ -174,6 +175,7 @@ class AppRouter {
     const backToRecipient = document.getElementById('btnBackFromAmount');
     if (backToRecipient) {
       backToRecipient.addEventListener('click', () => {
+        this._recipientConfirmed = false;
         if (this.transferState.isNewRecipient) {
           this.goTo('new-recipient');
         } else {
@@ -207,6 +209,7 @@ class AppRouter {
       if (paneFavorites) paneFavorites.classList.add('hidden');
       if (savedActions) savedActions.classList.remove('hidden');
       this.transferState.isNewRecipient = false;
+      this._recipientConfirmed = false;
     };
 
     const showFavoritesTab = () => {
@@ -216,6 +219,7 @@ class AppRouter {
       if (paneFavorites) paneFavorites.classList.remove('hidden');
       if (savedActions) savedActions.classList.remove('hidden');
       this.transferState.isNewRecipient = false;
+      this._recipientConfirmed = false;
     };
 
     if (tabSaved) tabSaved.addEventListener('click', showSavedTab);
@@ -247,6 +251,7 @@ class AppRouter {
     // Botón Otra Persona: Abre una nueva pantalla independiente (view-new-recipient)
     const openNewRecipientScreen = () => {
       this.transferState.isNewRecipient = true;
+      this._recipientConfirmed = false;
       if (newRecipientRutInput) newRecipientRutInput.value = '';
       if (numInput) numInput.value = '';
       const nameInput = document.getElementById('newRecipientName');
@@ -395,6 +400,7 @@ class AppRouter {
           window.interfazPuente.syncRutButtonLocation(false);
         }
         // Ocultar etapa RUT y mostrar formulario de datos
+        this._recipientConfirmed = false;
         if (stepRut) stepRut.classList.add('hidden');
         if (stepDetails) {
           stepDetails.classList.remove('hidden');
@@ -502,6 +508,34 @@ class AppRouter {
         }
       });
     });
+
+    // Resetear confirmación si el usuario modifica algún campo del formulario de nuevo destinatario
+    const resetRecipientConfirmed = () => {
+      this._recipientConfirmed = false;
+    };
+    const nameInputEl = document.getElementById('newRecipientName');
+    if (nameInputEl) {
+      nameInputEl.addEventListener('input', resetRecipientConfirmed);
+      nameInputEl.addEventListener('change', resetRecipientConfirmed);
+    }
+    if (newRecipientRutInput) {
+      newRecipientRutInput.addEventListener('input', resetRecipientConfirmed);
+      newRecipientRutInput.addEventListener('change', resetRecipientConfirmed);
+    }
+    if (numInput) {
+      numInput.addEventListener('input', resetRecipientConfirmed);
+      numInput.addEventListener('change', resetRecipientConfirmed);
+    }
+    const emailInputEl = document.getElementById('newRecipientEmail');
+    if (emailInputEl) {
+      emailInputEl.addEventListener('input', resetRecipientConfirmed);
+      emailInputEl.addEventListener('change', resetRecipientConfirmed);
+    }
+    if (bankSelect) {
+      bankSelect.addEventListener('change', resetRecipientConfirmed);
+    }
+    bankPills.forEach(pill => pill.addEventListener('click', resetRecipientConfirmed));
+    accountTypePills.forEach(pill => pill.addEventListener('click', resetRecipientConfirmed));
 
     // ================= BOTTOM SHEET: ¿QUÉ DESEAS HACER? =================
     const bsOverlay = document.getElementById('accountBottomSheetOverlay');
@@ -637,15 +671,53 @@ class AppRouter {
           return;
         }
 
+        const personName = nameInput.value.trim();
+        const bankName = bankSelect.value;
+        const accountType = typeSelect.value;
+
+        // Si no ha confirmado aún el resumen por voz
+        if (!this._recipientConfirmed) {
+          const summarySpeech = `La persona es ${personName}, su banco es ${bankName} y su tipo de cuenta es ${accountType}, si es correcto toca el botón verde "Listo" para seguir.`;
+          const summaryMsg = `La persona es ${personName}, su banco es ${bankName} y su tipo de cuenta es ${accountType}. Si es correcto, toca el botón verde "Listo" para seguir.`;
+
+          this._recipientConfirmed = true;
+
+          if (btnContinueNew) {
+            btnContinueNew.classList.add('spotlight-active');
+          }
+
+          if (window.interfazPuente) {
+            if (window.interfazPuente.isTutorialActive && window.interfazPuente.spotlightCard) {
+              const titleEl = document.getElementById('spotlightGuideTitle');
+              const textEl = document.getElementById('spotlightGuideText');
+              const voiceBtn = document.getElementById('btnSpotlightVoice');
+              if (titleEl) titleEl.textContent = 'Confirmar datos';
+              if (textEl) textEl.textContent = summaryMsg;
+              if (voiceBtn) voiceBtn.setAttribute('data-speech', summarySpeech);
+              window.interfazPuente.spotlightCard.classList.add('show');
+              if (btnContinueNew) window.interfazPuente.positionSpotlightCard(btnContinueNew);
+            } else if (window.interfazPuente.enabled && btnContinueNew) {
+              window.interfazPuente.activateSectionFocus(btnContinueNew, 'Listo');
+            }
+          }
+
+          if (window.puenteSpeech) {
+            window.puenteSpeech.speak(summarySpeech);
+          }
+          return;
+        }
+
         this.transferState.recipient = {
           id: 'nuevo_' + Date.now(),
-          name: nameInput.value.trim(),
+          name: personName,
           rut: rutInput.value.trim(),
-          bank: bankSelect.value,
-          accountType: typeSelect.value,
+          bank: bankName,
+          accountType: accountType,
           accountNum: numInput.value.trim(),
           email: emailInput ? emailInput.value.trim() : ''
         };
+
+        this._recipientConfirmed = false;
       }
 
       this.goTo('amount');
@@ -659,13 +731,18 @@ class AppRouter {
     const btnCancelRut = document.getElementById('btnCancelAddRecipientRut');
     const btnCancelForm = document.getElementById('btnCancelAddRecipientForm');
 
-    if (btnCancelSaved) btnCancelSaved.addEventListener('click', () => this.goTo('home'));
+    if (btnCancelSaved) btnCancelSaved.addEventListener('click', () => {
+      this._recipientConfirmed = false;
+      this.goTo('home');
+    });
     if (btnCancelRut) btnCancelRut.addEventListener('click', () => {
       this.transferState.isNewRecipient = false;
+      this._recipientConfirmed = false;
       this.goTo('recipient');
     });
     if (btnCancelForm) btnCancelForm.addEventListener('click', () => {
       this.transferState.isNewRecipient = false;
+      this._recipientConfirmed = false;
       this.goTo('recipient');
     });
   }

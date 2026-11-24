@@ -967,9 +967,25 @@ class InterfazPuente {
           },
           {
             target: '#btnContinueRecipient',
-            title: 'Toca el botón Listo',
-            message: 'Toca el botón Listo para continuar al monto.',
-            speech: 'Toca el botón Listo para avanzar.',
+            title: (window.appRouter && window.appRouter._recipientConfirmed) ? 'Confirmar datos' : 'Toca el botón Listo',
+            message: (() => {
+              const nameVal = (document.getElementById('newRecipientName')?.value || '').trim();
+              const bankVal = (document.getElementById('newRecipientBank')?.value || '').trim();
+              const typeVal = (document.getElementById('newRecipientType')?.value || '').trim();
+              if (window.appRouter && window.appRouter._recipientConfirmed && nameVal && bankVal && typeVal) {
+                return `La persona es ${nameVal}, su banco es ${bankVal} y su tipo de cuenta es ${typeVal}. Si es correcto, toca el botón verde "Listo" para seguir.`;
+              }
+              return 'Toca el botón verde Listo para revisar los datos antes de continuar.';
+            })(),
+            speech: (() => {
+              const nameVal = (document.getElementById('newRecipientName')?.value || '').trim();
+              const bankVal = (document.getElementById('newRecipientBank')?.value || '').trim();
+              const typeVal = (document.getElementById('newRecipientType')?.value || '').trim();
+              if (window.appRouter && window.appRouter._recipientConfirmed && nameVal && bankVal && typeVal) {
+                return `La persona es ${nameVal}, su banco es ${bankVal} y su tipo de cuenta es ${typeVal}, si es correcto toca el botón verde "Listo" para seguir.`;
+              }
+              return 'Toca el botón verde Listo para revisar los datos antes de continuar.';
+            })(),
             noBlur: true,
             autoAdvanceOnSpeechEnd: false
           }
