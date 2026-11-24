@@ -729,7 +729,7 @@ button.spotlight-active *,
 }
 
 #view-new-recipient.tutorial-rut-card-action-active .scroll-area {
-  padding-bottom: 260px !important;
+  padding-bottom: 24px !important;
 }
 
 /* ================= BANNER SUPERIOR COMPACTO EN DESTINATARIO (PASO 2) ================= */

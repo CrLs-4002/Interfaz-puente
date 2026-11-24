@@ -342,10 +342,11 @@ class InterfazPuente {
     const currentView = activeScreen ? activeScreen.id.replace('view-', '') : (window.appRouter ? window.appRouter.currentView : '');
     const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
 
-    // En Etapa A de RUT, el botón Continuar se aloja dentro del card al pie
+    // En Etapa A de RUT, la guía se muestra en el banner superior compacto para no tapar el teclado
     if (currentView === 'new-recipient' && isStepRutVisible) {
-      this.spotlightCard.style.transform = 'translateY(0)';
-      this.spotlightCard.classList.remove('is-docked-top');
+      if (this.spotlightCard) {
+        this.spotlightCard.classList.remove('show');
+      }
       this.updateSpotlightOverlay(null);
       return;
     }
@@ -645,8 +646,8 @@ class InterfazPuente {
     }
   }
 
-  /* Sincroniza la ubicación y texto del botón: dentro del card del Paso 1 (diciendo Continuar) solo si el modo tutorial está activo;
-     y debajo en la página diciendo "Listo" cuando el modo tutorial está apagado */
+  /* Sincroniza la ubicación y texto del botón de RUT: permanece en su lugar natural bajo el teclado;
+     muestra "Continuar" durante el modo tutorial y "Listo" cuando el modo tutorial está apagado */
   syncRutButtonLocation(isRutTutorialStep) {
     const btn = document.getElementById('btnConfirmRutNext');
     const slot = document.getElementById('spotlightCardActionSlot');
@@ -654,37 +655,47 @@ class InterfazPuente {
     const cancelBtn = document.getElementById('btnCancelAddRecipientRut');
     const newRecipientView = document.getElementById('view-new-recipient');
 
-    if (!btn || !slot || !originalContainer) return;
+    if (!btn || !originalContainer) return;
+
+    if (slot && btn.parentElement === slot) {
+      if (cancelBtn && cancelBtn.parentElement === originalContainer) {
+        originalContainer.insertBefore(btn, cancelBtn);
+      } else {
+        originalContainer.appendChild(btn);
+      }
+    }
+    if (slot) {
+      slot.style.display = 'none';
+    }
+    if (newRecipientView) {
+      newRecipientView.classList.remove('tutorial-rut-card-action-active');
+    }
 
     if (isRutTutorialStep) {
-      if (btn.parentElement !== slot) {
-        slot.appendChild(btn);
-      }
       btn.innerHTML = `
         <span>Continuar</span>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       `;
-      slot.style.display = 'block';
-      if (newRecipientView) {
-        newRecipientView.classList.add('tutorial-rut-card-action-active');
-      }
     } else {
-      if (btn.parentElement !== originalContainer) {
-        if (cancelBtn && cancelBtn.parentElement === originalContainer) {
-          originalContainer.insertBefore(btn, cancelBtn);
-        } else {
-          originalContainer.appendChild(btn);
-        }
-      }
       btn.innerHTML = `
         <span class="term-technical">Listo</span>
         <span class="term-simplified">Listo</span>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
       `;
-      slot.style.display = 'none';
-      if (newRecipientView) {
-        newRecipientView.classList.remove('tutorial-rut-card-action-active');
+    }
+  }
+
+  /* Sincroniza el banner superior compacto de la pantalla de nuevo destinatario (Etapa RUT) */
+  syncRutTutorialBanner(isStepRut) {
+    const banner = document.getElementById('rutTutorialBanner');
+    if (!banner) return;
+    if (isStepRut) {
+      banner.style.display = 'block';
+      if (this.spotlightCard) {
+        this.spotlightCard.classList.remove('show');
       }
+    } else {
+      banner.style.display = 'none';
     }
   }
 
@@ -743,6 +754,7 @@ class InterfazPuente {
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
     this.syncRecipientTutorialBanner(false);
+    this.syncRutTutorialBanner(false);
     document.body.classList.remove('dynamic-focus-active');
     this.clearPreviousHighlight();
     if (this.autoAdvanceTimer) {
@@ -788,6 +800,7 @@ class InterfazPuente {
     this.syncRutButtonLocation(false);
     this.syncSummaryCorrectoButton(false);
     this.syncRecipientTutorialBanner(false);
+    this.syncRutTutorialBanner(false);
     if (this.autoAdvanceTimer) {
       clearTimeout(this.autoAdvanceTimer);
       this.autoAdvanceTimer = null;
@@ -805,6 +818,10 @@ class InterfazPuente {
     const banner = document.getElementById('recipientTutorialBanner');
     if (banner) {
       banner.style.display = 'none';
+    }
+    const rutBanner = document.getElementById('rutTutorialBanner');
+    if (rutBanner) {
+      rutBanner.style.display = 'none';
     }
     this.clearPreviousHighlight();
     document.body.classList.remove('dynamic-focus-active');
@@ -861,9 +878,11 @@ class InterfazPuente {
     }
     if (viewName !== 'new-recipient') {
       this.syncRutButtonLocation(false);
+      this.syncRutTutorialBanner(false);
     } else {
       const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
       this.syncRutButtonLocation(this.isTutorialActive && isStepRutVisible);
+      this.syncRutTutorialBanner(this.isTutorialActive && isStepRutVisible);
     }
     if (viewName !== 'recipient') {
       this.syncRecipientTutorialBanner(false);
@@ -1083,6 +1102,7 @@ class InterfazPuente {
     const isStepRutVisible = document.getElementById('newRecipientStepRut') && !document.getElementById('newRecipientStepRut').classList.contains('hidden');
     const isRutTutorialStep = (this.isTutorialActive && currentView === 'new-recipient' && isStepRutVisible && step && step.target === '#groupRecipientRut');
     this.syncRutButtonLocation(isRutTutorialStep);
+    this.syncRutTutorialBanner(isRutTutorialStep);
 
     this.syncSummaryCorrectoButton(false);
 
@@ -1112,7 +1132,7 @@ class InterfazPuente {
       }
     }
 
-    const shouldShowCard = !isRecipientStep2 && !step.hideCard && currentView !== 'summary';
+    const shouldShowCard = !isRecipientStep2 && !isRutTutorialStep && !step.hideCard && currentView !== 'summary';
 
     if (this.spotlightCard) {
       const badgeEl = document.getElementById('spotlightStepBadge');
@@ -1744,6 +1764,28 @@ class InterfazPuente {
     const btnRecipientBannerClose = document.getElementById('btnRecipientBannerClose');
     if (btnRecipientBannerClose) {
       btnRecipientBannerClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.dismissCurrentTutorialStep();
+      });
+    }
+
+    // Botones del banner superior compacto de nuevo destinatario RUT (Paso 1)
+    const btnRutBannerVoice = document.getElementById('btnRutBannerVoice');
+    if (btnRutBannerVoice) {
+      btnRutBannerVoice.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const steps = this.getGuideSteps();
+        const step = (steps && steps.length > 0) ? steps[0] : null;
+        const speechText = (step && step.speech) ? step.speech : 'Escribe el RUT de la persona o toca Dictar. Al terminar, toca Continuar.';
+        if (speechText && window.puenteSpeech) {
+          window.puenteSpeech.speak(speechText);
+        }
+      });
+    }
+
+    const btnRutBannerClose = document.getElementById('btnRutBannerClose');
+    if (btnRutBannerClose) {
+      btnRutBannerClose.addEventListener('click', (e) => {
         e.stopPropagation();
         this.dismissCurrentTutorialStep();
       });
