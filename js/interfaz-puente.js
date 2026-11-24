@@ -1014,8 +1014,8 @@ class InterfazPuente {
         {
           target: '#btnConfirmSummary',
           title: 'Revisión tranquila de datos',
-          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
-          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.',
+          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.',
           hideCard: true,
           noBlur: true,
           autoAdvanceOnSpeechEnd: false

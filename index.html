@@ -1433,21 +1433,26 @@ button:disabled {
   margin: 0 !important;
   align-self: stretch !important;
   min-height: 48px;
-  background: #FFFFFF;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1.5px solid #FECACA;
   border-radius: var(--radius-pill);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-cancel-review:active {
-  background: var(--bg);
+  background: #FEE2E2;
+}
+
+.btn-cancel-review svg {
+  stroke: #DC2626;
 }
 
 .btn-cancel-full-width {
@@ -6641,8 +6646,8 @@ class InterfazPuente {
         {
           target: '#btnConfirmSummary',
           title: 'Revisión tranquila de datos',
-          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
-          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.',
+          message: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.',
+          speech: 'Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.',
           hideCard: true,
           noBlur: true,
           autoAdvanceOnSpeechEnd: false
@@ -9002,7 +9007,7 @@ class AppRouter {
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
-      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`;
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.`;
       
       if (window.puenteSpeech) {
         window.puenteSpeech.speak(speechText);
@@ -9314,7 +9319,7 @@ class AppRouter {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
-      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave.`);
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.`);
     } else if (this.currentView === 'receipt') {
       window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.`);
     }

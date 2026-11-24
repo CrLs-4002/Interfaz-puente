@@ -1412,21 +1412,26 @@ button:disabled {
   margin: 0 !important;
   align-self: stretch !important;
   min-height: 48px;
-  background: #FFFFFF;
-  color: var(--muted);
-  border: 1.5px solid var(--line);
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1.5px solid #FECACA;
   border-radius: var(--radius-pill);
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-cancel-review:active {
-  background: var(--bg);
+  background: #FEE2E2;
+}
+
+.btn-cancel-review svg {
+  stroke: #DC2626;
 }
 
 .btn-cancel-full-width {
