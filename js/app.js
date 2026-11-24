@@ -883,7 +883,7 @@ class AppRouter {
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
       
-      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.`;
+      const speechText = `Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo Cancelar y revisar que está más abajo.`;
       
       if (window.puenteSpeech) {
         window.puenteSpeech.speak(speechText);
@@ -1195,7 +1195,7 @@ class AppRouter {
       const amtStr = this.formatCLPForSpeech(this.transferState.amount);
       const destName = this.transferState.recipient.name;
       const destBank = this.transferState.recipient.bank;
-      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo claro Cancelar y revisar que está más abajo.`);
+      window.puenteSpeech.speak(`Vas a enviar ${amtStr} a ${destName}, a su cuenta en ${destBank}. Revisa tranquilo los datos antes de continuar. Tienes todo el tiempo que necesites. Cuando hayas verificado todo, toca el botón ingresar clave. Si no es correcto, toca el botón de rojo Cancelar y revisar que está más abajo.`);
     } else if (this.currentView === 'receipt') {
       window.puenteSpeech.speak(`¡Transferencia Exitosa! Tu dinero fue enviado. Para compartir el comprobante por WhatsApp, haz click en el botón Compartir comprobante.`);
     }
