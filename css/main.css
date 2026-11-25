@@ -6,9 +6,9 @@
 
 :root {
   /* ================= PALETA DE COLORES (UI TOKENS BANCOESTADO) ================= */
-  /* Primario (Marca): Naranja Institucional para CTA principal, alertas críticas */
-  --orange: #F35619;
-  --orange-dark: #D84209;
+  /* Primario (Marca): Naranja Institucional para CTA principal, alertas críticas (WCAG AA) */
+  --orange: #C2410C;
+  --orange-dark: #9A3412;
   --orange-light: #FFF1EB;
 
   /* Secundario: Azul Eléctrico / Corporativo para jerarquía, tarjetas y navegación */
@@ -529,11 +529,15 @@ input, select, textarea {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  box-shadow: 0 4px 14px rgba(243, 86, 25, 0.28);
+  box-shadow: 0 4px 14px rgba(194, 65, 12, 0.28);
   border: none;
   cursor: pointer;
   width: 100%;
   transition: transform 0.15s ease, background 0.15s ease;
+}
+
+#btnQuickTransfer {
+  background: #C2410C;
 }
 
 .btn-cta-big:active {
@@ -836,7 +840,7 @@ button:disabled {
 }
 
 .nav-tab.active {
-  color: #FF7700;
+  color: #C2410C;
 }
 
 .nav-tab.active::before {
@@ -846,12 +850,12 @@ button:disabled {
   left: 20%;
   right: 20%;
   height: 3.5px;
-  background: #FF7700;
+  background: #C2410C;
   border-radius: 0 0 3px 3px;
 }
 
 .nav-tab.active .nav-icon {
-  stroke: #FF7700;
+  stroke: #C2410C;
 }
 
 .nav-icon {
@@ -1011,13 +1015,13 @@ button:disabled {
 
 .account-item-bank {
   font-size: 13px;
-  color: #64748B;
+  color: #475569;
   margin-bottom: 2px;
 }
 
 .account-item-number {
   font-size: 13px;
-  color: #64748B;
+  color: #475569;
 }
 
 .btn-account-dots {
@@ -1413,7 +1417,7 @@ button:disabled {
   align-self: stretch !important;
   min-height: 48px;
   background: #FEF2F2;
-  color: #DC2626;
+  color: #B91C1C;
   border: 1.5px solid #FECACA;
   border-radius: var(--radius-pill);
   font-size: 15px;
@@ -1431,7 +1435,7 @@ button:disabled {
 }
 
 .btn-cancel-review svg {
-  stroke: #DC2626;
+  stroke: #B91C1C;
 }
 
 .btn-cancel-full-width {
@@ -1791,8 +1795,8 @@ button:disabled {
   height: 36px;
   border-radius: var(--radius-pill);
   background: #F0FDF4;
-  border: 1.5px solid #0D8F72;
-  color: #0D8F72;
+  border: 1.5px solid #047857;
+  color: #047857;
   display: inline-flex;
   align-items: center;
   justify-content: center;
