@@ -803,7 +803,7 @@ button:disabled {
 }
 
 .quick-action-label {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 700;
   color: #1E293B;
   text-align: center;
@@ -831,7 +831,7 @@ button:disabled {
   justify-content: center;
   gap: 4px;
   color: #64748B;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   position: relative;
   background: transparent;
@@ -956,8 +956,8 @@ button:disabled {
 }
 
 .contact-avatar-badge {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #FDEEE9;
   color: #A24936;
@@ -965,7 +965,7 @@ button:disabled {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14.5px;
   flex-shrink: 0;
 }
 
@@ -1014,31 +1014,31 @@ button:disabled {
 }
 
 .account-item-bank {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #475569;
   margin-bottom: 2px;
 }
 
 .account-item-number {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #475569;
 }
 
 .btn-account-dots {
   background: transparent;
   border: none;
-  padding: 6px 8px;
+  padding: 8px;
   cursor: pointer;
   color: #3C50B5;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
   margin-left: 8px;
   transition: background 0.15s, color 0.15s;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .btn-account-dots:hover {
@@ -1768,7 +1768,7 @@ button:disabled {
 
 .input-with-voice-wrap input,
 .input-with-voice-wrap .form-input {
-  padding-right: 96px !important;
+  padding-right: 104px !important;
   box-sizing: border-box;
 }
 
@@ -1784,7 +1784,7 @@ button:disabled {
 
 .amount-voice-input-wrap input {
   padding-left: 20px !important;
-  padding-right: 96px !important;
+  padding-right: 104px !important;
 }
 
 .btn-voice-dictate {
@@ -1792,7 +1792,8 @@ button:disabled {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  height: 36px;
+  height: 44px;
+  min-height: 44px;
   border-radius: var(--radius-pill);
   background: #F0FDF4;
   border: 1.5px solid #047857;
@@ -1804,17 +1805,17 @@ button:disabled {
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 3;
-  padding: 0 10px;
+  padding: 0 12px;
   margin: 0;
   box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .btn-voice-dictate span {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 800;
   color: inherit;
 }

@@ -824,7 +824,7 @@ button:disabled {
 }
 
 .quick-action-label {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 700;
   color: #1E293B;
   text-align: center;
@@ -852,7 +852,7 @@ button:disabled {
   justify-content: center;
   gap: 4px;
   color: #64748B;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   position: relative;
   background: transparent;
@@ -977,8 +977,8 @@ button:disabled {
 }
 
 .contact-avatar-badge {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #FDEEE9;
   color: #A24936;
@@ -986,7 +986,7 @@ button:disabled {
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 14.5px;
   flex-shrink: 0;
 }
 
@@ -1035,31 +1035,31 @@ button:disabled {
 }
 
 .account-item-bank {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #475569;
   margin-bottom: 2px;
 }
 
 .account-item-number {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #475569;
 }
 
 .btn-account-dots {
   background: transparent;
   border: none;
-  padding: 6px 8px;
+  padding: 8px;
   cursor: pointer;
   color: #3C50B5;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
   margin-left: 8px;
   transition: background 0.15s, color 0.15s;
-  min-width: 36px;
-  min-height: 36px;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .btn-account-dots:hover {
@@ -1789,7 +1789,7 @@ button:disabled {
 
 .input-with-voice-wrap input,
 .input-with-voice-wrap .form-input {
-  padding-right: 96px !important;
+  padding-right: 104px !important;
   box-sizing: border-box;
 }
 
@@ -1805,7 +1805,7 @@ button:disabled {
 
 .amount-voice-input-wrap input {
   padding-left: 20px !important;
-  padding-right: 96px !important;
+  padding-right: 104px !important;
 }
 
 .btn-voice-dictate {
@@ -1813,7 +1813,8 @@ button:disabled {
   right: 8px;
   top: 50%;
   transform: translateY(-50%);
-  height: 36px;
+  height: 44px;
+  min-height: 44px;
   border-radius: var(--radius-pill);
   background: #F0FDF4;
   border: 1.5px solid #047857;
@@ -1825,17 +1826,17 @@ button:disabled {
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 3;
-  padding: 0 10px;
+  padding: 0 12px;
   margin: 0;
   box-shadow: 0 1px 3px rgba(13, 27, 62, 0.08);
   flex-shrink: 0;
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 800;
   white-space: nowrap;
 }
 
 .btn-voice-dictate span {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 800;
   color: inherit;
 }
@@ -2549,8 +2550,8 @@ button.spotlight-active *,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--indigo-soft);
   color: var(--indigo);
@@ -2713,11 +2714,11 @@ button.spotlight-active *,
 }
 
 .recipient-tutorial-banner-badge {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 900;
   color: var(--mint);
   background: var(--navy);
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 6px;
   letter-spacing: 0.5px;
   flex-shrink: 0;
@@ -2731,7 +2732,7 @@ button.spotlight-active *,
 }
 
 .recipient-tutorial-banner-desc {
-  font-size: 13px;
+  font-size: 14.5px;
   color: #334155;
   margin: 0;
   line-height: 1.35;
@@ -2741,20 +2742,22 @@ button.spotlight-active *,
 .recipient-tutorial-banner-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
 .btn-recipient-banner-voice {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  gap: 5px;
   background: #E0E7FF;
   border: 1.5px solid #C7D2FE;
   color: #3730A3;
-  padding: 6px 10px;
-  border-radius: 12px;
-  font-size: 13px;
+  padding: 8px 14px;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
+  font-size: 14.5px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -2773,8 +2776,8 @@ button.spotlight-active *,
 }
 
 .btn-recipient-banner-close {
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #FFFFFF;
   border: 1.5px solid #CBD5E1;
@@ -2785,6 +2788,7 @@ button.spotlight-active *,
   cursor: pointer;
   transition: all 0.2s ease;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .btn-recipient-banner-close:hover,
@@ -2807,8 +2811,9 @@ button.spotlight-active *,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 8px 14px;
+  min-height: 44px;
+  border-radius: var(--radius-pill);
   background: var(--indigo-soft);
   color: var(--indigo);
   border: 1.5px solid #C3D4FB;
@@ -2869,16 +2874,17 @@ button.spotlight-active *,
   display: none !important;
   align-items: center;
   justify-content: center;
-  padding: 3px 10px;
-  min-height: 26px;
-  border-radius: 13px;
+  padding: 8px 16px;
+  min-height: 44px;
+  min-width: 44px;
+  border-radius: var(--radius-pill);
   background: var(--indigo-soft);
-  border: 1.5px solid var(--indigo);
+  border: 2px solid var(--indigo);
   color: var(--indigo);
-  font-size: 13px;
-  font-weight: 900;
+  font-size: 15px;
+  font-weight: 800;
   cursor: pointer;
-  margin-left: 6px;
+  margin-left: 8px;
   flex: none;
   line-height: 1;
   vertical-align: middle;
@@ -3058,7 +3064,7 @@ button.spotlight-active *,
   display: inline-block;
   background: var(--mint);
   color: #0D1B3E;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   padding: 4px 10px;
   border-radius: 10px;
@@ -3528,8 +3534,8 @@ button.spotlight-active *,
 }
 
 .btn-voice-dictate-home {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #F0FDF4;
   border: 1.5px solid #047857;
@@ -3559,7 +3565,7 @@ button.spotlight-active *,
 }
 
 .home-help-voice-hint {
-  font-size: 13px;
+  font-size: 14.5px;
   color: var(--muted);
   font-weight: 600;
   line-height: 1.4;
@@ -3567,7 +3573,7 @@ button.spotlight-active *,
 }
 
 .home-help-voice-feedback {
-  font-size: 13px;
+  font-size: 14.5px;
   font-weight: 800;
   margin-top: 10px;
   padding: 8px 12px;
@@ -5121,7 +5127,7 @@ button.spotlight-active *,
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
               <span style="font-size:16px;font-weight:800;margin-left:4px">Escuchar</span>
             </button>
-            <button type="button" class="btn-close-spotlight-x" id="btnSpotlightCloseX" aria-label="Cerrar mensaje de ayuda" title="Cerrar ayuda" style="width:34px;height:34px;border-radius:50%;background:#F1F5F9;border:1.5px solid #CBD5E1;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s">
+            <button type="button" class="btn-close-spotlight-x" id="btnSpotlightCloseX" aria-label="Cerrar mensaje de ayuda" title="Cerrar ayuda" style="width:44px;height:44px;border-radius:50%;background:#F1F5F9;border:1.5px solid #CBD5E1;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
